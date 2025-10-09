@@ -1,7 +1,7 @@
 "use client";
 import { MdChevronRight } from "react-icons/md";
 import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useUserSessionStore } from "@/src/store/user/useUserSessionStore";

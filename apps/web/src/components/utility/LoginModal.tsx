@@ -2,10 +2,10 @@
 import { signIn } from 'next-auth/react';
 import { Dispatch, SetStateAction } from 'react';
 import OpacityBackground from '../utility/OpacityBackground';
-import UtilityCard from '../utility/UtilityCard';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import { FaGithub } from 'react-icons/fa';
+import Card from '../ui/Card';
 
 interface LoginModalProps {
     opensignInModal: boolean;
@@ -24,7 +24,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
         <div>
             {opensignInModal && (
                 <OpacityBackground onBackgroundClick={() => setOpenSignInModal(false)}>
-                    <UtilityCard className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 z-50 bg-dark-base text-light">
+                    <Card className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 z-50 bg-dark-base text-light">
                         <div className="text-center space-y-2">
                             <h2 className="text-2xl font-semibold text-light">
                                 Sign in to continue
@@ -74,7 +74,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                 Privacy Policy
                             </span>
                         </p>
-                    </UtilityCard>
+                    </Card>
                 </OpacityBackground>
             )}
         </div>

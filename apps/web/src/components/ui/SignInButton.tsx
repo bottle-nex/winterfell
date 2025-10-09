@@ -1,7 +1,7 @@
 'use client';
 import { MdChevronRight } from 'react-icons/md';
 import { Button } from '../ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/src/lib/utils';
 import { useState } from 'react';
 import LoginModal from '../utility/LoginModal';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';

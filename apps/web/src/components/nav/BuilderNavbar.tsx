@@ -1,18 +1,24 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import Image from "next/image";
 import { FaCode, FaPlay } from "react-icons/fa";
-import { IoIosPaperPlane } from "react-icons/io";
+import { IoIosPaperPlane, IoMdOptions } from "react-icons/io";
 import ToolTipComponent from "../ui/TooltipComponent";
 import { Button } from "../ui/button";
 import { useUserSessionStore } from "@/src/store/user/useUserSessionStore";
+import { useState } from "react";
+import BuilderSettingsPanel from "../builder/BuilderSettingsPanel";
+import NetworkTicker from "../tickers/NetworkTicker";
+
+
 
 export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
+    const [openSettingsPanel, setOpenSettingsPanel] = useState<boolean>(false);
     return (
         <div className="h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
             <div></div>
             <div className="flex items-center justify-between">
-                <div className="flex items-center justify-start bg-neutral-800 rounded-lg p-[3px] border border-neutral-600">
+                <div className="flex items-center justify-start bg-dark rounded-[4px] p-[3px] border border-neutral-800">
                     <ToolTipComponent
                         side="bottom"
                         content="Preview your project in real-time"
@@ -20,7 +26,7 @@ export default function BuilderNavbar() {
                         <FaPlay
                             size={24}
                             className={cn(
-                                "py-2 rounded-md cursor-pointer transition w-8",
+                                "py-2 rounded-[4px] cursor-pointer transition w-8",
                             )}
                         />
                     </ToolTipComponent>
@@ -31,22 +37,29 @@ export default function BuilderNavbar() {
                         <FaCode
                             size={24}
                             className={cn(
-                                "py-2 rounded-md cursor-pointer transition w-8",
+                                "py-2 rounded-[4px] cursor-pointer transition w-8",
                             )}
                         />
                     </ToolTipComponent>
                 </div>
 
-                <div className="max-w-[20rem] w-full flex items-center justify-end border border-neutral-600 rounded-full p-[14px]"></div>
-
                 <div className="flex items-center justify-between gap-x-5">
-                    <Button
-                        size={"sm"}
-                        className="bg-light text-dark-base hover:bg-light hover:text-dark-base tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold"
-                    >
-                        <IoIosPaperPlane />
-                        <span>publish</span>
-                    </Button>
+                    <NetworkTicker />
+                    <div className="relative">
+                        <ToolTipComponent content="Settings" side="bottom">
+                            <IoMdOptions onClick={() => setOpenSettingsPanel(true)} className="hover:bg-neutral-700/70 rounded-[4px] p-[4px] h-6 w-6 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5" />
+                        </ToolTipComponent>
+                        <BuilderSettingsPanel openSettingsPanel={openSettingsPanel} setOpenSettingsPanel={setOpenSettingsPanel} />
+                    </div>
+                    <ToolTipComponent content="deploy your contract to the solana blockchain" side="bottom">
+                        <Button
+                            size={"sm"}
+                            className="bg-light text-dark-base hover:bg-light hover:text-dark-base tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                        >
+                            <IoIosPaperPlane />
+                            <span className="text-xs">Deploy</span>
+                        </Button>
+                    </ToolTipComponent>
                     {session?.user.image && (
                         <Image
                             src={session?.user.image}
