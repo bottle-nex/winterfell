@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import prisma from "@prisma/client";
+import { prisma } from "@repo/database"
 
 const SERVER_JWT_SECRET = process.env.SERVER_JWT_SECRET;
 
