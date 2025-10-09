@@ -12,6 +12,7 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
+  image     String?
   password  String? // if using credentials login
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,22 +1,20 @@
 import express from 'express';
-import cors from 'cors';
 import http from 'http';
-import router from "./routes";
+import env from './configs/env';
+import cors from 'cors';
+import router from './routes';
 
 const app = express();
 const server = http.createServer(app);
-
 app.use(express.json());
 app.use(
     cors({
-        origin: "http://localhost3000",
-        credentials: true,
+        origin: '*',
     }),
 );
 
 app.use('/api/v1', router);
 
-const PORT = 8080;
-server.listen(PORT, () => {
-    console.warn('Application started at port : ', PORT);
+server.listen(env.SERVER_PORT, () => {
+    console.log('Server is running on port : ', env.SERVER_PORT);
 });
