@@ -7,13 +7,13 @@ import LoginModal from '../utility/LoginModal';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useRouter } from 'next/navigation';
 
-export default function NavbarSigninAction() {
+export default function skdjvs() {
     const { session } = useUserSessionStore();
     const router = useRouter();
     const [opensignInModal, setOpenSignInModal] = useState<boolean>(false);
 
     function handler() {
-        if (!session?.user|| !session?.user.token) {
+        if (!session?.user || !session?.user.token) {
             setOpenSignInModal(true);
         } else {
             router.push('/home');

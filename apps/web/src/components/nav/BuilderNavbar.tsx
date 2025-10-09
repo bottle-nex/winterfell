@@ -4,8 +4,10 @@ import { FaCode, FaPlay } from "react-icons/fa";
 import { IoIosPaperPlane } from "react-icons/io";
 import ToolTipComponent from "../ui/TooltipComponent";
 import { Button } from "../ui/button";
+import { useUserSessionStore } from "@/src/store/user/useUserSessionStore";
 
 export default function BuilderNavbar() {
+    const { session } = useUserSessionStore();
     return (
         <div className="h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
             <div></div>
