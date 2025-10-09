@@ -8,12 +8,45 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output = "../generated/client"
+  output   = "../generated/client"
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String? // if using credentials login
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contracts Contract[]
+}
+
+model Contract {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  code        String // the Rust code of the contract
+  idl         Json? // auto-generated IDL
+  clientSdk   Json? // auto-generated client (TS/JS)
+  summary     String? // AI-generated human-readable summary
+  deployed    Boolean  @default(false)
+  programId   String? // Solana program ID after deployment
+  version     Int      @default(1)
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deployments Deployment[]
+}
+
+model Deployment {
+  id          String   @id @default(cuid())
+  contract    Contract @relation(fields: [contractId], references: [id])
+  contractId  String
+  network     String // devnet/testnet/mainnet
+  deployedAt  DateTime @default(now())
+  txSignature String? // optional Solana transaction signature
+  status      String // pending/success/failure
 }
