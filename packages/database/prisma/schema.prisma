@@ -18,25 +18,32 @@ model User {
   updatedAt DateTime @updatedAt
 
   contracts Contract[]
+  chats     Chat[]
 }
 
 model Contract {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  code        String // the Rust code of the contract
-  idl         Json? // auto-generated IDL
-  clientSdk   Json? // auto-generated client (TS/JS)
-  summary     String? // AI-generated human-readable summary
-  deployed    Boolean  @default(false)
-  programId   String? // Solana program ID after deployment
-  version     Int      @default(1)
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String       @id @default(cuid())
+  title        String
+  description  String?
+  contractType ContractType
+
+  code String // the Rust code of the contract
+
+  idl       Json? // auto-generated IDL
+  clientSdk Json? // auto-generated client (TS/JS)
+
+  summary String? // AI-generated human-readable summary
+
+  deployed  Boolean  @default(false)
+  programId String? // Solana program ID after deployment
+  version   Int      @default(1)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   deployments Deployment[]
+  chats       Chat[]
 }
 
 model Deployment {
@@ -47,4 +54,63 @@ model Deployment {
   deployedAt  DateTime @default(now())
   txSignature String? // optional Solana transaction signature
   status      String // pending/success/failure
+
+  @@index([contractId])
+}
+
+model Chat {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([userId])
+  @@index([contractId])
+}
+
+model Message {
+  id     String @id @default(cuid())
+  chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String
+
+  role    ChatRole
+  content String   @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([chatId])
+}
+
+enum ContractType {
+  TOKEN
+  NFT
+  STAKING
+  DAO
+  DEFI
+  MARKETPLACE
+  CUSTOM
+}
+
+enum Network {
+  DEVNET
+  TESTNET
+  MAINNET_BETA
+}
+
+enum DeploymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum ChatRole {
+  USER
+  AI
+  SYSTEM
 }

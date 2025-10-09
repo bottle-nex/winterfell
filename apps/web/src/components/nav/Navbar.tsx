@@ -41,8 +41,8 @@ export default function Navbar() {
 
       <div className="flex items-center gap-x-4">
         <IoIosCreate
-          onClick={() => router.push("/create")}
-          className="hover:bg-neutral-700/70 rounded-sm p-[4px] h-8 w-8 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
+          onClick={() => router.push("/make")}
+          className="hover:bg-neutral-700/70 rounded-sm p-[4px] h-7 w-7 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
         />
         <NavbarSigninAction />
       </div>

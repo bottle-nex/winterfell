@@ -2,6 +2,7 @@
   --color-primary: #013bb3;
   --color-light: #fdf9f0;
   --color-dark-base: #141517;
+  --color-dark: #1c1d20;
 }
 
 @theme {
@@ -34,4 +35,3 @@
 .animated-cards:hover::before {
   opacity: 1;
 }
-

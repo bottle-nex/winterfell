@@ -1,5 +1,5 @@
 'use client';
-import { cn } from '@/lib/utils';
+import { cn } from '@/src/lib/utils';
 import React, { ForwardedRef } from 'react';
 import { motion } from 'motion/react';
 interface UtilityCardProps {
@@ -8,7 +8,7 @@ interface UtilityCardProps {
     ref?: ForwardedRef<HTMLDivElement>;
 }
 
-export default function UtilityCard({ children, className, ref }: UtilityCardProps) {
+export default function Card({ children, className, ref }: UtilityCardProps) {
     return (
         <motion.div
             ref={ref}
