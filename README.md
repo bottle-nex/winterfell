@@ -1,199 +1,147 @@
-# Turborepo + Prisma ORM starter
+# Lovable for Anchor: AI-Powered Rust Smart Contract Platform
+
+**Lovable for Anchor** is an AI-powered platform for building, editing, deploying, and interacting with Rust-based smart contracts on Solana using Anchor. It aims to simplify the entire smart contract workflow, from AI-assisted contract generation to client SDK creation and frontend integration.
+
+---
+
+## **Core Features**
+
+### **1. AI Contract Generation**
+- Generate Rust-based Anchor contracts from natural language descriptions.
+- Use pre-built templates for common Solana programs:
+  - Token contracts
+  - NFT contracts
+  - DeFi programs
+  - Escrow or payment programs
+- Option to generate modular contracts with separate instructions, accounts, and error enums.
 
-This is a example designed to help you quickly set up a Turborepo monorepo with a Next.js app and Prisma ORM. This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+### **2. Smart Contract Editor**
+- Rich code editor with Rust syntax highlighting (Monaco/CodeMirror).
+- Live preview of contract structure: instructions, accounts, events.
+- Refactoring tools:
+  - Rename instructions
+  - Restructure accounts
+- Highlight mismatches between contract code and Anchor conventions.
+
+### **3. IDL & Metadata Generation**
+- Auto-generate IDL for the contract.
+- Generate deployment artifacts like `Cargo.toml`, build scripts, and client SDKs.
+
+---
+
+## **AI-Powered Enhancements**
+
+### **1. Contract Assistor**
+- Suggest improvements to contract logic.
+- Optimize instructions and reduce contract size.
+- Detect redundant or unsafe logic.
+- Generate documentation and comments inline.
+- Suggest type-safe account layouts and commonly used structs.
+- Warn about known vulnerabilities (unchecked seeds, missing payer checks, etc.).
 
-## What's inside?
+### **2. Summarization & Explanation**
+- Human-readable summaries for instructions, account requirements, and errors.
+- Security considerations explained in plain English.
 
-This turborepo includes the following packages/apps:
+### **3. Feature Suggestions**
+- AI suggests additional instructions or functionalities based on contract type.
+- Boilerplate for admin functionality, royalties, or access control.
 
-### Apps and packages
+---
 
-- `web`: a [Next.js](https://nextjs.org/) app
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/database`: [Prisma ORM](https://prisma.io/) to manage & access your database
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## **Developer Utilities**
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- **Version Control**
+  - Auto-save versions and rollback capabilities.
+  
+- **Testing & Simulation**
+  - Auto-generate Anchor test scripts.
+  - Simulate transactions in-browser or on devnet.
+  
+- **Contract Visualization**
+  - Graphical representation of instructions, accounts, and relationships.
 
-### Utilities
+- **Code Snippets**
+  - Predefined modular snippets (e.g., PDA creation, token minting, escrow logic).
 
-This turborepo has some additional tools already setup for you:
+---
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Prisma ORM](https://prisma.io/) for accessing the database
-- [Docker Compose](https://docs.docker.com/compose/) for a local MySQL database
+## **Deployment & Post-Deployment Features**
 
-## Getting started
+- **One-Click Deployment**
+  - Deploy to Solana Devnet, Testnet, or Mainnet.
+  - Auto-generate CLI commands for deployment.
+  
+- **ID/Address Management**
+  - Track deployed program IDs.
+  - Generate client SDKs to interact with deployed contracts.
 
-Follow these steps to set up and run your Turborepo project with Prisma ORM:
+- **Monitoring & Analytics**
+  - Display usage stats: calls per instruction, errors, deprecated patterns.
 
-### 1. Create a Turborepo project
+---
 
-Start by creating a new Turborepo project using the following command:
+## **Client Generation & Integration**
 
-```sh
-npx create-turbo@latest -e with-prisma
-```
+- **AI-Powered Client SDK**
+  - Automatically generate TypeScript/JavaScript client.
+  - Functions for each instruction with typed inputs/outputs.
+  - Pre-configured Anchor Provider and wallet integration.
+  - Helper functions for PDAs, token minting, and transactions.
 
-Choose your desired package manager when prompted and a name for the app (e.g., `my-turborepo`). This will scaffold a new Turborepo project with Prisma ORM included and dependencies installed.
+- **Frontend Boilerplate**
+  - React/Next.js starter project prewired with wallet adapters.
+  - Hooks for each contract instruction.
+  - Example UI components (forms, buttons) linked to instructions.
 
-Navigate to your project directory:
+- **Integration AI Assist**
+  - Suggest UI patterns based on contract type:
+    - NFT → gallery + mint button
+    - Token → transfer + balance display
+    - DeFi → swap/exchange interface
+  - Auto-generate ID to UI mapping for account balances, token states, etc.
 
-```bash
-cd ./my-turborepo
-```
+- **Testing & Simulation**
+  - Generate frontend integration tests.
+  - Simulate transactions in-browser for UX validation.
 
-### 2. Setup a local database with Docker Compose
+- **Deployment + Client Bundling**
+  - Deploy contract and generate client SDK for immediate use.
+  - Instructions for integrating SDK into other projects.
 
-We use [Prisma ORM](https://prisma.io/) to manage and access our database. As such you will need a database for this project, either locally or hosted in the cloud.
+---
 
-To make this process easier, a [`docker-compose.yml` file](./docker-compose.yml) is included to setup a MySQL server locally with a new database named `turborepo`:
+## **Optional “Lovable” Features**
 
-Start the MySQL database using Docker Compose:
+- **Interactive AI Chat**
+  - Ask questions about contracts: e.g., “Which accounts are required?” or “How to implement royalties?”
+  
+- **Collaboration**
+  - Share contracts with other developers for co-editing and review.
+  
+- **Template Marketplace**
+  - Community-curated or official contract templates ready to customize.
 
-```sh
-docker-compose up -d
-```
+- **Security Checklist**
+  - AI-powered checklist: seeds, admin restrictions, rent exemption checks.
 
-To change the default database name, update the `MYSQL_DATABASE` environment variable in the [`docker-compose.yml` file](/docker-compose.yml).
+- **Export Options**
+  - Export contract + IDL + tests + deployment scripts as a complete package.
 
-### 3. Setup environment variables
+- **Interactive Sandbox**
+  - Test contract interactions through a generated client without writing frontend code.
 
-Once the database is ready, copy the `.env.example` file to the [`/packages/database`](./packages/database/) and [`/apps/web`](./apps/web/) directories as `.env`:
+---
 
-```bash
-cp .env.example ./packages/database/.env
-cp .env.example ./apps/web/.env
-```
+## **Workflow Overview**
 
-This ensures Prisma has access to the `DATABASE_URL` environment variable, which is required to connect to your database.
+1. **Generate Contract** → AI creates Anchor contract from specification.
+2. **Edit & Improve** → Rich editor with AI suggestions and refactoring.
+3. **Generate IDL & Client** → Auto-generate IDL and client SDK.
+4. **Deploy** → One-click deployment to Solana network.
+5. **Integrate & Test** → Use generated frontend boilerplate and simulate transactions.
+6. **Monitor & Iterate** → Track usage stats, errors, and receive AI improvement suggestions.
 
-If you added a custom database name, or use a cloud based database, you will need to update the `DATABASE_URL` in your `.env` accordingly.
+---
 
-### 4. Migrate your database
-
-Once your database is running, you’ll need to create and apply migrations to set up the necessary tables. Run the database migration command:
-
-```bash
-# Using npm
-npm run db:migrate:dev
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn run db:migrate:dev
-
-# Using pnpm
-pnpm run db:migrate:dev
-
-# Using bun
-bun run db:migrate:dev
-```
-
-</details>
-
-You’ll be prompted to name the migration. Once you provide a name, Prisma will create and apply the migration to your database.
-
-> Note: The `db:migrate:dev` script (located in [packages/database/package.json](/packages/database/package.json)) uses [Prisma Migrate](https://www.prisma.io/migrate) under the hood.
-
-For production environments, always push schema changes to your database using the [`prisma migrate deploy` command](https://www.prisma.io/docs/orm/prisma-client/deployment/deploy-database-changes-with-prisma-migrate). You can find an example `db:migrate:deploy` script in the [`package.json` file](/packages/database/package.json) of the `database` package.
-
-### 5. Seed your database
-
-To populate your database with initial or fake data, use [Prisma's seeding functionality](https://www.prisma.io/docs/guides/database/seed-database).
-
-Update the seed script located at [`packages/database/src/seed.ts`](/packages/database/src/seed.ts) to include any additional data that you want to seed. Once edited, run the seed command:
-
-```bash
-# Using npm
-npm run db:seed
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn run db:seed
-
-# Using pnpm
-pnpm run db:seed
-
-# Using bun
-bun run db:seed
-```
-
-</details>
-
-### 6. Build your application
-
-To build all apps and packages in the monorepo, run:
-
-```bash
-# Using npm
-npm run build
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn run build
-
-# Using pnpm
-pnpm run build
-
-# Using bun
-bun run build
-```
-
-</details>
-
-### 7. Start the application
-
-Finally, start your application with:
-
-```bash
-yarn run dev
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn run dev
-
-# Using pnpm
-pnpm run dev
-
-# Using bun
-bun run dev
-```
-
-</details>
-
-Your app will be running at `http://localhost:3000`. Open it in your browser to see it in action!
-
-You can also read the official [detailed step-by-step guide from Prisma ORM](https://pris.ly/guide/turborepo?utm_campaign=turborepo-example) to build a project from scratch using Turborepo and Prisma ORM.
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+**Lovable for Anchor** makes building Solana programs faster, safer, and more approachable for developers of all levels.
