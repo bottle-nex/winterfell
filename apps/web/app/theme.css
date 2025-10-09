@@ -1,0 +1,37 @@
+@theme {
+  --color-primary: #013bb3;
+  --color-light: #fdf9f0;
+  --color-dark-base: #141517;
+}
+
+@theme {
+  --breakpoint-xs: 375px;
+  --breakpoint-md2: 896px;
+}
+
+.animated-cards::before {
+  pointer-events: none;
+  position: absolute;
+  -webkit-user-select: none;
+  user-select: none;
+  border-radius: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(
+    1000px circle at var(--x) var(--y),
+    #c9ee80 0,
+    #eebbe2 10%,
+    #adc0ec 25%,
+    #c9ee80 35%,
+    rgba(255, 255, 255, 0) 50%,
+    transparent 80%
+  );
+  z-index: -1;
+  content: "";
+  inset: -1px;
+}
+
+.animated-cards:hover::before {
+  opacity: 1;
+}
+
