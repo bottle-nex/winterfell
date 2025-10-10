@@ -304,3 +304,11 @@ body {
   --rct-color-focustree-item-active-bg: #121111 !important;
   --rct-color-focustree-item-selected-bg: #121111 !important;
 }
+
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 1.2px #FDF9EF; /* width + color */
+    -webkit-text-fill-color: transparent; /* optional */
+  }
+}
