@@ -1,22 +1,19 @@
-import { useRef, useState } from "react";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../ui/select";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useHandleClickOutside } from "@/src/hooks/useHandleClickOutside";
-import Sidebar from "../ui/Sidebar";
+import { useRef, useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { useHandleClickOutside } from '@/src/hooks/useHandleClickOutside';
+import Sidebar from '../ui/Sidebar';
 
 interface BuilderSettingsPanelProps {
     openSettingsPanel: boolean;
     setOpenSettingsPanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function BuilderSettingsPanel({ openSettingsPanel, setOpenSettingsPanel }: BuilderSettingsPanelProps) {
+export default function BuilderSettingsPanel({
+    openSettingsPanel,
+    setOpenSettingsPanel,
+}: BuilderSettingsPanelProps) {
     const settingsRef = useRef<HTMLDivElement>(null);
     useHandleClickOutside([settingsRef], setOpenSettingsPanel);
     const [settings, setSettings] = useState({
@@ -27,11 +24,12 @@ export default function BuilderSettingsPanel({ openSettingsPanel, setOpenSetting
         includeTests: true,
         includeClient: true,
         anchorVersion: '0.29.0',
-        securityLevel: 'standard'
+        securityLevel: 'standard',
     });
 
     return (
-        <Sidebar open={openSettingsPanel}
+        <Sidebar
+            open={openSettingsPanel}
             setOpen={setOpenSettingsPanel}
             width="40rem"
             content={
@@ -42,12 +40,17 @@ export default function BuilderSettingsPanel({ openSettingsPanel, setOpenSetting
                         </label>
                         <Select
                             value={settings.contractType}
-                            onValueChange={(value) => setSettings({ ...settings, contractType: value })}
+                            onValueChange={(value) =>
+                                setSettings({ ...settings, contractType: value })
+                            }
                         >
                             <SelectTrigger className="w-full border-neutral-800 text-light">
                                 <SelectValue placeholder="Select type" />
                             </SelectTrigger>
-                            <SelectContent container={settingsRef.current} className="bg-dark-base border-neutral-800 text-light">
+                            <SelectContent
+                                container={settingsRef.current}
+                                className="bg-dark-base border-neutral-800 text-light"
+                            >
                                 <SelectItem value="CUSTOM">Custom</SelectItem>
                                 <SelectItem value="TOKEN">Token</SelectItem>
                                 <SelectItem value="NFT">NFT</SelectItem>
@@ -70,7 +73,10 @@ export default function BuilderSettingsPanel({ openSettingsPanel, setOpenSetting
                             <SelectTrigger className="w-full border-neutral-800 text-light">
                                 <SelectValue placeholder="Select network" />
                             </SelectTrigger>
-                            <SelectContent container={settingsRef.current} className="bg-dark-base border-neutral-800 text-light">
+                            <SelectContent
+                                container={settingsRef.current}
+                                className="bg-dark-base border-neutral-800 text-light"
+                            >
                                 <SelectItem value="DEVNET">Devnet</SelectItem>
                                 <SelectItem value="TESTNET">Testnet</SelectItem>
                                 <SelectItem value="MAINNET_BETA">Mainnet Beta</SelectItem>
@@ -101,19 +107,23 @@ export default function BuilderSettingsPanel({ openSettingsPanel, setOpenSetting
                         </label>
                         <Select
                             value={settings.anchorVersion}
-                            onValueChange={(value) => setSettings({ ...settings, anchorVersion: value })}
+                            onValueChange={(value) =>
+                                setSettings({ ...settings, anchorVersion: value })
+                            }
                         >
                             <SelectTrigger className="w-full border-neutral-800 text-light">
                                 <SelectValue placeholder="Select version" />
                             </SelectTrigger>
-                            <SelectContent container={settingsRef.current} className="bg-dark-base border-neutral-800 text-light">
+                            <SelectContent
+                                container={settingsRef.current}
+                                className="bg-dark-base border-neutral-800 text-light"
+                            >
                                 <SelectItem value="0.30.0">0.30.0 (Latest)</SelectItem>
                                 <SelectItem value="0.29.0">0.29.0</SelectItem>
                                 <SelectItem value="0.28.0">0.28.0</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-
 
                     <div className="flex gap-2 mt-4 pt-3 border-t border-neutral-800">
                         <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded [4px]xt-xs font-medium transition-colors">

@@ -1,14 +1,11 @@
-"use client";
+'use client';
 import React, { useMemo } from 'react';
 import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
 import { useCodeEditor, FileNode } from '@/src/store/code/useCodeEditor';
-import { AiFillFolder } from "react-icons/ai";
-import { AiFillFolderOpen } from "react-icons/ai";
+import { AiFillFolder } from 'react-icons/ai';
+import { AiFillFolderOpen } from 'react-icons/ai';
 import FileIcon from '../tickers/FileIcon';
-
-
-
 
 interface TreeItem {
     index: string;
@@ -34,24 +31,23 @@ export default function Filetree() {
                 index: node.id,
                 data: node.name,
                 isFolder: isFolder,
-                children: isFolder && node.children
-                    ? node.children.map(child => child.id)
-                    : undefined
+                children:
+                    isFolder && node.children ? node.children.map((child) => child.id) : undefined,
             };
 
             if (isFolder && node.children) {
-                node.children.forEach(child => flattenNode(child));
+                node.children.forEach((child) => flattenNode(child));
             }
         }
 
-        fileTree.forEach(node => flattenNode(node));
+        fileTree.forEach((node) => flattenNode(node));
 
         return flattened;
     }, [fileTree]);
 
     const dataProvider = new StaticTreeDataProvider(treeData, (item, data) => ({
         ...item,
-        data
+        data,
     }));
 
     return (
@@ -65,18 +61,15 @@ export default function Filetree() {
             <div className="p-2 w-full">
                 <UncontrolledTreeEnvironment
                     dataProvider={dataProvider}
-                    getItemTitle={item => item.data}
+                    getItemTitle={(item) => item.data}
                     viewState={{}}
                     canDragAndDrop={false}
                     canDropOnFolder={false}
                     canReorderItems={false}
                     onSelectItems={(items) => {
                         const itemId = items[0];
-                        if (itemId && itemId !== "root") {
-                            const findNode = (
-                                nodes: FileNode[],
-                                id: string,
-                            ): FileNode | null => {
+                        if (itemId && itemId !== 'root') {
+                            const findNode = (nodes: FileNode[], id: string): FileNode | null => {
                                 for (const node of nodes) {
                                     if (node.id === id) return node;
                                     if (node.children) {
@@ -87,7 +80,7 @@ export default function Filetree() {
                                 return null;
                             };
                             const node = findNode(fileTree, itemId as string);
-                            if (node && node.type === "file") {
+                            if (node && node.type === 'file') {
                                 selectFile(node);
                             }
                         }
@@ -101,7 +94,11 @@ export default function Filetree() {
                                     <AiFillFolder size={16} className="text-blue-500" />
                                 )
                             ) : (
-                                <FileIcon filename={item.data} size={14} className="text-neutral-400" />
+                                <FileIcon
+                                    filename={item.data}
+                                    size={14}
+                                    className="text-neutral-400"
+                                />
                             )}
                             <span className="text-sm">{item.data}</span>
                         </div>

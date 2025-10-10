@@ -1,15 +1,13 @@
-import { cn } from "@/src/lib/utils";
-import Image from "next/image";
-import { FaCode, FaPlay } from "react-icons/fa";
-import { IoIosPaperPlane, IoMdOptions } from "react-icons/io";
-import ToolTipComponent from "../ui/TooltipComponent";
-import { Button } from "../ui/button";
-import { useUserSessionStore } from "@/src/store/user/useUserSessionStore";
-import { useState } from "react";
-import BuilderSettingsPanel from "../builder/BuilderSettingsPanel";
-import NetworkTicker from "../tickers/NetworkTicker";
-
-
+import { cn } from '@/src/lib/utils';
+import Image from 'next/image';
+import { FaCode, FaPlay } from 'react-icons/fa';
+import { IoIosPaperPlane, IoMdOptions } from 'react-icons/io';
+import ToolTipComponent from '../ui/TooltipComponent';
+import { Button } from '../ui/button';
+import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import { useState } from 'react';
+import BuilderSettingsPanel from '../builder/BuilderSettingsPanel';
+import NetworkTicker from '../tickers/NetworkTicker';
 
 export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
@@ -19,26 +17,16 @@ export default function BuilderNavbar() {
             <div></div>
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start bg-dark rounded-[4px] p-[3px] border border-neutral-800">
-                    <ToolTipComponent
-                        side="bottom"
-                        content="Preview your project in real-time"
-                    >
+                    <ToolTipComponent side="bottom" content="Preview your project in real-time">
                         <FaPlay
                             size={24}
-                            className={cn(
-                                "py-2 rounded-[4px] cursor-pointer transition w-8",
-                            )}
+                            className={cn('py-2 rounded-[4px] cursor-pointer transition w-8')}
                         />
                     </ToolTipComponent>
-                    <ToolTipComponent
-                        side="bottom"
-                        content="View and edit the source code"
-                    >
+                    <ToolTipComponent side="bottom" content="View and edit the source code">
                         <FaCode
                             size={24}
-                            className={cn(
-                                "py-2 rounded-[4px] cursor-pointer transition w-8",
-                            )}
+                            className={cn('py-2 rounded-[4px] cursor-pointer transition w-8')}
                         />
                     </ToolTipComponent>
                 </div>
@@ -47,13 +35,22 @@ export default function BuilderNavbar() {
                     <NetworkTicker />
                     <div className="relative">
                         <ToolTipComponent content="Settings" side="bottom">
-                            <IoMdOptions onClick={() => setOpenSettingsPanel(true)} className="hover:bg-neutral-700/70 rounded-[4px] p-[4px] h-6 w-6 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5" />
+                            <IoMdOptions
+                                onClick={() => setOpenSettingsPanel(true)}
+                                className="hover:bg-neutral-700/70 rounded-[4px] p-[4px] h-6 w-6 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
+                            />
                         </ToolTipComponent>
-                        <BuilderSettingsPanel openSettingsPanel={openSettingsPanel} setOpenSettingsPanel={setOpenSettingsPanel} />
+                        <BuilderSettingsPanel
+                            openSettingsPanel={openSettingsPanel}
+                            setOpenSettingsPanel={setOpenSettingsPanel}
+                        />
                     </div>
-                    <ToolTipComponent content="deploy your contract to the solana blockchain" side="bottom">
+                    <ToolTipComponent
+                        content="deploy your contract to the solana blockchain"
+                        side="bottom"
+                    >
                         <Button
-                            size={"sm"}
+                            size={'sm'}
                             className="bg-light text-dark-base hover:bg-light hover:text-dark-base tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
                         >
                             <IoIosPaperPlane />

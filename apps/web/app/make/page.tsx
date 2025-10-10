@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import BuilderDashboard from "@/src/components/builder/BuilderDashboard";
-import BuilderNavbar from "@/src/components/nav/BuilderNavbar";
+import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
+import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
 
 export default function Page() {
     return (

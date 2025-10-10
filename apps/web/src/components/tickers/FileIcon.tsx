@@ -28,20 +28,14 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
     const renderIcon = () => {
         switch (extension) {
             case 'rs':
-                return (
-                    <SiRust
-                        size={size}
-                        color='#CE422B'
-                        className={`${className}`}
-                    />
-                );
+                return <SiRust size={size} color="#CE422B" className={`${className}`} />;
 
             case 'ts':
             case 'tsx':
                 return (
                     <SiTypescript
                         size={11}
-                        color='#3178C6'
+                        color="#3178C6"
                         className={`text-[#3178C6] ${className}`}
                     />
                 );
@@ -51,27 +45,19 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
                 return (
                     <SiJavascript
                         size={size}
-                        color='#F7DF1E'
+                        color="#F7DF1E"
                         className={`text-[#F7DF1E] ${className}`}
                     />
                 );
 
             case 'toml':
                 return (
-                    <SiToml
-                        size={size}
-                        color='#9C4221'
-                        className={`text-[#9C4221] ${className}`}
-                    />
+                    <SiToml size={size} color="#9C4221" className={`text-[#9C4221] ${className}`} />
                 );
 
             case 'json':
                 return (
-                    <SiJson
-                        size={size}
-                        color='#F7DF1E'
-                        className={`text-[#F7DF1E] ${className}`}
-                    />
+                    <SiJson size={size} color="#F7DF1E" className={`text-[#F7DF1E] ${className}`} />
                 );
 
             case 'md':
@@ -79,7 +65,7 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
                 return (
                     <SiMarkdown
                         size={size}
-                        color='#083FA1'
+                        color="#083FA1"
                         className={`text-[#083FA1] ${className}`}
                     />
                 );
@@ -88,7 +74,7 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
                 return (
                     <SiSolidity
                         size={size}
-                        color='#AA9785'
+                        color="#AA9785"
                         className={`text-[#AA9785] ${className}`}
                     />
                 );
@@ -96,26 +82,17 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
             case 'yaml':
             case 'yml':
                 return (
-                    <SiYaml
-                        size={size}
-                        color='#CB171E'
-                        className={`text-[#CB171E] ${className}`}
-                    />
+                    <SiYaml size={size} color="#CB171E" className={`text-[#CB171E] ${className}`} />
                 );
 
             case 'lock':
-                return (
-                    <VscLock
-                        size={size}
-                        className={`text-neutral-600 ${className}`}
-                    />
-                );
+                return <VscLock size={size} className={`text-neutral-600 ${className}`} />;
 
             default:
                 return (
                     <VscFile
                         size={size}
-                        color='#353838hcv'
+                        color="#353838hcv"
                         className={`text-neutral-500 ${className}`}
                     />
                 );
