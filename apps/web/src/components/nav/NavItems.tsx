@@ -34,7 +34,7 @@ export default function NavItems({ items, className }: NavItemsProps) {
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-neutral-900"
+              className="absolute inset-0 h-full w-full rounded-[4px] bg-primary"
             />
           )}
           <span className="relative z-20">{item.name}</span>
