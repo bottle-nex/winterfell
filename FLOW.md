@@ -45,3 +45,22 @@ User clicks "Test Client"
 Show test results:
 ✅ 5 tests passed
 ❌ 1 test failed: "Missing signer"
+
+
+
+
+
+
+this one is for the build request --------------->
+
+[User] → Build Request → [Backend API] → Queue → [Build Worker (VM)]
+                                               ↓
+                                  ┌───────────────────────────┐
+                                  │ VM / EC2 / Fly Machine     │
+                                  │  - Docker Engine           │
+                                  ├───────────────────────────┤
+                                  │ Container #1: anchor build│
+                                  │ Container #2: anchor build│
+                                  │ Container #3: anchor build│
+                                  │ ... (parallel builds)     │
+                                  └───────────────────────────┘

@@ -48,9 +48,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                 priority
                                 unoptimized
                             />
-                            <span className="text-light text-xs">
-                                Sign in with Google
-                            </span>
+                            <span className="text-light text-xs">Sign in with Google</span>
                         </Button>
 
                         {/* GitHub Sign-in Button */}

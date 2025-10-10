@@ -1,6 +1,6 @@
-import { JSX } from "react";
-import BuilderChats from "./BuilderChats";
-import CodeEditor from "../code/CodeEditor";
+import { JSX } from 'react';
+import BuilderChats from './BuilderChats';
+import CodeEditor from '../code/CodeEditor';
 
 export default function BuilderDashboard(): JSX.Element {
     return (

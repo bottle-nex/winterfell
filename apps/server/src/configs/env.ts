@@ -13,6 +13,7 @@ const envScehma = z.object({
         .default('8787')
         .transform((val) => parseInt(val, 10)),
     SERVER_JWT_SECRET: z.string().transform((val) => val.trim()),
+    SERVER_ANTHROPIC_API_KEY: z.string().transform((val) => val.trim()),
 });
 
 function parseScehma() {

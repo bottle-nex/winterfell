@@ -12,13 +12,16 @@ export default function NetworkTicker({ network = Network.DEVNET }: NetworkTicke
     const getTicker = () => {
         switch (network) {
             case Network.DEVNET:
-                return { label: "Devnet", className: "bg-purple-500/40 border border-purple-500" };
+                return { label: 'Devnet', className: 'bg-purple-500/40 border border-purple-500' };
             case Network.TESTNET:
-                return { label: "Testnet", className: "bg-yellow-500/40 border border-yellow-500" };
+                return { label: 'Testnet', className: 'bg-yellow-500/40 border border-yellow-500' };
             case Network.MAINNET_BETA:
-                return { label: "Mainnet Beta", className: "bg-green-500/40 border border-green-500" };
+                return {
+                    label: 'Mainnet Beta',
+                    className: 'bg-green-500/40 border border-green-500',
+                };
             default:
-                return { label: "Unknown", className: "bg-gray-500" };
+                return { label: 'Unknown', className: 'bg-gray-500' };
         }
     };
 
