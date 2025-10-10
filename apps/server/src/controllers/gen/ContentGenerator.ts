@@ -40,7 +40,6 @@ export default class ContentGenerator {
         );
 
         const full_response = await this.generate_streaming_response(res, message, chat);
-        console.log("full response : ", full_response);
         if (full_response.includes("```rust") || full_response.includes("```")) {
             const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
             if (codeMatch && codeMatch[1]) {
@@ -82,7 +81,6 @@ export default class ContentGenerator {
                 });
             }
 
-            // Add the current user message
             contents.push({
                 role: "user",
                 parts: [{ text: message.content }]
