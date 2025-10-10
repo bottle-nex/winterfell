@@ -40,7 +40,7 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
             case 'tsx':
                 return (
                     <SiTypescript
-                        size={13}
+                        size={11}
                         color='#3178C6'
                         className={`text-[#3178C6] ${className}`}
                     />
