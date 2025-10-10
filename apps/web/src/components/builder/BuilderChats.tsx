@@ -60,7 +60,7 @@ export default function BuilderChats() {
                     </div>
                 ))}
             </div>
-            <div className="flex items-center justify-center w-full px-6 py-4">
+            <div className="flex items-center justify-center w-full py-4">
                 <BuilderChatInput />
             </div>
         </div>
