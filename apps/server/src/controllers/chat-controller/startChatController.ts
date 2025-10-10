@@ -1,28 +1,29 @@
 import { Request, Response } from "express";
-import { prisma } from "@repo/database";
-import Anthropic from "@anthropic-ai/sdk";
+import { ChatRole, prisma } from "@repo/database";
 import { SYSTEM_PROMPT } from "../../prompt/system";
 import env from "../../configs/env";
+import { GoogleGenAI } from '@google/genai';
 
-const anthropic = new Anthropic({
-    apiKey: env.SERVER_ANTHROPIC_API_KEY,
+const ai = new GoogleGenAI({
+    apiKey: env.SERVER_GEMINI_API_KEY,
 });
 
-console.log(anthropic)
-
 export default async function startChatController(req: Request, res: Response) {
-    // if (!req.user?.id) {
-    //     res.json({ error: "Not authenticated" });
-    // }
-
     console.log("reached here");
     const userId = 'cmgjpnlpk0000ui7vipnp4msw';
     const chatId = req.query.chatId as string;
     const message = req.body.message as string;
-    if (!chatId || chatId.length === 0 || typeof chatId !== 'string') {
-        res.json({ error: "Invalid chatId" });
+
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+        res.status(400).json({ error: "Message is required" });
         return;
     }
+
+    if (!chatId || chatId.length === 0 || typeof chatId !== 'string') {
+        res.status(400).json({ error: "Invalid chatId" });
+        return;
+    }
+
     let chat;
     let contract;
     let isNewContract = false;
@@ -35,21 +36,21 @@ export default async function startChatController(req: Request, res: Response) {
         if (isNewContract) {
             contract = await prisma.contract.create({
                 data: {
-                    title: message, // focus someone ... this will be geneated by the llm
+                    title: message.slice(0, 100),
                     description: message,
                     contractType: "CUSTOM",
-                    code: "", // Empty for now, will update after LLM
+                    code: "",
                     userId: String(userId),
                     version: 1,
                 }
-            })
-
+            });
 
             chat = await prisma.chat.create({
                 data: {
                     userId: String(userId),
                     contractId: contract.id,
-                }, include: {
+                },
+                include: {
                     contract: true,
                     messages: {
                         take: 20,
@@ -58,14 +59,13 @@ export default async function startChatController(req: Request, res: Response) {
                         }
                     }
                 }
-            })
-
-
+            });
         } else {
             chat = await prisma.chat.findUnique({
                 where: {
                     id: chatId,
-                }, include: {
+                },
+                include: {
                     messages: {
                         take: 20,
                         orderBy: {
@@ -74,28 +74,22 @@ export default async function startChatController(req: Request, res: Response) {
                     },
                     contract: true
                 }
-            })
+            });
 
             if (!chat) {
-                res.json({
-                    error: "Chat not found"
-                })
+                res.status(404).json({ error: "Chat not found" });
                 return;
             }
 
             if (chat.userId !== String(userId)) {
-                res.json({
-                    error: "Unauthorized"
-                })
+                res.status(403).json({ error: "Unauthorized" });
                 return;
             }
 
             contract = chat.contract;
         }
 
-        console.log("contract", contract);
-        console.log("chat", chat);
-
+        // Step 2: Save user message to database
         const savedUserMessage = await prisma.message.create({
             data: {
                 chatId: chat.id,
@@ -104,11 +98,13 @@ export default async function startChatController(req: Request, res: Response) {
             },
         });
 
+        // Step 3: Setup SSE headers for streaming
         res.setHeader("Content-Type", "text/event-stream");
         res.setHeader("Cache-Control", "no-cache");
         res.setHeader("Connection", "keep-alive");
         res.flushHeaders();
 
+        // Send initial metadata
         res.write(
             `data: ${JSON.stringify({
                 type: "start",
@@ -120,44 +116,122 @@ export default async function startChatController(req: Request, res: Response) {
         );
 
         try {
-
-            let llm_messages: Anthropic.MessageParam[] = chat.messages.map((c) => ({
-                role: c.role === "USER" ? "user" : "assistant",
-                content: c.content,
-            }));
-
-            llm_messages.push({
+            // Step 4: Use generateContentStream with full context
+            // This is the CORRECT way - don't use ai.chats.create for history
+            
+            // Build the contents array with history + system prompt
+            const contents = [];
+            
+            // Add system instruction as first user message
+            contents.push({
                 role: "user",
-                content: message,
+                parts: [{ text: SYSTEM_PROMPT }]
+            });
+            
+            // Add a model acknowledgment
+            contents.push({
+                role: "model", 
+                parts: [{ text: "Understood. I will help you create Anchor smart contracts following these guidelines." }]
+            });
+            
+            // Add all previous messages from database
+            for (const msg of chat.messages) {
+                contents.push({
+                    role: msg.role === "USER" ? "user" : "model",
+                    parts: [{ text: msg.content }]
+                });
+            }
+            
+            // Add the current user message
+            contents.push({
+                role: "user",
+                parts: [{ text: message }]
             });
 
-            const stream = await anthropic.messages.stream({
-                model: "claude-sonnet-4-5-20250929",
-                max_tokens: 4096,
-                system: SYSTEM_PROMPT,
-                messages: llm_messages,
+            console.log("contents is : ", contents);
+
+            // Step 5: Generate with streaming
+            const stream = await ai.models.generateContentStream({
+                model: "gemini-2.5-flash",
+                contents: contents,
             });
 
+            console.log("streams is : ", stream);
+
+            let fullResponse = "";
+
+            // Stream the response to client
             for await (const chunk of stream) {
-                if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-                    const content = chunk.delta.text;
+                if (chunk.text) {
+                    fullResponse += chunk.text;
+                    console.log(chunk.text);
                     res.write(
                         `data: ${JSON.stringify({
                             type: "chunk",
-                            content: content,
+                            content: chunk.text,
                         })}\n\n`
                     );
                 }
             }
 
+            // Step 6: Save assistant's response to database
+            await prisma.message.create({
+                data: {
+                    chatId: chat.id,
+                    role: ChatRole.AI,
+                    content: fullResponse,
+                },
+            });
+
+            // Step 7: Update contract code if response contains code
+            if (fullResponse.includes("```rust") || fullResponse.includes("```")) {
+                const codeMatch = fullResponse.match(/```(?:rust)?\n([\s\S]*?)```/);
+                if (codeMatch && codeMatch[1]) {
+                    await prisma.contract.update({
+                        where: { id: contract.id },
+                        data: { code: codeMatch[1].trim() }
+                    });
+                }
+            }
+
+            // Send completion event
+            res.write(
+                `data: ${JSON.stringify({
+                    type: "done",
+                    fullResponse: fullResponse,
+                })}\n\n`
+            );
+
+            res.end();
+
         } catch (llmError) {
             console.error("LLM Error:", llmError);
-            res.json({
-                error: "Failed to generate response from AI",
-            })
+            
+            res.write(
+                `data: ${JSON.stringify({
+                    type: "error",
+                    error: "Failed to generate response from AI",
+                })}\n\n`
+            );
+            
+            res.end();
         }
 
     } catch (err) {
-
+        console.error("Controller Error:", err);
+        
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: "Internal server error",
+            });
+        } else {
+            res.write(
+                `data: ${JSON.stringify({
+                    type: "error",
+                    error: "Internal server error",
+                })}\n\n`
+            );
+            res.end();
+        }
     }
 }

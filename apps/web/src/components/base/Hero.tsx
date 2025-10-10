@@ -18,7 +18,7 @@ export default function Hero() {
             <div className="flex gap-x-4 items-center">
                 <span className="tracking-wide text-stroke">NOT HARDER</span>
 
-                <div className="relative overflow-hidden rounded-full bg-[#7A78FF] text-dark-base px-7 h-12 flex items-center w-40">
+                <div className="relative overflow-hidden rounded-full bg-primary text-dark-base px-7 h-12 flex items-center w-40">
                     <div className="flex animate-marquee gap-x-4 whitespace-nowrap">
                         {[...Array(14)].map((_, i) => (
                             <ChevronRight key={i} />
