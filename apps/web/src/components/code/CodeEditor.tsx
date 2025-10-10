@@ -2,6 +2,8 @@
 
 import { JSX, useCallback } from "react";
 import { Editor, Monaco } from "@monaco-editor/react";
+import Filetree from "./Filetree";
+import { useCodeEditor } from "@/src/store/code/useCodeEditor";
 
 export default function CodeEditor(): JSX.Element {
 
@@ -95,14 +97,18 @@ export default function CodeEditor(): JSX.Element {
     });
   }, []);
 
+  const { currentCode } = useCodeEditor();
+  console.log("current code is : ", currentCode);
   return (
     <div className="w-full h-full flex z-10 border-neutral-800 border rounded-[4px] overflow-hidden">
+      <Filetree />
       <Editor
         height="100%"
-        language={'javascript'}
+        language={'rust'}
         beforeMount={handleEditorWillMount}
         theme="clean-dark"
-        value={"console.log('hello world')"}
+        value={currentCode}
+        
       />
     </div>
   );

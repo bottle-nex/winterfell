@@ -46,7 +46,7 @@ export default function NavbarSigninAction() {
             />
           )}
           <span className="text-light text-sm tracking-wider font-semibold">
-            {`${session?.user?.name?.split(" ")[0]}'s Cantabil`}
+            {`${session?.user?.name?.split(" ")[0]}'s Stair`}
           </span>
         </div>
       )}
