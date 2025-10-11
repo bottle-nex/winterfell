@@ -17,9 +17,7 @@
   "type": "commonjs",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0",
-    "@google-ai/generativelanguage": "^3.4.0",
     "@google/genai": "^1.23.0",
-    "@google/generative-ai": "^0.24.1",
     "@repo/database": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

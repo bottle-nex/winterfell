@@ -27,7 +27,7 @@ model Contract {
   description  String?
   contractType ContractType
 
-  code String // the Rust code of the contract
+  code String
 
   idl       Json? // auto-generated IDL
   clientSdk Json? // auto-generated client (TS/JS)

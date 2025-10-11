@@ -1,5 +1,5 @@
-"use client";
-import { useEffect, useRef } from "react";
+'use client';
+import { useEffect, useRef } from 'react';
 
 interface CircularDotsCanvasProps {
     circleX?: number;
@@ -22,7 +22,7 @@ export default function CircularDotsCanvas({
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
         let animationFrameId: number;
@@ -32,7 +32,7 @@ export default function CircularDotsCanvas({
             canvas.height = window.innerHeight;
         };
         resizeCanvas();
-        window.addEventListener("resize", resizeCanvas);
+        window.addEventListener('resize', resizeCanvas);
 
         const cx = circleX ?? window.innerWidth - 250;
         const cy = circleY ?? window.innerHeight / 2 - 228;
@@ -93,9 +93,14 @@ export default function CircularDotsCanvas({
 
         return () => {
             cancelAnimationFrame(animationFrameId);
-            window.removeEventListener("resize", resizeCanvas);
+            window.removeEventListener('resize', resizeCanvas);
         };
     }, [circleX, circleY, innerRadius, outerRadius, dotGap]);
 
-    return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0 pointer-events-none brightness-150" />;
+    return (
+        <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full z-0 pointer-events-none brightness-150"
+        />
+    );
 }
