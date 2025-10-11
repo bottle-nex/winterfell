@@ -8,13 +8,17 @@ import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useState } from 'react';
 import BuilderSettingsPanel from '../builder/BuilderSettingsPanel';
 import NetworkTicker from '../tickers/NetworkTicker';
+import { LiaServicestack } from 'react-icons/lia';
 
 export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
     const [openSettingsPanel, setOpenSettingsPanel] = useState<boolean>(false);
     return (
         <div className="h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
-            <div></div>
+            <div className=" text-[#C3C3C3] text-[17px] tracking-[0.5rem] flex justify-start items-center gap-x-3 cursor-pointer group">
+                <LiaServicestack size={28} className="text-primary" />
+                SHARK FIN
+            </div>
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start bg-dark rounded-[4px] p-[3px] border border-neutral-800">
                     <ToolTipComponent side="bottom" content="Preview your project in real-time">

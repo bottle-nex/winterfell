@@ -17,5 +17,5 @@ app.use(
 app.use('/api/v1', router);
 init_services();
 server.listen(env.SERVER_PORT, () => {
-    console.log('Server is running on port : ', env.SERVER_PORT);
+    console.warn('Server is running on port : ', env.SERVER_PORT);
 });

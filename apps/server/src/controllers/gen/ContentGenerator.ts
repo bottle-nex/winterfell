@@ -11,10 +11,10 @@ enum ChatState {
 }
 
 interface CtxObject {
-    role: 'user' | 'model'
+    role: 'user' | 'model';
     parts: {
-        text: string
-    }[]
+        text: string;
+    }[];
 }
 
 export default class ContentGenerator {
@@ -28,7 +28,12 @@ export default class ContentGenerator {
         });
     }
 
-    public async generate_initial_response(res: Response, message: Message, chat: Chat & { messages: Message[]}, contract_id: string) {
+    public async generate_initial_response(
+        res: Response,
+        message: Message,
+        chat: Chat & { messages: Message[] },
+        contract_id: string,
+    ) {
         this.generate_content_stream(res);
         res.write(
             `data: ${JSON.stringify({
@@ -36,59 +41,67 @@ export default class ContentGenerator {
                 messageId: message.id,
                 chatId: chat.id,
                 contractId: contract_id,
-            })}\n\n`
+            })}\n\n`,
         );
 
         const full_response = await this.generate_streaming_response(res, message, chat);
-        if (full_response.includes("```rust") || full_response.includes("```")) {
+        if (full_response.includes('```rust') || full_response.includes('```')) {
             const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
             if (codeMatch && codeMatch[1]) {
                 await prisma.contract.update({
                     where: { id: contract_id },
-                    data: { code: codeMatch[1].trim() }
+                    data: { code: codeMatch[1].trim() },
                 });
             }
         }
 
         res.write(
             `data: ${JSON.stringify({
-                type: "done",
+                type: 'done',
                 fullResponse: full_response,
-            })}\n\n`
+            })}\n\n`,
         );
 
         res.end();
     }
 
-    public async generate_streaming_response(res: Response, message: Message, chat: Chat & { messages: Message[]}): Promise<string> {
-        let contents: CtxObject[] = [];
-        let full_response = "";
+    public async generate_streaming_response(
+        res: Response,
+        message: Message,
+        chat: Chat & { messages: Message[] },
+    ): Promise<string> {
+        const contents: CtxObject[] = [];
+        let full_response = '';
 
         try {
             contents.push({
-                role: "user",
-                parts: [{ text: this.system_prompt }]
-            })
+                role: 'user',
+                parts: [{ text: this.system_prompt }],
+            });
             contents.push({
-                role: "model",
-                parts: [{ text: "Understood. I will help you create Anchor smart contracts following these guidelines." }]
+                role: 'model',
+                parts: [
+                    {
+                        text: 'Understood. I will help you create Anchor smart contracts following these guidelines.',
+                    },
+                ],
             });
 
             for (const msg of chat.messages) {
                 contents.push({
-                    role: msg.role === "USER" ? "user" : "model",
-                    parts: [{ text: msg.content }]
+                    role: msg.role === 'USER' ? 'user' : 'model',
+                    parts: [{ text: msg.content }],
                 });
             }
 
             contents.push({
-                role: "user",
-                parts: [{ text: message.content }]
+                role: 'user',
+                parts: [{ text: message.content }],
             });
             const response = await this.ai.models.generateContentStream({
-                model: "gemini-2.5-flash",
+                model: 'gemini-2.5-flash',
                 contents,
-            })
+            });
 
             for await (const chunk of response) {
                 if (chunk.text) {
@@ -98,8 +111,8 @@ export default class ContentGenerator {
             this.save_llm_response_to_db(full_response, chat.id);
             return full_response;
         } catch (llm_error) {
-            console.error("LLM Error:", llm_error);
-            return ""
+            console.error('LLM Error:', llm_error);
+            return '';
         }
     }
 
@@ -108,16 +121,15 @@ export default class ContentGenerator {
             data: {
                 chatId: chat_id,
                 role: ChatRole.AI,
-                content: full_response
-            }
-        })
+                content: full_response,
+            },
+        });
     }
 
     public generate_content_stream(res: Response) {
-        res.setHeader("Content-Type", "text/event-stream");
-        res.setHeader("Cache-Control", "no-cache");
-        res.setHeader("Connection", "keep-alive");
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
         res.flushHeaders();
     }
 }
-

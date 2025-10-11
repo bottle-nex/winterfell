@@ -1,4 +1,4 @@
-import ContentGenerator from "../controllers/gen/ContentGenerator";
+import ContentGenerator from '../controllers/gen/ContentGenerator';
 
 export let contentGenerator: ContentGenerator;
 

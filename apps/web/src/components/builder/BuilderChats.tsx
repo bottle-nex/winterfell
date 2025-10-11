@@ -1,6 +1,5 @@
 import { cn } from '@/src/lib/utils';
 import BuilderChatInput from './BuilderChatInput';
-import Image from 'next/image';
 
 export const dummyMessages = [
     {
@@ -21,8 +20,7 @@ export const dummyMessages = [
         id: 'msg4',
         chatId: 'chat1',
         role: 'USER',
-        content:
-            'Fixed supply of 1,000,000 tokens. Fixed supply of 1,000,000 tokens. Fixed supply of 1,000,000 tokens.',
+        content: 'Fixed supply of 1,000,000 tokens.',
         createdAt: new Date('2025-10-10T10:02:00Z'),
     },
     {
@@ -36,11 +34,11 @@ export const dummyMessages = [
 
 export default function BuilderChats() {
     return (
-        <div className="w-full flex flex-col justify-between h-full">
+        <div className="w-full flex flex-col justify-between h-full pt-4">
             <div className="flex flex-col w-full gap-y-3 text-light text-sm px-6 overflow-y-auto flex-1">
                 {dummyMessages.map((message) => (
-                    <div className=''>
-                      {/* { message.role === 'USER' && <Image src={"/user.png"} alt="user" width={40} height={40} /> } */}
+                    <div className="">
+                        {/* { message.role === 'USER' && <Image src={"/user.png"} alt="user" width={40} height={40} /> } */}
                         <div
                             key={message.id}
                             className={cn(
