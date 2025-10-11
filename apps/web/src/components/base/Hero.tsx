@@ -1,38 +1,38 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowRightIcon } from 'lucide-react';
-import { motion, useAnimation, useInView, useMotionValue, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useAnimation, useInView, useScroll, useTransform } from 'framer-motion';
 import { GoArrowUpRight } from 'react-icons/go';
 import { Textarea } from '../ui/textarea';
 import { cn } from '@/src/lib/utils';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { Button } from '../ui/button';
+import { RiCodeSSlashFill } from 'react-icons/ri';
 
 export default function Hero() {
     const [showText, setShowText] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>('');
 
     const heroRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(heroRef, { once: true });
+    const isInView = useInView(heroRef, { once: false });
     const controls = useAnimation();
 
     useEffect(() => {
-        if (isInView) controls.start('visible');
+        if (isInView) {
+            controls.start('visible');
+        }
     }, [isInView, controls]);
 
-    const y = useMotionValue(0);
-    useEffect(() => {
-        const handleScroll = () => {
-            y.set(window.scrollY * 0.3);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [y]);
-
-    const yTransform = useTransform(y, [0, 500], [0, -100]);
-
+    const { scrollY } = useScroll();
+    const fadeOpacity = useTransform(scrollY, [0, 800], [0, 1]);
+    
     return (
-        <div className="flex-1 flex justify-center items-center px-4 sticky top-0">
+        <motion.div className="flex-1 flex justify-center items-center px-4 sticky top-0 z-0">
+            <motion.div
+                className="absolute inset-0 bg-black pointer-events-none z-30"
+                style={{ opacity: fadeOpacity }}
+            />
+
             <div className="absolute top-2 left-5 text-[#C3C3C3] text-[17px] tracking-[0.5rem] cursor-pointer z-20 select-none">
                 STAIR
             </div>
@@ -44,17 +44,14 @@ export default function Hero() {
                     strokeWidth={1}
                 />
             </div>
+
             <main
                 ref={heroRef}
                 className="relative flex flex-col justify-center items-center h-screen w-full bg-dark-base rounded-[8px] overflow-hidden mt-9"
             >
-                {/* <CircularDotsCanvas /> */}
-                <motion.div
-                    style={{ y: yTransform }}
-                    className="absolute h-[900px] w-[900px] rounded-full -top-80 -right-40 flex justify-center items-center bg-gradient-to-r from-dark-base to-dark"
-                >
+                <div className="absolute h-[900px] w-[900px] rounded-full -top-80 -right-40 flex justify-center items-center bg-gradient-to-r from-dark-base to-dark">
                     <div className="h-[700px] w-[700px] rounded-full bg-gradient-to-br from-dark to-dark-base opacity-50" />
-                </motion.div>
+                </div>
 
                 <motion.div
                     className="text-light font-bold text-7xl max-w-5xl text-center flex flex-col justify-center items-center gap-4 z-10"
@@ -94,6 +91,7 @@ export default function Hero() {
                             Solana Contract
                         </motion.span>
                     </motion.span>
+
                     <div className="z-10 flex items-center justify-center">
                         <div
                             className={cn(
@@ -108,6 +106,7 @@ export default function Hero() {
                             </AnimatedShinyText>
                         </div>
                     </div>
+
                     <Textarea
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
@@ -121,7 +120,23 @@ export default function Hero() {
                         )}
                     />
                 </motion.div>
+
+                <div className="absolute bottom-20 left-12 ">
+                    <div className="max-w-2xl flex flex-col justify-start items-start text-light font-semibold">
+                        <span>Powered by AI + Anchor</span>
+                        <span className="">Build Solana Smart Contracts 10x Faster</span>
+                        <div className="flex items-end justify-center gap-x-3 mt-2">
+                            <Button className="font-semibold !px-6 rounded-[4px]">
+                                Explore Playground
+                                <RiCodeSSlashFill />
+                            </Button>
+                            <span className="font-light text-primary tracking-wide text-xs border-b border-primary py-1">
+                                Read Our Docs
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </main>
-        </div>
+        </motion.div>
     );
 }
