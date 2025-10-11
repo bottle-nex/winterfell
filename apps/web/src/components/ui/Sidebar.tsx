@@ -1,11 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
-import { IoIosCreate } from 'react-icons/io';
 
 interface UtilitySideBarProps {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     content: React.ReactNode;
-    width: string;
     bottomLogo?: boolean;
     blob?: boolean;
 }
@@ -14,7 +12,6 @@ export default function SideBar({
     open,
     setOpen,
     content,
-    width,
     bottomLogo,
     blob,
 }: UtilitySideBarProps) {
@@ -52,36 +49,6 @@ export default function SideBar({
                     {content}
                 </div>
             </div>
-
-            <style jsx global>{`
-                .gooey-blob {
-                    height: 18rem;
-                    width: 18rem;
-                    position: absolute;
-                    border-radius: 50%;
-                    background: #eab308;
-                    opacity: 0.2;
-                    bottom: 30%;
-                    right: 10%;
-                    filter: blur(20px);
-                    animation-name: gooey;
-                    animation-duration: 6s;
-                    animation-iteration-count: infinite;
-                    animation-direction: alternate;
-                    animation-timing-function: ease-in-out;
-                }
-
-                @keyframes gooey {
-                    from {
-                        filter: blur(20px);
-                        transform: translate(10%, -10%) skew(0);
-                    }
-                    to {
-                        filter: blur(30px);
-                        transform: translate(-10%, 10%) skew(-12deg);
-                    }
-                }
-            `}</style>
         </>
     );
 }

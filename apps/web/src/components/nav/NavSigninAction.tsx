@@ -36,6 +36,9 @@ export default function NavbarSigninAction() {
                 </Button>
             ) : (
                 <div className="flex items-center justify-center gap-x-3 hover:bg-neutral-700/70 py-1.5 px-3 rounded-lg cursor-pointer select-none">
+                    <span className="text-light text-sm tracking-wider font-semibold">
+                        {`${session?.user?.name?.split(' ')[0]}'s Stair`}
+                    </span>
                     {session?.user.image && (
                         <Image
                             src={session?.user.image}
@@ -45,9 +48,6 @@ export default function NavbarSigninAction() {
                             className="rounded-full"
                         />
                     )}
-                    <span className="text-light text-sm tracking-wider font-semibold">
-                        {`${session?.user?.name?.split(' ')[0]}'s Stair`}
-                    </span>
                 </div>
             )}
             <LoginModal opensignInModal={opensignInModal} setOpenSignInModal={setOpenSignInModal} />

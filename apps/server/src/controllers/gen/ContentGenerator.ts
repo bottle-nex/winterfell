@@ -56,7 +56,7 @@ export default class ContentGenerator {
                 });
             }
         }
-
+        console.log('full response is : ', full_response);
         res.write(
             `data: ${JSON.stringify({
                 type: 'done',
@@ -110,7 +110,7 @@ export default class ContentGenerator {
             for await (const chunk of response) {
                 if (chunk.text) {
                     console.log(chunk.text);
-                    full_response += chunk.text; 
+                    full_response += chunk.text;
                 }
             }
             this.save_llm_response_to_db(full_response, chat.id);

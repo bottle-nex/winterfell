@@ -50,7 +50,7 @@ export default function CircularDotsCanvas({
             if (!ctx) return;
             ctx.clearRect(0, 0, canvas!.width, canvas!.height);
 
-            for (let dot of dots) {
+            for (const dot of dots) {
                 // Move dots slowly
                 dot.x -= 0.25;
                 if (dot.x < -50) dot.x = canvas!.width + 50;
@@ -79,7 +79,7 @@ export default function CircularDotsCanvas({
 
                 const opacity = Math.max(0.05, Math.min(fadeLeft, fadeRight, fadeTop, fadeBottom));
 
-                ctx.fillStyle = `rgba(1, 59, 179, ${opacity.toFixed(10)})`;
+                ctx.fillStyle = `rgba(237, 61, 38, ${opacity.toFixed(10)})`;
 
                 ctx.beginPath();
                 ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);

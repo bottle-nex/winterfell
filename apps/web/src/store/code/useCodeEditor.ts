@@ -18,7 +18,7 @@ interface CodeEditorState {
     selectFile: (node: FileNode) => void;
 }
 
-export const useCodeEditor = create<CodeEditorState>((set, get) => ({
+export const useCodeEditor = create<CodeEditorState>((set) => ({
     currentCode: '',
     currentFile: null,
     fileTree: [

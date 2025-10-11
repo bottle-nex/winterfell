@@ -7,7 +7,7 @@ import LoginModal from '../utility/LoginModal';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useRouter } from 'next/navigation';
 
-export default function skdjvs() {
+export default function SigninButton() {
     const { session } = useUserSessionStore();
     const router = useRouter();
     const [opensignInModal, setOpenSignInModal] = useState<boolean>(false);

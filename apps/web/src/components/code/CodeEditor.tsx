@@ -97,7 +97,6 @@ export default function CodeEditor(): JSX.Element {
     }, []);
 
     const { currentCode } = useCodeEditor();
-    console.log('current code is : ', currentCode);
     return (
         <div className="w-full h-full flex z-10 border-neutral-800 border rounded-[4px] overflow-hidden">
             <Filetree />
