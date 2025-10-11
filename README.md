@@ -7,6 +7,7 @@
 ## **Core Features**
 
 ### **1. AI Contract Generation**
+
 - Generate Rust-based Anchor contracts from natural language descriptions.
 - Use pre-built templates for common Solana programs:
   - Token contracts
@@ -16,6 +17,7 @@
 - Option to generate modular contracts with separate instructions, accounts, and error enums.
 
 ### **2. Smart Contract Editor**
+
 - Rich code editor with Rust syntax highlighting (Monaco/CodeMirror).
 - Live preview of contract structure: instructions, accounts, events.
 - Refactoring tools:
@@ -24,6 +26,7 @@
 - Highlight mismatches between contract code and Anchor conventions.
 
 ### **3. IDL & Metadata Generation**
+
 - Auto-generate IDL for the contract.
 - Generate deployment artifacts like `Cargo.toml`, build scripts, and client SDKs.
 
@@ -32,6 +35,7 @@
 ## **AI-Powered Enhancements**
 
 ### **1. Contract Assistor**
+
 - Suggest improvements to contract logic.
 - Optimize instructions and reduce contract size.
 - Detect redundant or unsafe logic.
@@ -40,10 +44,12 @@
 - Warn about known vulnerabilities (unchecked seeds, missing payer checks, etc.).
 
 ### **2. Summarization & Explanation**
+
 - Human-readable summaries for instructions, account requirements, and errors.
 - Security considerations explained in plain English.
 
 ### **3. Feature Suggestions**
+
 - AI suggests additional instructions or functionalities based on contract type.
 - Boilerplate for admin functionality, royalties, or access control.
 
@@ -53,12 +59,11 @@
 
 - **Version Control**
   - Auto-save versions and rollback capabilities.
-  
 - **Testing & Simulation**
   - Auto-generate Anchor test scripts.
   - Simulate transactions in-browser or on devnet.
-  
 - **Contract Visualization**
+
   - Graphical representation of instructions, accounts, and relationships.
 
 - **Code Snippets**
@@ -71,8 +76,8 @@
 - **One-Click Deployment**
   - Deploy to Solana Devnet, Testnet, or Mainnet.
   - Auto-generate CLI commands for deployment.
-  
 - **ID/Address Management**
+
   - Track deployed program IDs.
   - Generate client SDKs to interact with deployed contracts.
 
@@ -84,17 +89,20 @@
 ## **Client Generation & Integration**
 
 - **AI-Powered Client SDK**
+
   - Automatically generate TypeScript/JavaScript client.
   - Functions for each instruction with typed inputs/outputs.
   - Pre-configured Anchor Provider and wallet integration.
   - Helper functions for PDAs, token minting, and transactions.
 
 - **Frontend Boilerplate**
+
   - React/Next.js starter project prewired with wallet adapters.
   - Hooks for each contract instruction.
   - Example UI components (forms, buttons) linked to instructions.
 
 - **Integration AI Assist**
+
   - Suggest UI patterns based on contract type:
     - NFT → gallery + mint button
     - Token → transfer + balance display
@@ -102,6 +110,7 @@
   - Auto-generate ID to UI mapping for account balances, token states, etc.
 
 - **Testing & Simulation**
+
   - Generate frontend integration tests.
   - Simulate transactions in-browser for UX validation.
 
@@ -115,17 +124,18 @@
 
 - **Interactive AI Chat**
   - Ask questions about contracts: e.g., “Which accounts are required?” or “How to implement royalties?”
-  
 - **Collaboration**
   - Share contracts with other developers for co-editing and review.
-  
 - **Template Marketplace**
+
   - Community-curated or official contract templates ready to customize.
 
 - **Security Checklist**
+
   - AI-powered checklist: seeds, admin restrictions, rent exemption checks.
 
 - **Export Options**
+
   - Export contract + IDL + tests + deployment scripts as a complete package.
 
 - **Interactive Sandbox**
