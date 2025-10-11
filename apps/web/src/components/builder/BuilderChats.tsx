@@ -37,7 +37,7 @@ export default function BuilderChats() {
         <div className="w-full flex flex-col justify-between h-full pt-4">
             <div className="flex flex-col w-full gap-y-3 text-light text-sm px-6 overflow-y-auto flex-1">
                 {dummyMessages.map((message) => (
-                    <div className="">
+                    <div key={message.id} className="">
                         {/* { message.role === 'USER' && <Image src={"/user.png"} alt="user" width={40} height={40} /> } */}
                         <div
                             key={message.id}

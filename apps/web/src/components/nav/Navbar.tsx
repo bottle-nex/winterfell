@@ -4,7 +4,6 @@ import { IoIosCreate } from 'react-icons/io';
 import { useRouter } from 'next/navigation';
 import NavItems from './NavItems';
 import NavbarSigninAction from './NavSigninAction';
-import { useEffect, useState } from 'react';
 import { cn } from '@/src/lib/utils';
 
 const navItems = [
@@ -16,18 +15,9 @@ const navItems = [
 
 export default function Navbar() {
     const router = useRouter();
-    const [scrolled, setScrolled] = useState<boolean>(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 10);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     return (
-        <div className="relative w-full z-[100] flex items-center justify-between px-5 py-2 transition-all duration-500">
+        <div className="absolute w-full z-[100] flex items-center justify-between px-6 transition-all duration-500 translate-y-11">
             <div className="flex items-center justify-between gap-x-2">
                 <LiaServicestack className="text-primary h-10 w-10 transition-all duration-500" />
             </div>

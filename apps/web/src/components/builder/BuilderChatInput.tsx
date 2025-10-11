@@ -1,14 +1,10 @@
 import { Textarea } from '../ui/textarea';
-import { FaChevronUp } from 'react-icons/fa';
-import { Button } from '../ui/button';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { cn } from '@/src/lib/utils';
 import { MdNotStarted } from 'react-icons/md';
 
-interface TextEditorProps {}
-
-export default function BuilderChatInput({}: TextEditorProps) {
+export default function BuilderChatInput() {
     const [inputValue, setInputValue] = useState<string>('');
 
     return (
