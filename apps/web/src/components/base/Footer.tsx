@@ -1,5 +1,6 @@
 import { Bruno_Ace } from 'next/font/google';
 import { LiaServicestack } from 'react-icons/lia';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const bruno = Bruno_Ace({
     subsets: ['latin'],
@@ -7,9 +8,23 @@ const bruno = Bruno_Ace({
     display: 'swap',
 });
 
-export default function Footer() {
+export default function Footer({ containerRef }: { containerRef: any }) {
+    
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "end start"]
+    });
+    
+    const fadeOpacity = useTransform(scrollYProgress, [0, 0.6], [4, 0]);
+    
     return (
-        <div className="w-screen h-screen bg-dark-base">
+        <motion.div className="w-screen h-screen bg-dark-base relative">
+            {/* Dark overlay that fades out */}
+            <motion.div
+                style={{ opacity: fadeOpacity }}
+                className="absolute inset-0 bg-black pointer-events-none z-10"
+            />
+            
             <div className="h-[65%] w-full border-b border-neutral-700 pt-20 px-4 flex">
                 <div className="w-[50%] h-full border-r border-neutral-700 text-neutral-100 ">
                     <div className="max-w-md text-5xl font-semibold tracking-wide">
@@ -50,6 +65,6 @@ export default function Footer() {
                 S H A R K
                 <LiaServicestack className="text-primary h-60 w-60 transition-all duration-500" />
             </div>
-        </div>
+        </motion.div>
     );
 }
