@@ -1,4 +1,5 @@
 'use client';
+import { useRef } from 'react';
 import Features from '@/src/components/base/Features';
 import Footer from '@/src/components/base/Footer';
 import Hero from '@/src/components/base/Hero';
@@ -7,15 +8,17 @@ import LenisProvider from '@/src/providers/LenisProvider';
 import Navbar from '@/src/components/nav/Navbar';
 
 export default function Page() {
+    const parallaxContainerRef = useRef(null);
+
     return (
         <LenisProvider>
             <div className="min-h-screen w-full flex flex-col bg-dark relative">
                 <Navbar />
                 <Hero />
                 <Features />
-                <div className="relative h-[200vh]">
+                <div ref={parallaxContainerRef} className="relative h-[200vh]">
                     <div className="sticky top-0 h-screen overflow-hidden">
-                        <Footer />
+                        <Footer containerRef={parallaxContainerRef} />
                     </div>
                     <div className="absolute top-0 left-0 w-full h-screen">
                         <WhoWeAre />
