@@ -34,7 +34,7 @@ export default function Hero() {
             />
 
             <div className="absolute top-2 left-5 text-[#C3C3C3] text-[17px] tracking-[0.5rem] cursor-pointer z-20 select-none">
-                STAIR
+                SHARK
             </div>
 
             <div className="absolute top-2 right-5 text-[#8A8784] text-[17px] tracking-wider hover:tracking-widest flex items-center gap-x-1 cursor-pointer group z-20 select-none">
