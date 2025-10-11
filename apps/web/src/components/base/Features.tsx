@@ -1,10 +1,9 @@
-"use client";
-import Image from "next/image";
+'use client';
+import Image from 'next/image';
 
 export default function Features() {
     return (
         <section className="w-full flex flex-col md:flex-row max-w-6xl mx-auto py-20 px-4 gap-x-16 relative">
-
             <div className="md:w-1/3 flex-shrink-0">
                 <div className="md:sticky md:top-24 font-bold text-5xl leading-[1.2] text-[#F2EFEC] whitespace-nowrap flex flex-col">
                     <span>SIMPLIFY WRITING</span>
@@ -20,7 +19,7 @@ export default function Features() {
                     >
                         <div className="w-full h-[65%] border border-neutral-700 rounded-[4px] relative overflow-hidden">
                             <Image
-                                src={"/Images/vscode.png"}
+                                src={'/Images/vscode.png'}
                                 alt=""
                                 fill
                                 className="object-cover"
@@ -32,8 +31,8 @@ export default function Features() {
                                 Give Inputs
                             </div>
                             <div className="text-[#a5a3a1] text-sm tracking-wide">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum,
-                                sint fugit! Sunt assumenda laudantium.
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum, sint
+                                fugit! Sunt assumenda laudantium.
                             </div>
                         </div>
                     </div>

@@ -22,4 +22,5 @@ pub mod my_contract {
 }
 \`\`\`
 
-Always explain what the contract does before showing the code.`;
+Always explain what the contract does before showing the code.
+Also give the context wrapped in /:~ and ~:/ tags. which will tell what the ai is doing. keep it concise and should be strict to 5 words`;

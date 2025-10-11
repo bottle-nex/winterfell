@@ -35,6 +35,7 @@ export default class ContentGenerator {
         contract_id: string,
     ) {
         this.generate_content_stream(res);
+
         res.write(
             `data: ${JSON.stringify({
                 type: ChatState.START,
@@ -45,6 +46,7 @@ export default class ContentGenerator {
         );
 
         const full_response = await this.generate_streaming_response(res, message, chat);
+
         if (full_response.includes('```rust') || full_response.includes('```')) {
             const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
             if (codeMatch && codeMatch[1]) {
@@ -87,6 +89,8 @@ export default class ContentGenerator {
                 ],
             });
 
+            console.log('stream started');
+
             for (const msg of chat.messages) {
                 contents.push({
                     role: msg.role === 'USER' ? 'user' : 'model',
@@ -105,7 +109,8 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
-                    full_response += chunk.text;
+                    console.log(chunk.text);
+                    full_response += chunk.text; 
                 }
             }
             this.save_llm_response_to_db(full_response, chat.id);

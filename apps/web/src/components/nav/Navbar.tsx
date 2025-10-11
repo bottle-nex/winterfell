@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import NavItems from './NavItems';
 import NavbarSigninAction from './NavSigninAction';
 import { useEffect, useState } from 'react';
+import { cn } from '@/src/lib/utils';
 
 const navItems = [
     { name: 'Features', link: '#features' },
@@ -27,23 +28,15 @@ export default function Navbar() {
 
     return (
         <div className="relative w-full z-[100] flex items-center justify-between px-5 py-2 transition-all duration-500">
-            <NavItems items={navItems} />
-
             <div className="flex items-center justify-between gap-x-2">
-                <LiaServicestack className="text-light/70 h-10 w-10 transition-all duration-500" />
+                <LiaServicestack className="text-primary h-10 w-10 transition-all duration-500" />
             </div>
 
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500">
                 <div
-                    className={`
-            py-1 px-2 rounded-[8px] flex items-center justify-center
-            transition-all duration-500
-            ${
-                scrolled
-                    ? 'bg-dark border border-neutral-800 shadow-lg max-w-fit w-full'
-                    : 'bg-transparent border-none shadow-none'
-            }
-          `}
+                    className={cn(
+                        'py-1 px-2 rounded-[8px] flex items-center justify-center transition-all duration-500',
+                    )}
                 >
                     <NavItems items={navItems} />
                 </div>
