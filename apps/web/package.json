@@ -16,6 +16,7 @@
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.3.0",
     "@repo/database": "*",
+    "@repo/shared-types": "*",
     "@types/three": "^0.180.0",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",

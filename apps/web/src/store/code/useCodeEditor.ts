@@ -1,12 +1,5 @@
 import { create } from 'zustand';
-
-export interface FileNode {
-    id: string;
-    name: string;
-    type: 'file' | 'folder';
-    content?: string;
-    children?: FileNode[];
-}
+import { FileNode, NODE } from "@repo/shared-types";
 
 interface CodeEditorState {
     currentCode: string;
@@ -25,32 +18,32 @@ export const useCodeEditor = create<CodeEditorState>((set) => ({
         {
             id: 'root',
             name: 'root',
-            type: 'folder',
+            type: NODE.FOLDER,
             children: [
                 {
                     id: 'root',
                     name: 'my-anchor-project',
-                    type: 'folder',
+                    type: NODE.FOLDER,
                     children: [
                         {
                             id: 'programs',
                             name: 'programs',
-                            type: 'folder',
+                            type: NODE.FOLDER,
                             children: [
                                 {
                                     id: 'my_program',
                                     name: 'my_program',
-                                    type: 'folder',
+                                    type: NODE.FOLDER,
                                     children: [
                                         {
                                             id: 'src',
                                             name: 'src',
-                                            type: 'folder',
+                                            type: NODE.FOLDER,
                                             children: [
                                                 {
                                                     id: 'lib_rs',
                                                     name: 'lib.rs',
-                                                    type: 'file',
+                                                    type: NODE.FILE,
                                                     content: `use anchor_lang::prelude::*;
 
 declare_id!("YourProgramID1111111111111111111111111111111");
@@ -86,7 +79,7 @@ pub struct BaseAccount {
                                         {
                                             id: 'cargo_toml',
                                             name: 'Cargo.toml',
-                                            type: 'file',
+                                            type: NODE.FILE,
                                             content: `[package]
 name = "my_program"
 version = "0.1.0"
@@ -107,12 +100,12 @@ anchor-lang = "0.29.0"
                         {
                             id: 'tests',
                             name: 'tests',
-                            type: 'folder',
+                            type: NODE.FOLDER,
                             children: [
                                 {
                                     id: 'my_program_test',
                                     name: 'my_program.ts',
-                                    type: 'file',
+                                    type: NODE.FILE,
                                     content: `import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { MyProgram } from "../target/types/my_program";
@@ -144,7 +137,7 @@ describe("my_program", () => {
                         {
                             id: 'anchor_toml',
                             name: 'Anchor.toml',
-                            type: 'file',
+                            type: NODE.FILE,
                             content: `[programs.localnet]
 my_program = "YourProgramID1111111111111111111111111111111"
 
@@ -169,7 +162,7 @@ test = "npm run test"
     updateFileContent: (fileId: string, content: string) => {},
 
     selectFile: (node: FileNode) => {
-        if (node.type === 'file') {
+        if (node.type === NODE.FILE) {
             set({
                 currentFile: node,
                 currentCode: node.content,
