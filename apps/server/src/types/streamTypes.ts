@@ -1,12 +1,13 @@
 export type StreamEventType =
-    | 'start' // initial connextion establish
-    | 'context' // context extracted
-    | 'message_chunk' // message chunk
-    | 'code_block' // code block extracted
-    | 'file_structure'
-    | 'status' // status update
-    | 'complete' // stream finish
-    | 'error';
+    | 'START'
+    | 'CONTEXT'
+    | 'MESSAGE_CHUNK'
+    | 'CODE_BLOCK'
+    | 'FILE_STRUCTURE'
+    | 'STATUS'
+    | 'COMPLETE'
+    | 'ERROR';
+
 
 export interface StreamEvent<T = any> {
     type: StreamEventType;
@@ -62,10 +63,14 @@ export interface ErrorEventData {
 }
 
 // file-structure types
+export enum NODE {
+    FILE = 'FILE',
+    FOLDER = 'FOLDER',
+}
 
 export interface FileNode {
     name: string;
-    type: 'file' | 'folder';
+    type: NODE;
     path: string;
     content?: string;
     language?: string;
@@ -146,19 +151,22 @@ export interface ContractRecord {
 
 //parser types
 
-export interface StreamEvent<T> {
-    type:
-        | 'start'
-        | 'context'
-        | 'message_chunk'
-        | 'code_block'
-        | 'file_structure'
-        | 'status'
-        | 'complete'
-        | 'error';
-    data: T;
-    timestamp: number;
+export enum STREAM_TYPE {
+    START = 'START',
+    CONTEXT = 'CONTEXT',
+    MESSAGE_CHUNK = 'MESSAGE_CHUNK',
+    CODE_BLOCK = 'CODE_BLOCK',
+    FILE_STRUCTURE = 'FILE_STRUCTURE',
+    STATUS = 'STATUS',
+    COMPLETE = 'COMPLETE',
+    ERROR = 'ERROR',
 }
+
+// export interface StreamEvent<T> {
+//     type: STREAM_TYPE;
+//         data: T;
+//     timestamp: number;
+// }
 
 export interface ContextData {
     content: string;
@@ -175,7 +183,7 @@ export interface CodeBlock {
 
 export interface FileNode {
     name: string;
-    type: 'file' | 'folder';
+    type: NODE;
     path: string;
     content?: string;
     language?: string;
@@ -188,8 +196,9 @@ export interface FileStructure {
 }
 
 export interface StatusUpdate {
-    stage: 'thinking' | 'analyzing' | 'generating' | 'building' | 'complete' | 'error';
+    stage: STAGE;
     message: string;
+
     progress?: number;
 }
 
@@ -216,20 +225,31 @@ export function isStreamEvent(obj: any): obj is StreamEvent {
     );
 }
 
-export function isCodeBlockEvent(event: StreamEvent): event is StreamEvent<CodeBlockEventData> {
-    return event.type === 'code_block';
-}
+// export function isCodeBlockEvent(event: StreamEvent): event is StreamEvent<CodeBlockEventData> {
+//     return event.type === 'code_block';
+// }
 
-export function isContextEvent(event: StreamEvent): event is StreamEvent<ContextEventData> {
-    return event.type === 'context';
-}
+// export function isContextEvent(event: StreamEvent): event is StreamEvent<ContextEventData> {
+//     return event.type === 'context';
+// }
 
-export function isErrorEvent(event: StreamEvent): event is StreamEvent<ErrorEventData> {
-    return event.type === 'error';
-}
+// export function isErrorEvent(event: StreamEvent): event is StreamEvent<ErrorEventData> {
+//     return event.type === 'error';
+// }
 
 export type Nullable<T> = T | null;
 export type Optional<T> = T | undefined;
 export type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
+
+
+export enum STAGE {
+    THINKING = 'THINKING',
+    ANALYZING = 'ANALYZING',
+    GENERATING = 'GENERATING',
+    STRUCTURING = 'STRUCTURING',
+    BUILDING = 'BUILDING',
+    COMPLETE = 'COMPLETE',
+    ERROR = 'ERROR',
+}

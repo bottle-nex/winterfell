@@ -1,9 +1,17 @@
 import { GoogleGenAI } from '@google/genai';
 import env from '../../configs/env';
-import { SYSTEM_PROMPT } from '../../prompt/system';
+// import { SYSTEM_PROMPT } from '../../prompt/system';
+import { SYSTEM_PROMPT } from '../../prompt/gemini';
 import { Response } from 'express';
 import { Chat, ChatRole, Message, prisma } from '@repo/database';
-import { AIStreamParser } from '../../services/AIStreamParser';
+import extractRustCode from '../../filters/extractRustCode';
+import { STAGE } from '../../types/streamTypes';
+
+enum ChatState {
+    START,
+    STREAMING,
+    COMPLETE,
+}
 
 interface CtxObject {
     role: 'user' | 'model';
@@ -35,7 +43,7 @@ export default class ContentGenerator {
 
         res.write(
             `data: ${JSON.stringify({
-                type: 'start',
+                type: ,
                 messageId: message.id,
                 chatId: chat.id,
                 contractId: contract_id,
@@ -46,6 +54,8 @@ export default class ContentGenerator {
         try {
             const full_response = await this.generate_streaming_response(res, message, chat);
 
+            const filterCode = extractRustCode(full_response);
+
             if (full_response.includes('```rust') || full_response.includes('```')) {
                 const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
                 if (codeMatch && codeMatch[1]) {
@@ -55,10 +65,12 @@ export default class ContentGenerator {
                     });
                 }
 
+                // finalizing stream with file structure
                 this.streamParser.finalize_and_send_file_structure(res, full_response);
 
                 this.streamParser.reset();
                 res.end();
+
             }
         } catch (error) {
             console.error('Error in generate_initial_response:', error);
