@@ -8,14 +8,12 @@ export const doto = Doto({
 });
 
 interface FeatureOneProps {
-    className?: string;
     title: string;
     subTitle: string;
     description: string;
 }
 
 export default function FeatureOne({
-    className = '',
     title,
     subTitle,
     description,

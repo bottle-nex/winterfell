@@ -1,46 +1,46 @@
-"use client";
-import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+'use client';
+import React from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { LiaServicestack } from 'react-icons/lia';
-import { FaBolt, FaShieldAlt, FaSmile } from "react-icons/fa";
-import { FaRust } from "react-icons/fa6";
-import { Highlighter } from "@/components/ui/highlighter";
+import { FaBolt, FaShieldAlt, FaSmile } from 'react-icons/fa';
+import { FaRust } from 'react-icons/fa6';
+import { Highlighter } from '@/components/ui/highlighter';
 
 const featureData = [
     {
-        topTitle: "SHARK POWER",
-        centerTitle: "Smart Contracts",
-        bottomTitle: "Build with ease",
+        topTitle: 'SHARK POWER',
+        centerTitle: 'Smart Contracts',
+        bottomTitle: 'Build with ease',
         icon: FaRust,
-        color: "#CE422B",
+        color: '#CE422B',
     },
     {
-        topTitle: "LIGHTNING FAST",
-        centerTitle: "Deploy Instantly",
-        bottomTitle: "No delays, just code",
+        topTitle: 'LIGHTNING FAST',
+        centerTitle: 'Deploy Instantly',
+        bottomTitle: 'No delays, just code',
         icon: FaBolt,
-        color: "#FFD93D",
+        color: '#FFD93D',
     },
     {
         topTitle: 'ENHANCED EXPERIENCE',
         centerTitle: 'SHARK',
         bottomTitle: 'Fins dont wait',
         icon: LiaServicestack,
-        color: "#6C44FC"
+        color: '#6C44FC',
     },
     {
-        topTitle: "ROCK-SOLID",
-        centerTitle: "Security",
-        bottomTitle: "Safe & reliable",
+        topTitle: 'ROCK-SOLID',
+        centerTitle: 'Security',
+        bottomTitle: 'Safe & reliable',
         icon: FaShieldAlt,
-        color: "#00C6A7",
+        color: '#00C6A7',
     },
     {
-        topTitle: "FUN CODING",
-        centerTitle: "Innovate",
-        bottomTitle: "Enjoy creating",
+        topTitle: 'FUN CODING',
+        centerTitle: 'Innovate',
+        bottomTitle: 'Enjoy creating',
         icon: FaSmile,
-        color: "#5D9CEC",
+        color: '#5D9CEC',
     },
 ];
 
@@ -48,12 +48,12 @@ export default function Features() {
     const containerRef = React.useRef(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start start", "end end"],
+        offset: ['start start', 'end end'],
     });
 
     return (
-        <div ref={containerRef} className="relative bg-dark-base" style={{ height: "350vh" }}>
-            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden">
+        <div ref={containerRef} className="relative bg-dark-base" style={{ height: '350vh' }}>
+            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
                 <div className="w-full max-w-[60%] text-5xl font-bold tracking-wider text-[#FDF9F0] leading-[1.2] relative">
                     BECAUSE CODING SHOULDN&apos;T RUIN YOUR SLEEP SCHEDULE
                     <div className="absolute text-sm -top-8 font-extralight w-full flex justify-center text-[#c0b69e]">
@@ -67,12 +67,14 @@ export default function Features() {
                 >
                     <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-dark-base font-semibold">
                         Transform your blockchain ideas into&nbsp;
-                        <Highlighter action="underline" color="#6741EF">production-ready</Highlighter>
+                        <Highlighter action="underline" color="#6741EF">
+                            production-ready
+                        </Highlighter>
                         &nbsp;contracts seamlessly.
                     </div>
                 </motion.div>
 
-                <div className="relative w-full flex justify-center items-center mt-20 space-x-2 h-[2rem]">
+                <div className="relative w-full flex justify-center items-center mt-20 space-x-2 h-[2rem] bg-primary">
                     {featureData.map((feature, index) => (
                         <AnimatedFeatureCard
                             key={index}
@@ -94,6 +96,7 @@ interface FeatureCardProps {
     icon: React.ElementType;
     color: string;
     index: number;
+    //@typescript-eslint/no-explicit-any
     scrollProgress: any;
 }
 
@@ -111,7 +114,7 @@ export function AnimatedFeatureCard({
 
     const startAnimation = 0.2 + delayFactor * 0.2;
     const holdStart = 0.45 + delayFactor * 0.2;
-    const holdEnd = 0.70 + delayFactor * 0.2;
+    const holdEnd = 0.7 + delayFactor * 0.2;
     const vanishStart = 0.75 + delayFactor * 0.2;
     const vanishEnd = 0.95 + delayFactor * 0.2;
 
@@ -131,7 +134,9 @@ export function AnimatedFeatureCard({
             className="h-[20rem] w-[15rem] rounded-xl flex flex-col justify-center items-center 
              bg-light border-2 border-neutral-800 backdrop-blur-xs shadow-lg shadow-black/20 relative p-4"
         >
-            <div className="absolute top-2 right-3 text-sm text-dark-base tracking-wider">{topTitle}</div>
+            <div className="absolute top-2 right-3 text-sm text-dark-base tracking-wider">
+                {topTitle}
+            </div>
 
             <div className="flex flex-col items-center gap-y-3 text-md text-dark-base">
                 <Icon className="text-4xl" style={{ color }} />
