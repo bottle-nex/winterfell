@@ -9,6 +9,7 @@ import City from './City';
 import { FaFileCode } from "react-icons/fa";
 import { Textarea } from '../ui/textarea';
 import { BiSolidZap } from "react-icons/bi";
+import { Highlighter } from '@/components/ui/highlighter';
 
 export default function Hero() {
     const [inputValue, setInputValue] = useState<string>('');
@@ -54,31 +55,12 @@ export default function Hero() {
                         transition={{ delay: 0.5, duration: 0.6 }}
                         className="mb-3"
                     >
-                        <h1 className="text-[55px] font-bold leading-tight bg-gradient-to-t from-neutral-700 via-neutral-300 to-neutral-200 bg-clip-text text-transparent">
-                            Ship Solana Contracts
-                            <br />
-                            <span className="inline-flex items-center gap-2">
-                                <span className="">in</span>
-                                <span className="relative inline-block">
-                                    <span className="relative z-10">Minutes</span>
-                                    <motion.span
-                                        className="absolute inset-0"
-                                        initial={{ opacity: 0, x: 2, y: 2 }}
-                                        animate={{ opacity: [0, 0.3, 0], x: [2, -2, 2], y: [2, -2, 2] }}
-                                        transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-                                    >
-                                        Minutes
-                                    </motion.span>
-                                </span>
-                                <span className="">not</span>
-
-                                <span className="relative inline-block">
-                                    Months
-                                    {/* <span
-                                        className="absolute left-0 top-1/2 h-[2px] w-full bg-[#2c2c2c] -rotate-[6deg] translate-y-[-50%]"
-                                        aria-hidden="true"
-                                    ></span> */}
-                                </span>
+                        <h1 className="text-[60px] font-bold leading-tight bg-gradient-to-t flex flex-col from-neutral-700 via-neutral-300 to-neutral-200 bg-clip-text text-transparent">
+                            <span>
+                                Ship Solana Contracts
+                            </span>
+                            <span>
+                                in Minutes not Months
                             </span>
                         </h1>
                     </motion.div>
@@ -87,9 +69,13 @@ export default function Hero() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.7, duration: 0.6 }}
-                        className="text-neutral-500 text-sm mb-6 font-mono"
+                        className="text-[#a7a7a7] text-sm mb-6 font-mono tracking-wider"
                     >
-                        SHARK eats months. Ships in minutes.
+                        SHARK eats{" "}
+                        <span className='text-white'>
+                            <Highlighter action='highlight' padding={5} iterations={1} color='#6741EF'>months</Highlighter>
+                        </span>
+                        . Ships in <Highlighter action='underline' padding={0} color='#FFC412'>minutes</Highlighter>.
                     </motion.p>
 
                     <motion.div
