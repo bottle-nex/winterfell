@@ -51,29 +51,19 @@ export default function Hero() {
                             hidden: { opacity: 0, y: 20 },
                             visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
                         }}
+                        className={cn("text-transparent bg-clip-text bg-gradient-to-b from-light via-light to-neutral-800 ")}
                     >
                         From Idea to Deployed
                     </motion.span>
 
                     <motion.span
-                        className="shadow-inset-center bg-primary text-dark max-w-[40rem] overflow-hidden flex items-center justify-center font-bold"
-                        style={{ height: '6rem' }}
                         variants={{
-                            hidden: { width: '0%' },
-                            visible: {
-                                width: '100%',
-                                transition: { duration: 0.6, ease: 'easeInOut' },
-                            },
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
                         }}
-                        onAnimationComplete={() => setShowText(true)}
+                        className={cn("text-transparent bg-clip-text bg-gradient-to-b from-light via-light to-neutral-800 ")}
                     >
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: showText ? 1 : 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            Solana Contract
-                        </motion.span>
+                        Smart Contract
                     </motion.span>
 
                     <Textarea

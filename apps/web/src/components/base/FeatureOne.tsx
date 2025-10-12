@@ -32,7 +32,7 @@ export default function FeatureOne({
                     {title}
                 </h1>
                 <p className="text-left text-xl font-bold mt-2 text-primary">{subTitle}</p>
-                <p className="text-left text-light tracking-wide text-md mt-5">{description}</p>
+                <p className="text-left text-light/50 tracking-wide text-md mt-5">{description}</p>
             </div>
         </div>
     );
