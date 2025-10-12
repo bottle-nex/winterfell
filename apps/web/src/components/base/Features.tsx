@@ -53,9 +53,9 @@ export default function Features() {
 
     return (
         <div ref={containerRef} className="relative bg-dark-base" style={{ height: "350vh" }}>
-            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-[#000000] z-10 overflow-hidden">
-                <div className="w-full max-w-[35rem] text-4xl font-semibold tracking-wider text-[#FDF9F0] leading-[1.2] relative">
-                    BECAUSE CODING SHOULDN'T RUIN YOUR SLEEP SCHEDULE
+            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden">
+                <div className="w-full max-w-[60%] text-5xl font-bold tracking-wider text-[#FDF9F0] leading-[1.2] relative">
+                    BECAUSE CODING SHOULDN&apos;T RUIN YOUR SLEEP SCHEDULE
                     <div className="absolute text-sm -top-8 font-extralight w-full flex justify-center text-[#c0b69e]">
                         fin-tastic features. zero-hassle.
                     </div>
@@ -65,7 +65,7 @@ export default function Features() {
                     className="mt-26 flex flex-col w-full space-y-3 pointer-events-none"
                     style={{ opacity: useTransform(scrollYProgress, [0, 0.2], [0, 1]) }}
                 >
-                    <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-neutral-500">
+                    <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-dark-base font-semibold">
                         Transform your blockchain ideas into&nbsp;
                         <Highlighter action="underline" color="#6741EF">production-ready</Highlighter>
                         &nbsp;contracts seamlessly.
@@ -129,16 +129,16 @@ export function AnimatedFeatureCard({
         <motion.div
             style={{ y, opacity, rotate, x }}
             className="h-[20rem] w-[15rem] rounded-xl flex flex-col justify-center items-center 
-             bg-black/10 border-2 border-neutral-700 backdrop-blur-xs shadow-lg shadow-black/20 relative p-4"
+             bg-light border-2 border-neutral-800 backdrop-blur-xs shadow-lg shadow-black/20 relative p-4"
         >
-            <div className="absolute top-2 right-3 text-sm text-neutral-300 tracking-wider">{topTitle}</div>
+            <div className="absolute top-2 right-3 text-sm text-dark-base tracking-wider">{topTitle}</div>
 
-            <div className="flex flex-col items-center gap-y-3 text-md text-neutral-200">
+            <div className="flex flex-col items-center gap-y-3 text-md text-dark-base">
                 <Icon className="text-4xl" style={{ color }} />
                 <span className="tracking-wide">{centerTitle}</span>
             </div>
 
-            <div className="absolute bottom-2 left-3 text-sm text-neutral-300 tracking-wider">
+            <div className="absolute bottom-2 left-3 text-sm text-dark-base tracking-wider">
                 {bottomTitle}
             </div>
         </motion.div>
