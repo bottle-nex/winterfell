@@ -9,7 +9,7 @@ import Navbar from '@/src/components/nav/Navbar';
 
 export default function Page() {
     const parallaxContainerRef = useRef<HTMLDivElement>(null);
-    
+
     return (
         <LenisProvider>
             <div className="min-h-screen w-full flex flex-col bg-dark relative">
@@ -17,7 +17,7 @@ export default function Page() {
                 <Hero />
                 <Features />
                 <WhoWeAre />
-                
+
                 <div ref={parallaxContainerRef} className="relative h-[200vh]">
                     <div className="sticky top-0 h-screen overflow-hidden">
                         <Footer containerRef={parallaxContainerRef} />
