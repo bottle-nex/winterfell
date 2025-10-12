@@ -4,6 +4,7 @@ import { SYSTEM_PROMPT } from '../../prompt/system';
 import { Response } from 'express';
 import { Chat, ChatRole, Message, prisma } from '@repo/database';
 import { AIStreamParser } from '../../services/AIStreamParser';
+import extractRustCode from '../../filters/extractRustCode';
 
 enum ChatState {
     START,
@@ -53,14 +54,15 @@ export default class ContentGenerator {
         try {
             const full_response = await this.generate_streaming_response(res, message, chat);
 
-            if (full_response.includes('```rust') || full_response.includes('```')) {
-                const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
-                if (codeMatch && codeMatch[1]) {
-                    await prisma.contract.update({
-                        where: { id: contract_id },
-                        data: { code: codeMatch[1].trim() },
-                    });
-                }
+        const filterCode = extractRustCode(full_response);
+
+        if (full_response.includes('```rust') || full_response.includes('```')) {
+            const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
+            if (codeMatch && codeMatch[1]) {
+                await prisma.contract.update({
+                    where: { id: contract_id },
+                    data: { code: codeMatch[1].trim() },
+                });
             }
 
             // finalizing stream with file structure
@@ -69,7 +71,8 @@ export default class ContentGenerator {
             this.streamParser.reset();
             res.end();
 
-        } catch (error) {
+        } 
+    }catch (error) {
             console.error('Error in generate_initial_response:', error);
 
             res.write(
