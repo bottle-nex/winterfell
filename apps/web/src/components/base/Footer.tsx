@@ -1,7 +1,7 @@
-import { Bruno_Ace } from 'next/font/google';
 import { LiaServicestack } from 'react-icons/lia';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Ref  } from 'react';
+import { Bruno_Ace } from 'next/font/google';
 
 const bruno = Bruno_Ace({
     subsets: ['latin'],
