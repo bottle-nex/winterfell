@@ -8,20 +8,19 @@ import LenisProvider from '@/src/providers/LenisProvider';
 import Navbar from '@/src/components/nav/Navbar';
 
 export default function Page() {
-    const parallaxContainerRef = useRef(null);
-
+    const parallaxContainerRef = useRef<HTMLDivElement>(null);
+    
     return (
         <LenisProvider>
             <div className="min-h-screen w-full flex flex-col bg-dark relative">
                 <Navbar />
                 <Hero />
                 <Features />
+                <WhoWeAre />
+                
                 <div ref={parallaxContainerRef} className="relative h-[200vh]">
                     <div className="sticky top-0 h-screen overflow-hidden">
                         <Footer containerRef={parallaxContainerRef} />
-                    </div>
-                    <div className="absolute top-0 left-0 w-full h-screen">
-                        <WhoWeAre />
                     </div>
                 </div>
             </div>

@@ -25,7 +25,6 @@
 // Always explain what the contract does before showing the code.
 // Also give the context wrapped in /:~ and ~:/ tags. which will tell what the ai is doing. keep it concise and should be strict to 5 words`;
 
-
 export const SYSTEM_PROMPT = `You are an expert Solana Anchor framework developer.
 
 When a user asks for a smart contract, generate complete, production-ready Rust code using Anchor.

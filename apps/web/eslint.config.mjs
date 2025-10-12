@@ -12,6 +12,12 @@ export default [
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {
+        languageOptions: {
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
         plugins: {
             react: reactPlugin,
             'react-hooks': hooksPlugin,

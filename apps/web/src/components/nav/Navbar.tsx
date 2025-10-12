@@ -20,7 +20,7 @@ export default function Navbar() {
         <div className="absolute w-full z-[100] flex items-center justify-between px-6 transition-all duration-500 top-4">
             <div className="flex items-center justify-between gap-x-2">
                 <LiaServicestack className="text-primary h-10 w-10 transition-all duration-500" />
-                <span className='tracking-[0.1rem] font-semibold'>SHARK</span>
+                <span className="tracking-[0.1rem] font-semibold">SHARK</span>
             </div>
 
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-500">

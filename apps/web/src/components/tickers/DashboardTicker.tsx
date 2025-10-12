@@ -1,6 +1,6 @@
-import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-import { cn } from "@/src/lib/utils";
-import { ArrowRightIcon } from "lucide-react";
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { cn } from '@/src/lib/utils';
+import { ArrowRightIcon } from 'lucide-react';
 
 export default function DashboardTicker() {
     return (

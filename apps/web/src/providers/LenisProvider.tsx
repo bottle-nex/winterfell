@@ -16,8 +16,9 @@ export default function LenisProvider({ children }: LenisProviderProps) {
                 smoothWheel: true,
                 wheelMultiplier: 1,
                 touchMultiplier: 2,
-            }}>
-                {children}
-            </ReactLenis>
-    )
+            }}
+        >
+            {children}
+        </ReactLenis>
+    );
 }
