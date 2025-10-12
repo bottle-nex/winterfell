@@ -55,7 +55,6 @@ export default class ContentGenerator {
             const full_response = await this.generate_streaming_response(res, message, chat);
 
         const filterCode = extractRustCode(full_response);
-        console.log("Filtered code: ", filterCode);
 
         if (full_response.includes('```rust') || full_response.includes('```')) {
             const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
@@ -135,6 +134,7 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
+<<<<<<< HEAD
                     // Accumulate full response
                     full_response += chunk.text;
 
@@ -143,6 +143,10 @@ export default class ContentGenerator {
 
                     // Log for debugging
                     process.stdout.write(chunk.text);
+=======
+                    console.log(chunk.text);
+                    full_response += chunk.text; 
+>>>>>>> 0a3c988 (feat: added s3 client.)
                 }
             }
 
