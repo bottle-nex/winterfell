@@ -6,7 +6,6 @@ import { Button } from '../ui/button';
 import { RiCodeSSlashFill } from 'react-icons/ri';
 import { Terminal, ArrowRight, FileCode } from 'lucide-react';
 import City from './City';
-import { FaFileCode } from "react-icons/fa";
 import { Textarea } from '../ui/textarea';
 import { BiSolidZap } from "react-icons/bi";
 import { Highlighter } from '@/components/ui/highlighter';
@@ -48,7 +47,6 @@ export default function Hero() {
                         visible: { opacity: 1, transition: { duration: 0.8 } },
                     }}
                 >
-
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -100,12 +98,16 @@ export default function Hero() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-x-1.5 justify-center">
-                                    <div className={cn(
-                                        "w-1.5 h-1.5 rounded-full transition-colors duration-300 mb-0.5",
-                                        isTyping ? "bg-green-500 shadow-lg shadow-green-500/50" : "bg-neutral-700"
-                                    )} />
+                                    <div
+                                        className={cn(
+                                            'w-1.5 h-1.5 rounded-full transition-colors duration-300 mb-0.5',
+                                            isTyping
+                                                ? 'bg-green-500 shadow-lg shadow-green-500/50'
+                                                : 'bg-neutral-700',
+                                        )}
+                                    />
                                     <span className="text-xs text-neutral-600 font-mono">
-                                        {isTyping ? "active" : "idle"}
+                                        {isTyping ? 'active' : 'idle'}
                                     </span>
                                 </div>
                             </div>
@@ -125,9 +127,8 @@ export default function Hero() {
                                         'w-full h-28 bg-transparent pl-10 pr-4 py-5 text-neutral-200 border-0',
                                         'placeholder:text-neutral-800 placeholder:font-mono placeholder:text-sm resize-none',
                                         'focus:outline-none transition-all duration-200',
-                                        'text-md tracking-wide',
-                                        'selection:bg-[#6741EF] selection:text-dark-base',
-                                        'caret-[#e6e0d4]'
+                                        'text-md tracking-wider',
+                                        'caret-[#e6e0d4]',
                                     )}
                                     rows={3}
                                 />
@@ -150,17 +151,20 @@ export default function Hero() {
                                 <Button
                                     disabled={!inputValue.trim()}
                                     className={cn(
-                                        "group/submit flex items-center gap-2 h-8 w-9 px-2 py-1 rounded-[4px] font-mono text-xs duration-200",
-                                        "transition-all duration-200",
+                                        'group/submit flex items-center gap-2 h-8 w-9 px-2 py-1 rounded-[4px] font-mono text-xs duration-200',
+                                        'transition-all duration-200',
                                         inputValue.trim()
-                                            ? "bg-neutral-800 text-neutral-300 hover:text-neutral-200"
-                                            : "bg-neutral-900 text-neutral-700 cursor-not-allowed"
+                                            ? 'bg-neutral-800 text-neutral-300 hover:text-neutral-200'
+                                            : 'bg-neutral-900 text-neutral-700 cursor-not-allowed',
                                     )}
                                 >
-                                    <ArrowRight className={cn(
-                                        "w-3 h-3 transition-transform",
-                                        inputValue.trim() && "group-hover/submit:translate-x-0.5 duration-200"
-                                    )} />
+                                    <ArrowRight
+                                        className={cn(
+                                            'w-3 h-3 transition-transform',
+                                            inputValue.trim() &&
+                                                'group-hover/submit:translate-x-0.5 duration-200',
+                                        )}
+                                    />
                                 </Button>
                             </div>
                         </div>
@@ -175,9 +179,24 @@ export default function Hero() {
                         className="flex items-center justify-center gap-4 mt-8"
                     >
                         {[
-                            { step: 'Generate', icon: Terminal, delay: 1.2, color: 'text-[#6741EF]' },
-                            { step: 'Deploy', icon: BiSolidZap, delay: 1.3, color: 'text-[#FFC412]' },
-                            { step: 'Integrate', icon: FileCode, delay: 1.4, color: 'text-[#00A652]' }
+                            {
+                                step: 'Generate',
+                                icon: Terminal,
+                                delay: 1.2,
+                                color: 'text-[#6741EF]',
+                            },
+                            {
+                                step: 'Deploy',
+                                icon: BiSolidZap,
+                                delay: 1.3,
+                                color: 'text-[#FFC412]',
+                            },
+                            {
+                                step: 'Integrate',
+                                icon: FileCode,
+                                delay: 1.4,
+                                color: 'text-[#00A652]',
+                            },
                         ].map((item, idx) => (
                             <div key={item.step} className="flex items-center gap-2">
                                 <motion.div
@@ -187,13 +206,13 @@ export default function Hero() {
                                     className="flex items-center gap-2"
                                 >
                                     <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-neutral-900/50 border border-neutral-800/50 backdrop-blur-sm">
-                                        <item.icon className={cn("w-3 h-3 mb-0.5", item.color)} />
-                                        <span className="text-neutral-500 text-xs font-mono">{item.step}</span>
+                                        <item.icon className={cn('w-3 h-3 mb-0.5', item.color)} />
+                                        <span className="text-neutral-500 text-xs font-mono">
+                                            {item.step}
+                                        </span>
                                     </div>
                                 </motion.div>
-                                {idx < 2 && (
-                                    <ArrowRight className="w-3 h-3 text-[#9b9b9b]" />
-                                )}
+                                {idx < 2 && <ArrowRight className="w-3 h-3 text-[#9b9b9b]" />}
                             </div>
                         ))}
                     </motion.div>
