@@ -36,21 +36,9 @@ const footerLinks = [
     },
 ];
 
-export default function Footer({ containerRef }: { containerRef: Ref<HTMLDivElement> }) {
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ['start end', 'end start'],
-    });
-
-    const fadeOpacity = useTransform(scrollYProgress, [0, 0.6], [4, 0]);
-
+export default function Footer() {
     return (
         <motion.div className="w-screen h-screen bg-dark-base relative">
-
-            <motion.div
-                style={{ opacity: fadeOpacity }}
-                className="absolute inset-0 bg-black pointer-events-none z-10"
-            />
             <div className='w-full h-[3rem] bg-white'/>
 
             <div className="h-[65%] w-full border-b border-neutral-700 pt-20 px-4 flex">
