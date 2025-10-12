@@ -134,7 +134,6 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
-<<<<<<< HEAD
                     // Accumulate full response
                     full_response += chunk.text;
 
@@ -143,10 +142,6 @@ export default class ContentGenerator {
 
                     // Log for debugging
                     process.stdout.write(chunk.text);
-=======
-                    console.log(chunk.text);
-                    full_response += chunk.text; 
->>>>>>> 0a3c988 (feat: added s3 client.)
                 }
             }
 
