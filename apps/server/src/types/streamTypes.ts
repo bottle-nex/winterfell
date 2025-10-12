@@ -1,11 +1,11 @@
 export type StreamEventType =
-    | 'start'   // initial connextion establish
+    | 'start' // initial connextion establish
     | 'context' // context extracted
-    | 'message_chunk'   // message chunk
-    | 'code_block'  // code block extracted
+    | 'message_chunk' // message chunk
+    | 'code_block' // code block extracted
     | 'file_structure'
-    | 'status'  // status update
-    | 'complete'    // stream finish
+    | 'status' // status update
+    | 'complete' // stream finish
     | 'error';
 
 export interface StreamEvent<T = any> {
@@ -47,7 +47,7 @@ export interface FileStructureEventData {
 export interface StatusEventData {
     stage: 'thinking' | 'analyzing' | 'generating' | 'building' | 'complete' | 'error';
     message: string;
-    progress?: number;    // 0-100
+    progress?: number; // 0-100
 }
 
 export interface CompleteEventData {
@@ -147,7 +147,15 @@ export interface ContractRecord {
 //parser types
 
 export interface StreamEvent<T> {
-    type: 'start' | 'context' | 'message_chunk' | 'code_block' | 'file_structure' | 'status' | 'complete' | 'error';
+    type:
+        | 'start'
+        | 'context'
+        | 'message_chunk'
+        | 'code_block'
+        | 'file_structure'
+        | 'status'
+        | 'complete'
+        | 'error';
     data: T;
     timestamp: number;
 }
@@ -225,7 +233,3 @@ export type Optional<T> = T | undefined;
 export type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
-
-
-
-

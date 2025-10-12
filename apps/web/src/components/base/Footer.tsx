@@ -1,6 +1,7 @@
 import { Bruno_Ace } from 'next/font/google';
 import { LiaServicestack } from 'react-icons/lia';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Ref  } from 'react';
 
 const bruno = Bruno_Ace({
     subsets: ['latin'],
@@ -35,7 +36,7 @@ const footerLinks = [
     },
 ];
 
-export default function Footer({ containerRef }: { containerRef: any }) {
+export default function Footer({ containerRef }: { containerRef: Ref<HTMLDivElement> }) {
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ['start end', 'end start'],
@@ -45,11 +46,12 @@ export default function Footer({ containerRef }: { containerRef: any }) {
 
     return (
         <motion.div className="w-screen h-screen bg-dark-base relative">
-            {/* Dark overlay that fades out */}
+
             <motion.div
                 style={{ opacity: fadeOpacity }}
                 className="absolute inset-0 bg-black pointer-events-none z-10"
             />
+            <div className='w-full h-[3rem] bg-white'/>
 
             <div className="h-[65%] w-full border-b border-neutral-700 pt-20 px-4 flex">
                 <div className="w-[50%] h-full border-r border-neutral-700 text-neutral-100 px-4">
@@ -65,12 +67,12 @@ export default function Footer({ containerRef }: { containerRef: any }) {
                     {footerLinks.map((section, index) => (
                         <div
                             key={section.title}
-                            className={`w-full h-full px-4 flex flex-col text-neutral-200 gap-y-3 ${
+                            className={`w-full h-full px-4 flex flex-col items-start  text-neutral-200 gap-y-3 ${
                                 index < footerLinks.length - 1 ? 'border-r border-neutral-700' : ''
                             }`}
                         >
                             <div className="text-3xl font-semibold">{section.title}</div>
-                            <div className="flex flex-col gap-y-2 text-neutral-400">
+                            <div className="flex flex-col items-start gap-y-2 text-neutral-400">
                                 {section.links.map((link) => (
                                     <span
                                         key={link}

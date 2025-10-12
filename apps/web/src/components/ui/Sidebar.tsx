@@ -8,13 +8,7 @@ interface UtilitySideBarProps {
     blob?: boolean;
 }
 
-export default function SideBar({
-    open,
-    setOpen,
-    content,
-    bottomLogo,
-    blob,
-}: UtilitySideBarProps) {
+export default function SideBar({ open, setOpen, content, bottomLogo, blob }: UtilitySideBarProps) {
     const ref = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {

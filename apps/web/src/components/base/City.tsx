@@ -44,7 +44,7 @@ export default function City3D({ className = '' }: City3DProps) {
         const uSpeed = 0.001;
 
         // FOG background
-        const setcolor = 0x6b44fc;
+        const setcolor = 0x6c44fc;
         scene.background = new THREE.Color(setcolor);
         scene.fog = new THREE.Fog(setcolor, 10, 16);
 

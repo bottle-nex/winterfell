@@ -71,7 +71,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const chat = chats.get(currentChatId);
         if (!chat) return;
 
-        const messageIndex = chat.messages.findIndex(m => m.id === streamingMessageId);
+        const messageIndex = chat.messages.findIndex((m) => m.id === streamingMessageId);
         if (messageIndex === -1) return;
 
         const updatedMessages = [...chat.messages];
@@ -99,7 +99,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const chat = chats.get(currentChatId);
         if (!chat) return;
 
-        const messageIndex = chat.messages.findIndex(m => m.id === streamingMessageId);
+        const messageIndex = chat.messages.findIndex((m) => m.id === streamingMessageId);
         if (messageIndex === -1) return;
 
         const updatedMessages = [...chat.messages];

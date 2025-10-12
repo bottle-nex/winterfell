@@ -1,6 +1,12 @@
-import { Response } from "express";
-import { CodeBlock, ContextData, FileNode, FileStructure, StatusUpdate, StreamEvent, StreamEventType } from "../types/streamTypes";
-import { lowercase } from "zod";
+import { Response } from 'express';
+import {
+    CodeBlock,
+    ContextData,
+    FileNode,
+    FileStructure,
+    StatusUpdate,
+    StreamEvent,
+} from '../types/streamTypes';
 
 export class AIStreamParser {
     private buffer: string = '';
@@ -14,7 +20,7 @@ export class AIStreamParser {
         incompleteCodeBlock: /```(\w+)?\n([\s\S]*?)$/,
     };
 
-    constructor() { };
+    constructor() {}
 
     public process_chunk(chunk: string, res: Response) {
         this.buffer += chunk;
@@ -36,7 +42,11 @@ export class AIStreamParser {
     public finalize_and_send_file_structure(res: Response, fullResponse: string): void {
         try {
             const fileStructure = this.build_file_structure(fullResponse);
-            if (fileStructure && fileStructure.root.children && fileStructure.root.children.length > 0) {
+            if (
+                fileStructure &&
+                fileStructure.root.children &&
+                fileStructure.root.children.length > 0
+            ) {
                 this.send_event(res, 'file_structure', fileStructure);
             }
 
@@ -44,7 +54,6 @@ export class AIStreamParser {
                 fullResponse,
                 totalCodeBlocks: this.codeBlocksSent.size,
             });
-
         } catch (error) {
             console.error('Error in sending file structure', error);
         }
@@ -77,7 +86,6 @@ export class AIStreamParser {
         this.PATTERNS.codeBlock.lastIndex = 0;
         let match;
 
-
         while ((match = this.PATTERNS.codeBlock.exec(this.buffer)) !== null) {
             // to avoid duplicates
             const blockKey = `${match.index}-${match[0].length}`;
@@ -99,7 +107,6 @@ export class AIStreamParser {
                 this.send_event(res, 'code_block', codeBlock);
                 this.codeBlocksSent.add(blockKey);
             }
-
         }
     }
 
@@ -120,7 +127,7 @@ export class AIStreamParser {
         if (cleanText.length > this.lastMessageLength) {
             this.send_event(res, 'message_chunk', {
                 content: cleanText,
-                isPartial: true
+                isPartial: true,
             });
             this.lastMessageLength = cleanText.length;
         }
@@ -133,17 +140,17 @@ export class AIStreamParser {
         if (lower.includes('analyzing') || lower.includes('analyse')) {
             status = {
                 stage: 'analyzing',
-                message: 'Analyzing your requirements'
+                message: 'Analyzing your requirements',
             };
         } else if (lower.includes('generating') || lower.includes('creating')) {
             status = {
                 stage: 'generating',
-                message: 'Generating smart contract code'
+                message: 'Generating smart contract code',
             };
         } else if (lower.includes('building') || lower.includes('structur')) {
             status = {
                 stage: 'building',
-                message: 'Building project structure'
+                message: 'Building project structure',
             };
         }
 
@@ -185,8 +192,7 @@ export class AIStreamParser {
             type,
             data,
             timestamp: Date.now(),
-        }
-
+        };
         res.write(`data: ${JSON.stringify(event)}\n\n`);
     }
 
@@ -212,7 +218,12 @@ export class AIStreamParser {
         return blocks;
     }
 
-    private decide_file_name(text: string, blockIndex: number, language: string, code: string): string | undefined {
+    private decide_file_name(
+        text: string,
+        blockIndex: number,
+        language: string,
+        code: string,
+    ): string | undefined {
         const beforeBlock = text.substring(Math.max(0, blockIndex - 200), blockIndex);
         const fileMatch = beforeBlock.match(/File:\s*([^\n]+)/i);
 
@@ -267,19 +278,19 @@ export class AIStreamParser {
 
     private get_extension(language: string): string {
         const extensions: Record<string, string> = {
-            'rust': 'rs',
-            'typescript': 'ts',
-            'javascript': 'js',
-            'json': 'json',
-            'toml': 'toml',
-            'yaml': 'yml'
-        }
+            rust: 'rs',
+            typescript: 'ts',
+            javascript: 'js',
+            json: 'json',
+            toml: 'toml',
+            yaml: 'yml',
+        };
 
         return extensions[language] || 'txt';
     }
 
     private add_file_to_tree(root: FileNode, path: string, block: CodeBlock): void {
-        const parts = path.split('/').filter(p => p);
+        const parts = path.split('/').filter((p) => p);
         let current = root;
 
         for (let i = 0; i < parts.length; i++) {
@@ -290,7 +301,7 @@ export class AIStreamParser {
                 current.children = [];
             }
 
-            let child = current.children.find(c => c.name === part);
+            let child = current.children.find((c) => c.name === part);
 
             if (!child) {
                 child = {
@@ -312,31 +323,43 @@ export class AIStreamParser {
         }
     }
 
-    private add_standard_anchor_files(root: FileNode, files: Record<string, string>, projectName: string): void {
+    private add_standard_anchor_files(
+        root: FileNode,
+        files: Record<string, string>,
+        projectName: string,
+    ): void {
         if (!files['Anchor.toml']) {
             const anchorToml = this.generate_anchor_toml(projectName);
             files['Anchor.toml'] = anchorToml;
-            this.add_file_to_tree(
-                root, 'Anchor.toml',
-                {
-                    language: 'toml',
-                    code: anchorToml,
-                    startIndex: 0,
-                    endIndex: 0,
-                });
+            this.add_file_to_tree(root, 'Anchor.toml', {
+                language: 'toml',
+                code: anchorToml,
+                startIndex: 0,
+                endIndex: 0,
+            });
         }
 
         if (!files['Cargo.toml']) {
             const cargoToml = this.generate_root_cargo_toml();
             files['Cargo.toml'] = cargoToml;
-            this.add_file_to_tree(root, 'Cargo.toml', { language: 'toml', code: cargoToml, startIndex: 0, endIndex: 0 });
+            this.add_file_to_tree(root, 'Cargo.toml', {
+                language: 'toml',
+                code: cargoToml,
+                startIndex: 0,
+                endIndex: 0,
+            });
         }
 
         const programCargoPath = `programs/${projectName}/Cargo.toml`;
         if (!files[programCargoPath]) {
             const programCargo = this.generate_program_cargo_toml(projectName);
             files[programCargoPath] = programCargo;
-            this.add_file_to_tree(root, programCargoPath, { language: 'toml', code: programCargo, startIndex: 0, endIndex: 0 });
+            this.add_file_to_tree(root, programCargoPath, {
+                language: 'toml',
+                code: programCargo,
+                startIndex: 0,
+                endIndex: 0,
+            });
         }
     }
 
@@ -420,12 +443,4 @@ export class AIStreamParser {
         this.codeBlocksSent.clear();
         this.lastMessageLength = 0;
     }
-
 }
-
-
-
-
-
-
-

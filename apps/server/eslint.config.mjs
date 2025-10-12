@@ -14,6 +14,10 @@ export default [
     files: ['**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
     plugins: {
       prettier: prettierPlugin,

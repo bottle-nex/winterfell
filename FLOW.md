@@ -8,41 +8,41 @@ User: "Create staking contract"
 User clicks "Build"
 ↓
 ┌─────────────────────────────────────┐
-│ Send code → Build Server            │
-│ Build Server:                       │
-│  1. anchor build (30–120s)          │
-│  2. Extract IDL automatically ✨    │
-│  3. Extract binary (program.so)     │
+│ Send code → Build Server │
+│ Build Server: │
+│ 1. anchor build (30–120s) │
+│ 2. Extract IDL automatically ✨ │
+│ 3. Extract binary (program.so) │
 └──────────────┬──────────────────────┘
 ↓
 ┌─────────────────────────────────────┐
-│ Save IDL + binary to DB             │
-│ contract.idl = {...}                │
-│ contract.binary = "<program.so>"    │
+│ Save IDL + binary to DB │
+│ contract.idl = {...} │
+│ contract.binary = "<program.so>" │
 └──────────────┬──────────────────────┘
-               ↓
+↓
 ┌─────────────────────────────────────┐
-│ zk-Proof Module (off-chain prover)  │
-│ Inputs:                             │
-│   • canonicalized source lib.rs     │
-│   • compiled binary (program.so)    │
-│ Produces:                           │
-│   • contract_source_hash (Hs)       │
-│   • contract_binary_hash (Hb)       │
-│   • zkp: proof.json                 │
-│   • public_inputs.json              │
+│ zk-Proof Module (off-chain prover) │
+│ Inputs: │
+│ • canonicalized source lib.rs │
+│ • compiled binary (program.so) │
+│ Produces: │
+│ • contract_source_hash (Hs) │
+│ • contract_binary_hash (Hb) │
+│ • zkp: proof.json │
+│ • public_inputs.json │
 └──────────────┬──────────────────────┘
-               ↓
+↓
 ┌─────────────────────────────────────┐
-│ Save proof + public inputs to DB /  │
-│ upload to IPFS / object store       │
-│ contract.zk = { proofUrl, Hs, Hb }  │
+│ Save proof + public inputs to DB / │
+│ upload to IPFS / object store │
+│ contract.zk = { proofUrl, Hs, Hb } │
 └──────────────┬──────────────────────┘
 ↓
 User clicks "Generate Client"
 ↓
 ┌─────────────────────────────────────┐
-│ Option A: Anchor IDL generator      │
+│ Option A: Anchor IDL generator │
 │ Option B: Ask LLM with IDL (source) │
 └──────────────┬──────────────────────┘
 ↓
@@ -54,12 +54,12 @@ User clicks "Generate Client"
 User clicks "Test Client"
 ↓
 ┌─────────────────────────────────────┐
-│ If deployed:                        │
-│   Run tests against devnet          │
-│   Additionally: call zkVerifier     │
-│     verify_proof(proofUrl, Hb, Hs)  │
-│ If not deployed:                    │
-│   Syntax checks, local mocks        │
+│ If deployed: │
+│ Run tests against devnet │
+│ Additionally: call zkVerifier │
+│ verify_proof(proofUrl, Hb, Hs) │
+│ If not deployed: │
+│ Syntax checks, local mocks │
 └──────────────┬──────────────────────┘
 ↓
 Show test results:

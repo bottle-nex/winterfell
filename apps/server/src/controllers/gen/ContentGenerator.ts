@@ -4,13 +4,6 @@ import { SYSTEM_PROMPT } from '../../prompt/system';
 import { Response } from 'express';
 import { Chat, ChatRole, Message, prisma } from '@repo/database';
 import { AIStreamParser } from '../../services/AIStreamParser';
-import extractRustCode from '../../filters/extractRustCode';
-
-enum ChatState {
-    START,
-    STREAMING,
-    COMPLETE,
-}
 
 interface CtxObject {
     role: 'user' | 'model';
@@ -38,7 +31,6 @@ export default class ContentGenerator {
         chat: Chat & { messages: Message[] },
         contract_id: string,
     ) {
-        
         this.generate_content_stream(res);
 
         res.write(
@@ -47,32 +39,28 @@ export default class ContentGenerator {
                 messageId: message.id,
                 chatId: chat.id,
                 contractId: contract_id,
-                timestamp: Date.now()
+                timestamp: Date.now(),
             })}\n\n`,
         );
 
         try {
             const full_response = await this.generate_streaming_response(res, message, chat);
 
-        const filterCode = extractRustCode(full_response);
+            if (full_response.includes('```rust') || full_response.includes('```')) {
+                const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
+                if (codeMatch && codeMatch[1]) {
+                    await prisma.contract.update({
+                        where: { id: contract_id },
+                        data: { code: codeMatch[1].trim() },
+                    });
+                }
 
-        if (full_response.includes('```rust') || full_response.includes('```')) {
-            const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
-            if (codeMatch && codeMatch[1]) {
-                await prisma.contract.update({
-                    where: { id: contract_id },
-                    data: { code: codeMatch[1].trim() },
-                });
+                this.streamParser.finalize_and_send_file_structure(res, full_response);
+
+                this.streamParser.reset();
+                res.end();
             }
-
-            // finalizing stream with file structure
-            this.streamParser.finalize_and_send_file_structure(res, full_response);
-
-            this.streamParser.reset();
-            res.end();
-
-        } 
-    }catch (error) {
+        } catch (error) {
             console.error('Error in generate_initial_response:', error);
 
             res.write(
@@ -80,9 +68,9 @@ export default class ContentGenerator {
                     type: 'error',
                     data: {
                         message: 'Failed to generate response',
-                        error: error instanceof Error ? error.message : 'Unknown error'
+                        error: error instanceof Error ? error.message : 'Unknown error',
                     },
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                 })}\n\n`,
             );
 
@@ -125,8 +113,6 @@ export default class ContentGenerator {
                 parts: [{ text: message.content }],
             });
 
-            console.log('starting stream');
-
             const response = await this.ai.models.generateContentStream({
                 model: 'gemini-2.0-flash-exp',
                 contents,
@@ -145,13 +131,10 @@ export default class ContentGenerator {
                 }
             }
 
-            console.log('\n Stream complete');
-
             // Save complete response to database
             await this.save_llm_response_to_db(full_response, chat.id);
 
             return full_response;
-
         } catch (llm_error) {
             console.error('LLM Error:', llm_error);
 
@@ -161,9 +144,9 @@ export default class ContentGenerator {
                     type: 'error',
                     data: {
                         message: 'LLM generation failed',
-                        error: llm_error instanceof Error ? llm_error.message : 'Unknown error'
+                        error: llm_error instanceof Error ? llm_error.message : 'Unknown error',
                     },
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                 })}\n\n`,
             );
 
@@ -180,7 +163,6 @@ export default class ContentGenerator {
                     content: full_response,
                 },
             });
-            console.log('Response saved to database');
         } catch (error) {
             console.error('error saving to database:', error);
         }
