@@ -35,7 +35,7 @@ export interface FileStructureEventData {
 export interface StatusEventData {
     stage: STAGE;
     message: string;
-    progress?: number;    // 0-100
+    progress?: number; // 0-100
 }
 
 export interface CompleteEventData {

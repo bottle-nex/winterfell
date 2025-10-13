@@ -1,3 +1,5 @@
+import { STREAM_EVENT_ENUM } from "./StreamEventTypes";
+
 export type StreamEventType =
     | 'START'
     | 'CONTEXT'
@@ -7,7 +9,6 @@ export type StreamEventType =
     | 'STATUS'
     | 'COMPLETE'
     | 'ERROR';
-
 
 export interface StreamEvent<T = any> {
     type: StreamEventType;
@@ -242,7 +243,6 @@ export type Optional<T> = T | undefined;
 export type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
-
 
 export enum STAGE {
     THINKING = 'THINKING',

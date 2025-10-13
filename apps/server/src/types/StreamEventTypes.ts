@@ -1,13 +1,21 @@
-
 export type StreamEventType =
     | 'START'
     | 'CONTEXT'
-    | 'MESSAGE_CHUNK'
-    | 'CODE_BLOCK'
+    | 'EDITING_FILE'
+    | 'PHASE'
     | 'FILE_STRUCTURE'
-    | 'STATUS'
     | 'COMPLETE'
     | 'ERROR';
+
+export enum STREAM_EVENT_ENUM {
+    START = 'START',
+    CONTEXT = 'CONTEXT',
+    EDITING_FILE = 'EDITING_FILE',
+    PHASE = 'PHASE',
+    FILE_STRUCTURE = 'FILE_STRUCTURE',
+    COMPLETE = 'COMPLETE',
+    ERROR = 'ERROR',
+}
 
 export interface StreamEvent<T = any> {
     type: StreamEventType;
@@ -21,4 +29,3 @@ export interface StartEventData {
     chatId: string;
     contractId: string;
 }
-
