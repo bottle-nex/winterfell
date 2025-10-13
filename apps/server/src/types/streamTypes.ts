@@ -1,235 +1,255 @@
-export type StreamEventType =
-    | 'start' // initial connextion establish
-    | 'context' // context extracted
-    | 'message_chunk' // message chunk
-    | 'code_block' // code block extracted
-    | 'file_structure'
-    | 'status' // status update
-    | 'complete' // stream finish
-    | 'error';
+// import { STREAM_EVENT_ENUM } from "./StreamEventTypes";
 
-export interface StreamEvent<T = any> {
-    type: StreamEventType;
-    data: T;
-    timestamp: number;
-}
+// export type StreamEventType =
+//     | 'START'
+//     | 'CONTEXT'
+//     | 'MESSAGE_CHUNK'
+//     | 'CODE_BLOCK'
+//     | 'FILE_STRUCTURE'
+//     | 'STATUS'
+//     | 'COMPLETE'
+//     | 'ERROR';
 
-// event-data types
-export interface StartEventData {
-    messageId: string;
-    chatId: string;
-    contractId: string;
-}
+// export interface StreamEvent<T = any> {
+//     type: StreamEventType;
+//     data: T;
+//     timestamp: number;
+// }
 
-export interface ContextEventData {
-    content: string; // actual context text
-    action: string;
-}
+// // event-data types
+// export interface StartEventData {
+//     messageId: string;
+//     chatId: string;
+//     contractId: string;
+// }
 
-export interface MessageChunkEventData {
-    content: string;
-    isPartial: boolean;
-}
+// export interface ContextEventData {
+//     content: string; // actual context text
+//     action: string;
+// }
 
-export interface CodeBlockEventData {
-    language: string;
-    code: string;
-    filename?: string;
-    startIndex: number;
-    endIndex: number;
-}
+// export interface MessageChunkEventData {
+//     content: string;
+//     isPartial: boolean;
+// }
 
-export interface FileStructureEventData {
-    root: FileNode;
-    files: Record<string, string>;
-}
+// export interface CodeBlockEventData {
+//     language: string;
+//     code: string;
+//     filename?: string;
+//     startIndex: number;
+//     endIndex: number;
+// }
 
-export interface StatusEventData {
-    stage: 'thinking' | 'analyzing' | 'generating' | 'building' | 'complete' | 'error';
-    message: string;
-    progress?: number; // 0-100
-}
+// export interface FileStructureEventData {
+//     root: FileNode;
+//     files: Record<string, string>;
+// }
 
-export interface CompleteEventData {
-    fullResponse: string;
-    totalCodeBlocks: number;
-}
+// export interface StatusEventData {
+//     stage: 'thinking' | 'analyzing' | 'generating' | 'building' | 'complete' | 'error';
+//     message: string;
+//     progress?: number; // 0-100
+// }
 
-export interface ErrorEventData {
-    message: string;
-    error?: string;
-    stack?: string;
-}
+// export interface CompleteEventData {
+//     fullResponse: string;
+//     totalCodeBlocks: number;
+// }
 
-// file-structure types
+// export interface ErrorEventData {
+//     message: string;
+//     error?: string;
+//     stack?: string;
+// }
 
-export interface FileNode {
-    name: string;
-    type: 'file' | 'folder';
-    path: string;
-    content?: string;
-    language?: string;
-    children?: FileNode[];
-}
+// // file-structure types
+// export enum NODE {
+//     FILE = 'FILE',
+//     FOLDER = 'FOLDER',
+// }
 
-export interface FileStructure {
-    root: FileNode;
-    files: Record<string, string>; // map of path -> content for quick access
-}
+// export interface FileNode {
+//     name: string;
+//     type: NODE;
+//     path: string;
+//     content?: string;
+//     language?: string;
+//     children?: FileNode[];
+// }
 
-// anchor project structure
+// export interface FileStructure {
+//     root: FileNode;
+//     files: Record<string, string>; // map of path -> content for quick access
+// }
 
-export interface AnchorProjectFiles {
-    'Anchor.toml': string;
-    'Cargo.toml': string;
-    [key: `programs/${string}/Cargo.toml`]: string;
-    [key: `programs/${string}/src/lib.rs`]: string;
-    [key: `tests/${string}.ts`]: string;
-}
+// // anchor project structure
 
-// parse-configs
+// export interface AnchorProjectFiles {
+//     'Anchor.toml': string;
+//     'Cargo.toml': string;
+//     [key: `programs/${string}/Cargo.toml`]: string;
+//     [key: `programs/${string}/src/lib.rs`]: string;
+//     [key: `tests/${string}.ts`]: string;
+// }
 
-export interface ParserConfig {
-    enableContextExtraction?: boolean;
-    enableCodeBlockExtraction?: boolean;
-    enableFileStructureGeneration?: boolean;
-    enableStatusDetection?: boolean;
-    projectName?: string;
-}
+// // parse-configs
 
-// parser state
+// export interface ParserConfig {
+//     enableContextExtraction?: boolean;
+//     enableCodeBlockExtraction?: boolean;
+//     enableFileStructureGeneration?: boolean;
+//     enableStatusDetection?: boolean;
+//     projectName?: string;
+// }
 
-export interface ParserState {
-    buffer: string;
-    contextSent: boolean;
-    codeBlocksSent: Set<string>;
-    lastMessageLength: number;
-}
+// // parser state
 
-export interface CodeBlockMatch {
-    fullMatch: string;
-    language: string;
-    code: string;
-    index: number;
-}
+// export interface ParserState {
+//     buffer: string;
+//     contextSent: boolean;
+//     codeBlocksSent: Set<string>;
+//     lastMessageLength: number;
+// }
 
-export interface ContextMatch {
-    fullMatch: string;
-    content: string;
-    index: number;
-}
+// export interface CodeBlockMatch {
+//     fullMatch: string;
+//     language: string;
+//     code: string;
+//     index: number;
+// }
 
-export interface MessageRecord {
-    id: string;
-    chatId: string;
-    role: 'USER' | 'AI' | 'SYSTEM';
-    content: string;
-    createdAt: Date;
-}
+// export interface ContextMatch {
+//     fullMatch: string;
+//     content: string;
+//     index: number;
+// }
 
-export interface ChatRecord {
-    id: string;
-    userId: string;
-    contractId: string;
-    messages: MessageRecord[];
-}
+// export interface MessageRecord {
+//     id: string;
+//     chatId: string;
+//     role: 'USER' | 'AI' | 'SYSTEM';
+//     content: string;
+//     createdAt: Date;
+// }
 
-export interface ContractRecord {
-    id: string;
-    title: string;
-    description: string;
-    code: string;
-    contractType: string;
-    version: number;
-    userId: string;
-}
+// export interface ChatRecord {
+//     id: string;
+//     userId: string;
+//     contractId: string;
+//     messages: MessageRecord[];
+// }
 
-//parser types
+// export interface ContractRecord {
+//     id: string;
+//     title: string;
+//     description: string;
+//     code: string;
+//     contractType: string;
+//     version: number;
+//     userId: string;
+// }
 
-export interface StreamEvent<T> {
-    type:
-        | 'start'
-        | 'context'
-        | 'message_chunk'
-        | 'code_block'
-        | 'file_structure'
-        | 'status'
-        | 'complete'
-        | 'error';
-    data: T;
-    timestamp: number;
-}
+// //parser types
 
-export interface ContextData {
-    content: string;
-    action: string;
-}
+// export enum STREAM_TYPE {
+//     START = 'START',
+//     CONTEXT = 'CONTEXT',
+//     MESSAGE_CHUNK = 'MESSAGE_CHUNK',
+//     CODE_BLOCK = 'CODE_BLOCK',
+//     FILE_STRUCTURE = 'FILE_STRUCTURE',
+//     STATUS = 'STATUS',
+//     COMPLETE = 'COMPLETE',
+//     ERROR = 'ERROR',
+// }
 
-export interface CodeBlock {
-    language: string;
-    code: string;
-    filename?: string;
-    startIndex: number;
-    endIndex: number;
-}
+// export interface StreamEvent<T> {
+//     type: STREAM_EVENT_ENUM;
+//     data: T;
+//     timestamp: number;
+// }
 
-export interface FileNode {
-    name: string;
-    type: 'file' | 'folder';
-    path: string;
-    content?: string;
-    language?: string;
-    children?: FileNode[];
-}
+// export interface ContextData {
+//     content: string;
+//     action: string;
+// }
 
-export interface FileStructure {
-    root: FileNode;
-    files: Record<string, string>; // path -> content
-}
+// export interface CodeBlock {
+//     language: string;
+//     code: string;
+//     filename?: string;
+//     startIndex: number;
+//     endIndex: number;
+// }
 
-export interface StatusUpdate {
-    stage: 'thinking' | 'analyzing' | 'generating' | 'building' | 'complete' | 'error';
-    message: string;
-    progress?: number;
-}
+// export interface FileNode {
+//     name: string;
+//     type: NODE;
+//     path: string;
+//     content?: string;
+//     language?: string;
+//     children?: FileNode[];
+// }
 
-// req-res types
+// export interface FileStructure {
+//     root: FileNode;
+//     files: Record<string, string>; // path -> content
+// }
 
-export interface SendMessageRequest {
-    message: string;
-}
+// export interface StatusUpdate {
+//     stage: STAGE;
+//     message: string;
 
-export interface SendMessageResponse {
-    success: boolean;
-    chatId?: string;
-    messageId?: string;
-    error?: string;
-}
+//     progress?: number;
+// }
 
-export function isStreamEvent(obj: any): obj is StreamEvent {
-    return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        'type' in obj &&
-        'data' in obj &&
-        'timestamp' in obj
-    );
-}
+// // req-res types
 
-export function isCodeBlockEvent(event: StreamEvent): event is StreamEvent<CodeBlockEventData> {
-    return event.type === 'code_block';
-}
+// export interface SendMessageRequest {
+//     message: string;
+// }
 
-export function isContextEvent(event: StreamEvent): event is StreamEvent<ContextEventData> {
-    return event.type === 'context';
-}
+// export interface SendMessageResponse {
+//     success: boolean;
+//     chatId?: string;
+//     messageId?: string;
+//     error?: string;
+// }
 
-export function isErrorEvent(event: StreamEvent): event is StreamEvent<ErrorEventData> {
-    return event.type === 'error';
-}
+// export function isStreamEvent(obj: any): obj is StreamEvent {
+//     return (
+//         typeof obj === 'object' &&
+//         obj !== null &&
+//         'type' in obj &&
+//         'data' in obj &&
+//         'timestamp' in obj
+//     );
+// }
 
-export type Nullable<T> = T | null;
-export type Optional<T> = T | undefined;
-export type DeepPartial<T> = {
-    [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
+// // export function isCodeBlockEvent(event: StreamEvent): event is StreamEvent<CodeBlockEventData> {
+// //     return event.type === 'code_block';
+// // }
+
+// // export function isContextEvent(event: StreamEvent): event is StreamEvent<ContextEventData> {
+// //     return event.type === 'context';
+// // }
+
+// // export function isErrorEvent(event: StreamEvent): event is StreamEvent<ErrorEventData> {
+// //     return event.type === 'error';
+// // }
+
+// export type Nullable<T> = T | null;
+// export type Optional<T> = T | undefined;
+// export type DeepPartial<T> = {
+//     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+// };
+
+// export enum STAGE {
+//     THINKING = 'THINKING',
+//     ANALYZING = 'ANALYZING',
+//     GENERATING = 'GENERATING',
+//     STRUCTURING = 'STRUCTURING',
+//     BUILDING = 'BUILDING',
+//     COMPLETE = 'COMPLETE',
+//     ERROR = 'ERROR',
+// }
