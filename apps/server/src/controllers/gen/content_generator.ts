@@ -1,17 +1,11 @@
-
 import { GoogleGenAI } from '@google/genai';
 import env from '../../configs/env';
-import { SYSTEM_PROMPT } from '../../prompt/gemini';
 import { Response } from 'express';
 import { Chat, ChatRole, Message, prisma } from '@repo/database';
-import StreamParser from '../../services/StreamParser';
-import { STREAM_EVENT_ENUM } from '../../types/StreamEventTypes';
-
-enum ChatState {
-    START,
-    STREAMING,
-    COMPLETE,
-}
+import StreamParser from '../../services/stream_parser';
+import { STREAM_EVENT_ENUM } from '../../types/stream_event_types';
+import { SYSTEM_PROMPT } from '../../prompt/system';
+import { objectStore } from '../../services/init';
 
 interface CtxObject {
     role: 'user' | 'model';
@@ -23,7 +17,7 @@ interface CtxObject {
 export default class ContentGenerator {
     public ai: GoogleGenAI;
     public system_prompt: string;
-    private parsers: Map<string, StreamParser>; // contract-id -> stream-parser
+    private parsers: Map<string, StreamParser>;
 
     constructor() {
         this.system_prompt = SYSTEM_PROMPT;
@@ -45,41 +39,29 @@ export default class ContentGenerator {
         res.write(
             `data: ${JSON.stringify({
                 type: STREAM_EVENT_ENUM.START,
-                messageId: message.id,
-                chatId: chat.id,
-                contractId: contract_id,
-                timestamp: Date.now(),
+                data: {
+                    messageId: message.id,
+                    chatId: chat.id,
+                    contractId: contract_id,
+                    timestamp: Date.now(),
+                },
             })}\n\n`,
         );
 
         try {
-            const full_response = await this.generate_streaming_response(
-                res,
-                message,
-                chat,
-                parser,
-            );
+            await this.generate_streaming_response(res, message, chat, parser);
 
-            // const filterCode = extractRustCode(full_response);
+            const generatedFiles = parser.getGeneratedFiles();
 
-            if (full_response.includes('```rust') || full_response.includes('```')) {
-                const codeMatch = full_response.match(/```(?:rust)?\n([\s\S]*?)```/);
-                if (codeMatch && codeMatch[1]) {
-                    await prisma.contract.update({
-                        where: { id: contract_id },
-                        data: { code: codeMatch[1].trim() },
-                    });
-                }
-
-                parser.complete();
-                parser.reset();
+            objectStore.uploadContractFiles(contract_id, generatedFiles);
+            if (generatedFiles.length > 0) {
                 this.delete_parser(contract_id);
-
                 res.end();
+            } else {
+                throw new Error('No files were generated');
             }
         } catch (error) {
             console.error('Error in generate_initial_response:', error);
-
             this.sendSSE(res, STREAM_EVENT_ENUM.ERROR, {
                 message: 'Failed to generate response',
                 error: error instanceof Error ? error.message : 'Unknown error',
@@ -87,7 +69,6 @@ export default class ContentGenerator {
 
             parser.reset();
             this.delete_parser(contract_id);
-
             res.end();
         }
     }
@@ -111,7 +92,7 @@ export default class ContentGenerator {
                 role: 'model',
                 parts: [
                     {
-                        text: 'Understood. I will help you create Anchor smart contracts following these guidelines.',
+                        text: 'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
                     },
                 ],
             });
@@ -135,11 +116,7 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
-                    // Accumulate full response
                     full_response += chunk.text;
-
-                    // Parse and send structured events
-                    console.log(chunk.text);
                     parser.feed(chunk.text);
                 }
             }
@@ -151,7 +128,6 @@ export default class ContentGenerator {
         } catch (llm_error) {
             console.error('LLM Error:', llm_error);
 
-            // Send error through SSE
             res.write(
                 `data: ${JSON.stringify({
                     type: 'error',

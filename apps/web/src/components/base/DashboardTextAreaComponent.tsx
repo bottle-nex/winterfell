@@ -1,7 +1,7 @@
 import { cn } from '@/src/lib/utils';
 import { Textarea } from '../ui/textarea';
-import { Button } from '../ui/button';  
-import { Terminal, ArrowRight, FileCode } from 'lucide-react';  
+import { Button } from '../ui/button';
+import { Terminal, ArrowRight, FileCode } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
