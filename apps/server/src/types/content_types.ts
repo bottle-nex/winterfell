@@ -42,3 +42,8 @@ export interface CompleteEventData {
     fullResponse: string;
     totalCodeBlocks: number;
 }
+
+export interface FileContent {
+    path: string;
+    content: string;
+}

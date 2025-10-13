@@ -1,13 +1,9 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import env from '../configs/env';
+import { FileContent } from '../types/content_types';
 
-interface FileToUpload {
-    path: string;
-    content: string | Buffer;
-}
-
-export class ContractS3Client {
+export default class ObjectStore {
     private s3: S3Client;
     private bucket: string;
 
@@ -22,7 +18,7 @@ export class ContractS3Client {
         this.bucket = env.SERVER_AWS_BUCKET_NAME;
     }
 
-    public async uploadContractFiles(contractId: string, files: FileToUpload[]) {
+    public async uploadContractFiles(contractId: string, files: FileContent[]) {
         const uploadedFiles: string[] = [];
 
         for (const file of files) {

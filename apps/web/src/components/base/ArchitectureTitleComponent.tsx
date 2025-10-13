@@ -20,7 +20,7 @@ export default function ArchitectureTitleComponent() {
         hidden: {
             opacity: 0,
             y: 100,
-            rotateX: 90
+            rotateX: 90,
         },
         visible: {
             opacity: 1,
@@ -29,8 +29,8 @@ export default function ArchitectureTitleComponent() {
             transition: {
                 duration: 0.8,
                 ease: [0.22, 1, 0.36, 1],
-            }
-        }
+            },
+        },
     };
 
     return (
