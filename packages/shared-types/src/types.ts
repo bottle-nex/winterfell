@@ -61,10 +61,15 @@ export interface ContextData {
   action: string; // state responses
 }
 
+export enum NODE {
+  FILE = "FILE",
+  FOLDER = "FOLDER",
+}
+
 export interface FileNode {
+  id: string;
   name: string;
-  type: "file" | "folder";
-  path: string;
+  type: NODE;
   content?: string;
   language?: string;
   children?: FileNode[];
