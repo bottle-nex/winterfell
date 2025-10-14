@@ -28,6 +28,7 @@
     "eslint": "^9.32.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "uuid": "^13.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

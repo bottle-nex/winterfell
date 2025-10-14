@@ -17,7 +17,8 @@
     "dev": "turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "turbo run generate",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "remove-logs": "turbo run remove-logs"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
