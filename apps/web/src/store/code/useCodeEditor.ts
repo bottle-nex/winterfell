@@ -140,7 +140,7 @@ describe("my_program", () => {
       .signers([baseAccount])
       .rpc();
 
-    console.log("Transaction Signature:", tx);
+    
   });
 });
 `,

@@ -52,7 +52,8 @@ export default class ContentGenerator {
             await this.generate_streaming_response(res, message, chat, parser);
 
             const generatedFiles = parser.getGeneratedFiles();
-
+            // console.log('generate files are ------------------------------------->');
+            // console.log(generatedFiles);
             objectStore.uploadContractFiles(contract_id, generatedFiles);
             if (generatedFiles.length > 0) {
                 this.delete_parser(contract_id);
@@ -123,7 +124,8 @@ export default class ContentGenerator {
 
             // Save complete response to database
             await this.save_llm_response_to_db(full_response, chat.id);
-
+            // console.log('full response is -------------------------------------------------->');
+            // console.log(full_response);
             return full_response;
         } catch (llm_error) {
             console.error('LLM Error:', llm_error);

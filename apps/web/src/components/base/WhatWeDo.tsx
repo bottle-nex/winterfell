@@ -1,12 +1,5 @@
 'use client';
 
-import { Bungee } from 'next/font/google';
-
-const bungee = Bungee({
-    subsets: ['latin'],
-    weight: ['400'],
-});
-
 export default function WhatWeDo() {
     return (
         <div className="h-screen w-screen flex flex-col p-15 text-[#FDF9F0] gap-y-5">
