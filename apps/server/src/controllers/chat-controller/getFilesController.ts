@@ -20,13 +20,8 @@ export default async function getFilesController(req: Request, res: Response) {
     try {
         const getFileContent = async (fileKey: string): Promise<string> => {
             // console.log('file key is: ', fileKey);
-            const fileUrl = `${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
+            const fileUrl = `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${fileKey}`;
             const response = await fetch(fileUrl);
-
-            if (!response.ok) {
-                console.error('Failed to fetch file content:', response.status);
-                return '';
-            }
 
             return await response.text();
         };
