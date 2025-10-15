@@ -50,17 +50,22 @@ export default class RazorpayGateway {
         order_id: string,
         payment_id: string,
         signature: string,
-        subscriptions_id: string,
+        subscription_id: string,
         user_id: string,
         plan_type: PlanType,
-    ): Promise<boolean> {
+    ): Promise<{ success: boolean, message?: string }> {
         const sign = this.get_sign(order_id, payment_id);
 
         const expected_signature = this.get_expected_signature(sign);
 
         const is_valid = expected_signature === signature;
 
-        if (!is_valid) return false;
+        if (!is_valid) {
+            return {
+                success: false,
+                message: 'Invalid signature',
+            };
+        }
 
         const start = new Date();
         const end = new Date(start);
@@ -68,7 +73,7 @@ export default class RazorpayGateway {
 
         await prisma.subscription.update({
             where: {
-                id: subscriptions_id,
+                id: subscription_id,
                 userId: user_id,
             },
             data: {
@@ -82,11 +87,9 @@ export default class RazorpayGateway {
             },
         });
 
-        return true;
-    }
-
-    public async cancel() {
-
+        return {
+            success: true,
+        };
     }
 
     private get_sign(order_id: string, payment_id: string): string {
