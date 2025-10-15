@@ -5,6 +5,7 @@ import { LiaServicestack } from 'react-icons/lia';
 import { FaBolt, FaShieldAlt, FaSmile } from 'react-icons/fa';
 import { FaRust } from 'react-icons/fa6';
 import { Highlighter } from '@/components/ui/highlighter';
+import { TbAnchor } from "react-icons/tb";
 
 const featureData = [
     {
@@ -19,7 +20,7 @@ const featureData = [
         centerTitle: 'Deploy Instantly',
         bottomTitle: 'No delays, just code',
         icon: FaBolt,
-        color: '#FFD93D',
+        color: '#FFC400',
     },
     {
         topTitle: 'ENHANCED EXPERIENCE',
@@ -29,18 +30,18 @@ const featureData = [
         color: '#6C44FC',
     },
     {
+        topTitle: 'FUN CODING',
+        centerTitle: 'Anchor',
+        bottomTitle: 'Enjoy creating',
+        icon: TbAnchor,
+        color: '#106DE1',
+    },
+    {
         topTitle: 'ROCK-SOLID',
         centerTitle: 'Security',
         bottomTitle: 'Safe & reliable',
         icon: FaShieldAlt,
         color: '#00C6A7',
-    },
-    {
-        topTitle: 'FUN CODING',
-        centerTitle: 'Innovate',
-        bottomTitle: 'Enjoy creating',
-        icon: FaSmile,
-        color: '#5D9CEC',
     },
 ];
 
@@ -56,7 +57,7 @@ export default function Features() {
             <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
                 <div className="w-full max-w-[60%] text-5xl font-bold tracking-wider text-[#FDF9F0] leading-[1.2] relative">
                     BECAUSE CODING SHOULDN&apos;T RUIN YOUR SLEEP SCHEDULE
-                    <div className="absolute text-sm -top-8 font-extralight w-full flex justify-center text-[#c0b69e]">
+                    <div className="absolute text-[15px] -top-8 font-extralight w-full flex justify-center text-[#d6caae]">
                         fin-tastic features. zero-hassle.
                     </div>
                 </div>
@@ -67,7 +68,7 @@ export default function Features() {
                 >
                     <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-dark-base font-semibold">
                         Transform your blockchain ideas into&nbsp;
-                        <Highlighter action="underline" color="#6741EF">
+                        <Highlighter action="underline" color="#6C44FC">
                             production-ready
                         </Highlighter>
                         &nbsp;contracts seamlessly.
