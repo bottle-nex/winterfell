@@ -57,7 +57,8 @@ export default class ObjectStore {
     }
 
     public getFileUrl(key: string) {
-        return `https://${this.bucket}.s3.${env.SERVER_AWS_REGION}.amazonaws.com/${key}`;
+        // return `https://${this.bucket}.s3.${env.SERVER_AWS_REGION}.amazonaws.com/${key}`;
+        return `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${key}`;
     }
 }
 
