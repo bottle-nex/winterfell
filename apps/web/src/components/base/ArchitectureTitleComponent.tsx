@@ -3,7 +3,7 @@ import { useRef } from 'react';
 
 export default function ArchitectureTitleComponent() {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: false, margin: '-100px' });
+    const isInView = useInView(ref, { once: true, margin: '-100px' });
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
