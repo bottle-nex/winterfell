@@ -94,7 +94,7 @@ model Subscription {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
-  plan   PlatType           @default(FREE)
+  plan   PlanType           @default(FREE)
   status SubscriptionStatus @default(ACTIVE)
 
   razorpayOrderId   String?
@@ -137,7 +137,7 @@ enum ChatRole {
   SYSTEM
 }
 
-enum PlatType {
+enum PlanType {
   FREE
   PREMIUM
   PREMIUM_PLUS
