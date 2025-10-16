@@ -11,7 +11,7 @@ export default class PodService {
       const pod_template = PodTemplate.getAnchorPodTemplate(
         req.userId,
         req.sessionId,
-        req.projectName
+        req.projectName,
       );
 
       console.log("creaiting pod for : ", req.userId);
