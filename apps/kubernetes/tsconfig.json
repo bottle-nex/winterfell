@@ -11,7 +11,7 @@
     "src"
   ],
   "exclude": [
-    "node_modules",
+    "../web/src/node_modules",
     "dist"
   ]
 }

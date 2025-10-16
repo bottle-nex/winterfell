@@ -1,8 +1,8 @@
 import { V1Pod } from '@kubernetes/client-node';
 
 export default class PodTemplate {
-   public static getAnchorPodTemplate(userId: string, sessionId: string, projectName?: string) {
-      const podName: string = this.get_pod_template(userId, sessionId);
+   public static get_anchor_pod_template(userId: string, sessionId: string, projectName?: string) {
+      const podName: string = this.get_pod_name(userId, sessionId);
       const template: V1Pod = {
          apiVersion: 'v1',
          kind: 'Pod',
@@ -24,8 +24,8 @@ export default class PodTemplate {
             containers: [
                {
                   name: 'anchor-dev',
-                  image: 'anjan-figure-out-image-name',
-                  command: ['/bin/bash'],
+                  image: 'nginx',
+                  command: ['/bin/sh'],
                   args: ['-c', 'tail -f /dev/null'],
                   stdin: true,
                   tty: true,
@@ -73,7 +73,7 @@ export default class PodTemplate {
       return template;
    }
 
-   private static get_pod_template(userId: string, sessionId: string) {
+   public static get_pod_name(userId: string, sessionId: string) {
       return `anchor-pod-template-${userId}-${sessionId}`.toLowerCase().substring(0, 63);
    }
 }
