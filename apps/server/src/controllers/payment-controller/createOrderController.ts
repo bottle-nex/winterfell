@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
-import PLANS from "../../configs/plans";
-import { razorpay } from "../../services/init";
-import { prisma, SubscriptionStatus } from "@repo/database";
+import { Request, Response } from 'express';
+import PLANS from '../../configs/plans';
+import { razorpay } from '../../services/init';
+import { prisma, SubscriptionStatus } from '@repo/database';
 
 export default async function createOrderController(req: Request, res: Response) {
     try {
-
         const { planType } = req.body;
         const user = req.user;
 
@@ -55,10 +54,9 @@ export default async function createOrderController(req: Request, res: Response)
                 amount: plan.amount,
                 currency: plan.currency,
                 interval: plan.interval,
-            }
+            },
         });
         return;
-
     } catch (err) {
         console.error('Error while creating order: ', err);
         res.status(500).json({

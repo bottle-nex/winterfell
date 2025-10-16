@@ -1,4 +1,3 @@
-
 const PLANS = {
     FREE: { amount: 0, currency: 'INR', interval: 'month' },
     PREMIUM: { amount: 799, currency: 'INR', interval: 'month' },

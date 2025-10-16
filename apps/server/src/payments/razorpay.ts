@@ -1,12 +1,11 @@
-import Razorpay from "razorpay";
-import { Orders } from "razorpay/dist/types/orders";
-import env from "../configs/env";
-import { PlanType, prisma, SubscriptionStatus } from "@repo/database";
-import PLANS from "../configs/plans";
-import crypto from "crypto";
+import Razorpay from 'razorpay';
+import { Orders } from 'razorpay/dist/types/orders';
+import env from '../configs/env';
+import { PlanType, prisma, SubscriptionStatus } from '@repo/database';
+import PLANS from '../configs/plans';
+import crypto from 'crypto';
 
 export default class RazorpayGateway {
-
     private razorpay: Razorpay;
 
     constructor() {
@@ -43,7 +42,6 @@ export default class RazorpayGateway {
         if (!is_valid) return false;
 
         return true;
-
     }
 
     public async verify_and_update(
@@ -53,7 +51,7 @@ export default class RazorpayGateway {
         subscription_id: string,
         user_id: string,
         plan_type: PlanType,
-    ): Promise<{ success: boolean, message?: string }> {
+    ): Promise<{ success: boolean; message?: string }> {
         const sign = this.get_sign(order_id, payment_id);
 
         const expected_signature = this.get_expected_signature(sign);
@@ -92,6 +90,57 @@ export default class RazorpayGateway {
         };
     }
 
+    public async cancel(user_id: string, subscription_id: string) {
+        try {
+            await prisma.subscription.update({
+                where: {
+                    id: subscription_id,
+                    userId: user_id,
+                },
+                data: {
+                    plan: PlanType.FREE,
+                    status: SubscriptionStatus.CANCELLED,
+                },
+            });
+        } catch (error) {
+            console.error('Error while cancelling subscription: ', error);
+        }
+    }
+
+    public async get_subscription_status(user_id: string): Promise<{
+        plan: PlanType;
+        status: SubscriptionStatus;
+        start?: Date;
+        end?: Date;
+        auto_renew?: boolean;
+    } | null> {
+        try {
+            const subscription = await prisma.subscription.findUnique({
+                where: {
+                    userId: user_id,
+                },
+            });
+
+            if (!subscription) {
+                return {
+                    plan: PlanType.FREE,
+                    status: SubscriptionStatus.ACTIVE,
+                };
+            }
+
+            return {
+                plan: subscription.plan,
+                status: subscription.status,
+                start: subscription.start,
+                end: subscription.end!,
+                auto_renew: subscription.autoRenew,
+            };
+        } catch (err) {
+            console.error('Error while fetching user subscription: ', err);
+            return null;
+        }
+    }
+
     private get_sign(order_id: string, payment_id: string): string {
         return order_id + '|' + payment_id;
     }
@@ -104,5 +153,4 @@ export default class RazorpayGateway {
 
         return expected_signature;
     }
-
 }
