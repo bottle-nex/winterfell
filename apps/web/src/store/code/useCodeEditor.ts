@@ -172,7 +172,7 @@ test = "npm run test"
         set({ currentCode: code });
     },
 
-    updateFileContent: (fileId: string, content: string) => {},
+    updateFileContent: (_fileId: string, _content: string) => {},
 
     selectFile: (node: FileNode) => {
         if (node.type === NODE.FILE) {

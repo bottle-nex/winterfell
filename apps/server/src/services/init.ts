@@ -1,7 +1,5 @@
-import Razorpay from 'razorpay';
 import ObjectStore from '../class/object_store';
 import ContentGenerator from '../controllers/gen/content_generator';
-import env from '../configs/env';
 import RazorpayGateway from '../payments/razorpay';
 
 export let contentGenerator: ContentGenerator;
