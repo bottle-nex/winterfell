@@ -49,7 +49,7 @@ export default function ArchitectureTitleComponent() {
                         variants={textVariants}
                         className="text-[7rem] font-semibold tracking-widest"
                     >
-                        SHARK&apos;s
+                        WINTERFELL&apos;s
                     </motion.span>
                 </div>
                 <div className="w-full flex items-center justify-start border-b border-t border-primary overflow-hidden">

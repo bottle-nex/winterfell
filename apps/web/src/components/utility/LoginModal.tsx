@@ -24,7 +24,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
         <div>
             {opensignInModal && (
                 <OpacityBackground onBackgroundClick={() => setOpenSignInModal(false)}>
-                    <Card className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 z-50 bg-dark-base text-light">
+                    <Card className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 z-50 bg-dark-base text-lightz">
                         <div className="text-center space-y-2">
                             <h2 className="text-2xl font-semibold text-light">
                                 Sign in to continue
@@ -35,7 +35,6 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                             </p>
                         </div>
 
-                        {/* Google Sign-in Button */}
                         <Button
                             onClick={() => signinHandler('GOOGLE')}
                             className="w-full flex items-center justify-center gap-3 px-6 py-[22px] text-sm font-medium bg-dark-base hover:bg-neutral-900 rounded-md border border-neutral-800 cursor-pointer"
@@ -51,7 +50,6 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                             <span className="text-light text-xs">Sign in with Google</span>
                         </Button>
 
-                        {/* GitHub Sign-in Button */}
                         <Button
                             onClick={() => signinHandler('GITHUB')}
                             className="w-full flex items-center justify-center gap-3 px-6 py-[22px] text-sm font-medium bg-dark-base hover:bg-neutral-900 rounded-md border border-neutral-800 cursor-pointer"

@@ -14,7 +14,7 @@ const router: Router = Router();
 router.post('/sign-in', signInController);
 
 // code-routes
-router.post('/new', authMiddleware, startChatController);
+router.post('/new', startChatController);
 router.get('/files/:contractId', authMiddleware, getFilesController);
 
 // payment-routes
