@@ -3,7 +3,7 @@ import { prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
 
 export default async function startChatController(req: Request, res: Response) {
-    const userId = 'cmgpfieax0008uipxcb072utu';
+    const userId = 'cmgta8t8b0000ui382hjo8di0';
     const chatId = req.query.chatId as string;
     const message = req.body.message as string;
 

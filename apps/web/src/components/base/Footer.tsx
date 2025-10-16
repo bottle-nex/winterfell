@@ -94,8 +94,8 @@ export default function Footer() {
             <div
                 className={`h-[35%] text-neutral-200 w-full flex flex-col justify-center items-center ${bruno.className}`}
             >
-                <div className="text-[140px] font-extrabold tracking-[0.1em] flex items-center">
-                    S H A R K
+                <div className="text-9xl font-extrabold tracking-wider flex items-center">
+                    WINTERFELL
                     <LiaServicestack className="text-primary h-52 w-52 transition-all duration-500" />
                 </div>
                 <p className="text-neutral-500 text-sm tracking-wider mt-4">

@@ -27,7 +27,7 @@ export default function DashboardTextAreaComponent() {
                         </div>
                         <div className="flex items-center gap-2 text-neutral-500 text-xs font-mono h-full">
                             <Terminal className="w-3.5 h-3.5" />
-                            <span>shark.ai</span>
+                            <span>winterfell.dev</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-x-1.5 justify-center">
