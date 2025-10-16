@@ -1,4 +1,5 @@
 import * as k8s from "@kubernetes/client-node";
+import { SmsCommandContextImpl } from "twilio/lib/rest/supersim/v1/smsCommand";
 
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
