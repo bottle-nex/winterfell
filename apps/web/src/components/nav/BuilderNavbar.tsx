@@ -17,7 +17,7 @@ export default function BuilderNavbar() {
         <div className="h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
             <div className=" text-[#C3C3C3] text-[17px] tracking-[0.5rem] flex justify-start items-center gap-x-3 cursor-pointer group">
                 <LiaServicestack size={28} className="text-primary" />
-                SHARK FIN
+                WINTERFELL
             </div>
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start bg-dark rounded-[4px] p-[3px] border border-neutral-800">
