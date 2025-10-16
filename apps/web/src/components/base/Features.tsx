@@ -2,14 +2,14 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { LiaServicestack } from 'react-icons/lia';
-import { FaBolt, FaShieldAlt, FaSmile } from 'react-icons/fa';
+import { FaBolt, FaShieldAlt } from 'react-icons/fa';
 import { FaRust } from 'react-icons/fa6';
 import { Highlighter } from '@/components/ui/highlighter';
 import { TbAnchor } from 'react-icons/tb';
 
 const featureData = [
     {
-        topTitle: 'SHARK POWER',
+        topTitle: 'WINTERFELL POWER',
         centerTitle: 'Smart Contracts',
         bottomTitle: 'Build with ease',
         icon: FaRust,
@@ -24,7 +24,7 @@ const featureData = [
     },
     {
         topTitle: 'ENHANCED EXPERIENCE',
-        centerTitle: 'SHARK',
+        centerTitle: 'WINTERFELL',
         bottomTitle: 'Fins dont wait',
         icon: LiaServicestack,
         color: '#6C44FC',

@@ -37,7 +37,7 @@ export default function NavbarSigninAction() {
             ) : (
                 <div className="flex items-center justify-center gap-x-3 hover:bg-neutral-700/70 py-1.5 px-3 rounded-lg cursor-pointer select-none">
                     <span className="text-light text-sm tracking-wider font-semibold">
-                        {`${session?.user?.name?.split(' ')[0]}'s Stair`}
+                        {`${session?.user?.name?.split(' ')[0]}'s Winterfell`}
                     </span>
                     {session?.user.image && (
                         <Image
