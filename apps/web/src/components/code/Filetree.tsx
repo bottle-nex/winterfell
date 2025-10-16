@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
-import { useCodeEditor, FileNode } from '@/src/store/code/useCodeEditor';
+import { useCodeEditor, FileNode, NODE } from '@/src/store/code/useCodeEditor';
 import { AiFillFolder } from 'react-icons/ai';
 import { AiFillFolderOpen } from 'react-icons/ai';
 import FileIcon from '../tickers/FileIcon';
@@ -25,7 +25,7 @@ export default function Filetree() {
         const flattened: TreeData = {};
 
         function flattenNode(node: FileNode): void {
-            const isFolder = node.type === 'folder';
+            const isFolder = node.type === NODE.FOLDER;
 
             flattened[node.id] = {
                 index: node.id,
@@ -80,7 +80,7 @@ export default function Filetree() {
                                 return null;
                             };
                             const node = findNode(fileTree, itemId as string);
-                            if (node && node.type === 'file') {
+                            if (node && node.type === NODE.FILE) {
                                 selectFile(node);
                             }
                         }

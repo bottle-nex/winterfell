@@ -10,7 +10,7 @@ import HighlighterTicker from '../tickers/HighlighterTicker';
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(heroRef, { once: false });
+    const isInView = useInView(heroRef, { once: true });
     const controls = useAnimation();
 
     useEffect(() => {
