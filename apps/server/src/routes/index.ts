@@ -15,7 +15,7 @@ router.post('/sign-in', signInController);
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);
-router.get('/files/:contractId', getFilesController);
+router.get('/files/:contractId', authMiddleware, getFilesController);
 
 // payment-routes
 router.post('/subscription/create-subscription-order', authMiddleware, createOrderController);
