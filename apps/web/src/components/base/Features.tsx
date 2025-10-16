@@ -5,7 +5,7 @@ import { LiaServicestack } from 'react-icons/lia';
 import { FaBolt, FaShieldAlt, FaSmile } from 'react-icons/fa';
 import { FaRust } from 'react-icons/fa6';
 import { Highlighter } from '@/components/ui/highlighter';
-import { TbAnchor } from "react-icons/tb";
+import { TbAnchor } from 'react-icons/tb';
 
 const featureData = [
     {

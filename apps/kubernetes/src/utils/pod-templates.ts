@@ -4,7 +4,7 @@ export default class PodTemplate {
   public static getAnchorPodTemplate(
     userId: string,
     sessionId: string,
-    projectName?: string
+    projectName?: string,
   ) {
     const podName: string = this.get_pod_template(userId, sessionId);
     const template: V1Pod = {
