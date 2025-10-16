@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, MotionValue, useScroll, useTransform } from 'framer-motion';
 import { LiaServicestack } from 'react-icons/lia';
 import { FaBolt, FaShieldAlt } from 'react-icons/fa';
 import { FaRust } from 'react-icons/fa6';
@@ -98,7 +98,7 @@ interface FeatureCardProps {
     color: string;
     index: number;
     //@typescript-eslint/no-explicit-any
-    scrollProgress: any;
+    scrollProgress: MotionValue<number>;
 }
 
 export function AnimatedFeatureCard({

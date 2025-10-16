@@ -1,4 +1,4 @@
-import { PlanType, prisma, SubscriptionStatus } from '@repo/database';
+import { PlanType, SubscriptionStatus } from '@repo/database';
 import { NextFunction, Request, Response } from 'express';
 import { razorpay } from '../services/init';
 
