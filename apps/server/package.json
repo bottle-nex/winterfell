@@ -24,11 +24,13 @@
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "eslint": "^9.32.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "uuid": "^13.0.0",
+    "razorpay": "^2.9.6",
     "zod": "^4.1.12"
   },
   "devDependencies": {
