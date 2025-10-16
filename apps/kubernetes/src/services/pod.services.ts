@@ -62,7 +62,7 @@ export default class PodService {
             }
             await new Promise((res) => setTimeout(res, 2000));
          } catch (err) {
-            logger.error('error waiting for pod to run:', err);
+            logger.error('error waiting for pod to be running:', err);
          }
       }
    }
