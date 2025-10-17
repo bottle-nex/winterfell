@@ -83,6 +83,9 @@ model Message {
   role    ChatRole
   content String   @db.Text
 
+  systemType SystemMessageType?
+  systemData Json?
+
   createdAt DateTime @default(now())
 
   @@index([chatId])
@@ -148,4 +151,11 @@ enum SubscriptionStatus {
   EXPIRED
   CANCELLED
   PENDING
+}
+
+enum SystemMessageType {
+  BUILD_START
+  BUILD_PROGRESS
+  BUILD_COMPLETE
+  BUILD_ERROR
 }

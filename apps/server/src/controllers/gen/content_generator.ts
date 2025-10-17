@@ -1,11 +1,12 @@
 import { GoogleGenAI } from '@google/genai';
 import env from '../../configs/env';
 import { Response } from 'express';
-import { Chat, ChatRole, Message, prisma } from '@repo/database';
+import { Chat, ChatRole, Message, prisma, SystemMessageType } from '@repo/database';
 import StreamParser from '../../services/stream_parser';
-import { STREAM_EVENT_ENUM } from '../../types/stream_event_types';
 import { SYSTEM_PROMPT } from '../../prompt/system';
 import { objectStore } from '../../services/init';
+import { logger } from '../../utils/logger';
+import { FILE_STRUCTURE_TYPES, PHASE_TYPES } from '../../types/stream_event_types';
 
 interface CtxObject {
     role: 'user' | 'model';
@@ -34,22 +35,36 @@ export default class ContentGenerator {
         contract_id: string,
     ) {
         const parser = this.get_parser(contract_id, res);
-        this.generate_content_stream(res);
+        this.create_stream(res);
 
-        res.write(
-            `data: ${JSON.stringify({
-                type: STREAM_EVENT_ENUM.START,
-                data: {
+        const system_message = await prisma.message.create({
+            data: {
+                chatId: chat.id,
+                role: ChatRole.SYSTEM,
+                content: 'starting to generate in a few seconds',
+                systemType: SystemMessageType.BUILD_START,
+                systemData: {
                     messageId: message.id,
                     chatId: chat.id,
                     contractId: contract_id,
-                    timestamp: Date.now(),
                 },
-            })}\n\n`,
+            },
+        });
+
+        this.sendSSE(
+            res,
+            PHASE_TYPES.THINKING,
+            {
+                messageId: message.id,
+                chatId: chat.id,
+                contractId: contract_id,
+                timestamp: Date.now(),
+            },
+            system_message,
         );
 
         try {
-            await this.generate_streaming_response(res, message, chat, parser);
+            await this.generate_streaming_response(res, message, chat, parser, system_message);
 
             const generatedFiles = parser.getGeneratedFiles();
             objectStore.uploadContractFiles(contract_id, generatedFiles);
@@ -60,11 +75,16 @@ export default class ContentGenerator {
                 throw new Error('No files were generated');
             }
         } catch (error) {
-            console.error('Error in generate_initial_response:', error);
-            this.sendSSE(res, STREAM_EVENT_ENUM.ERROR, {
-                message: 'Failed to generate response',
-                error: error instanceof Error ? error.message : 'Unknown error',
-            });
+            logger.error('Error in generate_initial_response:', error);
+            this.sendSSE(
+                res,
+                PHASE_TYPES.ERROR,
+                {
+                    message: 'Failed to generate response',
+                    error: error instanceof Error ? error.message : 'Unknown error',
+                },
+                system_message,
+            );
 
             parser.reset();
             this.delete_parser(contract_id);
@@ -77,6 +97,7 @@ export default class ContentGenerator {
         message: Message,
         chat: Chat & { messages: Message[] },
         parser: StreamParser,
+        system_message: Message,
     ): Promise<string> {
         const contents: CtxObject[] = [];
         let full_response = '';
@@ -113,10 +134,20 @@ export default class ContentGenerator {
                 contents,
             });
 
+            system_message = await prisma.message.update({
+                where: {
+                    id: system_message.id,
+                },
+                data: {
+                    systemType: SystemMessageType.BUILD_PROGRESS,
+                    content: 'working on your command',
+                },
+            });
+
             for await (const chunk of response) {
                 if (chunk.text) {
                     full_response += chunk.text;
-                    parser.feed(chunk.text);
+                    parser.feed(chunk.text, system_message);
                 }
             }
 
@@ -136,6 +167,16 @@ export default class ContentGenerator {
                 })}\n\n`,
             );
 
+            await prisma.message.update({
+                where: {
+                    id: system_message.id,
+                },
+                data: {
+                    systemType: SystemMessageType.BUILD_ERROR,
+                    content: 'LLM generation failed',
+                },
+            });
+
             throw llm_error;
         }
     }
@@ -154,11 +195,11 @@ export default class ContentGenerator {
         }
     }
 
-    public generate_content_stream(res: Response) {
+    public create_stream(res: Response) {
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
-        res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+        res.setHeader('X-Accel-Buffering', 'no');
         res.flushHeaders();
     }
 
@@ -166,28 +207,28 @@ export default class ContentGenerator {
         if (!this.parsers.has(contract_id)) {
             const parser = new StreamParser();
 
-            parser.on(STREAM_EVENT_ENUM.PHASE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.PHASE, data),
+            parser.on(PHASE_TYPES.THINKING, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.THINKING, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.EDITING_FILE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.EDITING_FILE, data),
+            parser.on(PHASE_TYPES.GENERATING, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.GENERATING, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.CONTEXT, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.CONTEXT, data),
+            parser.on(PHASE_TYPES.BUILDING, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.BUILDING, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.FILE_STRUCTURE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.FILE_STRUCTURE, data),
+            parser.on(PHASE_TYPES.CREATING_FILES, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.CREATING_FILES, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.COMPLETE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.COMPLETE, data),
+            parser.on(PHASE_TYPES.COMPLETE, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.COMPLETE, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.ERROR, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.ERROR, data),
+            parser.on(FILE_STRUCTURE_TYPES.EDITING_FILE, ({ data, systemMessage }) =>
+                this.sendSSE(res, FILE_STRUCTURE_TYPES.EDITING_FILE, data, systemMessage),
             );
 
             this.parsers.set(contract_id, parser);
@@ -199,11 +240,17 @@ export default class ContentGenerator {
         this.parsers.delete(contract_id);
     }
 
-    private sendSSE(res: Response, type: STREAM_EVENT_ENUM, data: any) {
+    private sendSSE(
+        res: Response,
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        data: any,
+        systemMessage: Message,
+    ) {
         res.write(
             `data: ${JSON.stringify({
                 type,
                 data,
+                systemMessage,
                 timestamp: Date.now(),
             })}\n\n`,
         );

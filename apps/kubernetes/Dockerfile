@@ -1,12 +1,13 @@
 FROM rust:alpine
 
-RUN apk add --no-cache \
+# Update package index and use main mirror
+RUN apk update && apk add --no-cache \
     curl \
     git \
     build-base \
     musl-dev \
     openssl-dev \
-    pkg-config
+    pkgconf
 
 RUN cargo install anchor-cli solana-cli
 
