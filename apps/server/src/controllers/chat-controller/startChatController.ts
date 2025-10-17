@@ -1,10 +1,17 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
+import { logger } from '../../utils/logger';
 
 export default async function startChatController(req: Request, res: Response) {
-    const userId = 'cmgta8t8b0000ui382hjo8di0';
-    const chatId = req.query.chatId as string;
+    const userId = req.user?.id;
+    logger.info(`userId: ${userId}`);
+    if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
+    const chatId = req.body.chatId as string;
     const message = req.body.message as string;
 
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
@@ -12,21 +19,25 @@ export default async function startChatController(req: Request, res: Response) {
         return;
     }
 
-    if (!chatId || chatId.length === 0 || typeof chatId !== 'string') {
+    if (!chatId || typeof chatId !== 'string') {
         res.status(400).json({ error: 'Invalid chatId' });
         return;
     }
 
-    let chat;
-    let contract;
-    let isNewContract = false;
-
-    if (!chatId || chatId === 'new') {
-        isNewContract = true;
-    }
-
     try {
-        if (isNewContract) {
+        let chat = await prisma.chat.findUnique({
+            where: { id: chatId },
+            include: {
+                messages: {
+                    orderBy: { createdAt: 'asc' },
+                },
+                contract: true,
+            },
+        });
+
+        let contract;
+
+        if (!chat) {
             contract = await prisma.contract.create({
                 data: {
                     title: message.slice(0, 100),
@@ -40,45 +51,22 @@ export default async function startChatController(req: Request, res: Response) {
 
             chat = await prisma.chat.create({
                 data: {
+                    id: chatId,
                     userId: String(userId),
                     contractId: contract.id,
                 },
                 include: {
                     contract: true,
                     messages: {
-                        take: 20,
-                        orderBy: {
-                            createdAt: 'asc',
-                        },
+                        orderBy: { createdAt: 'asc' },
                     },
                 },
             });
         } else {
-            chat = await prisma.chat.findUnique({
-                where: {
-                    id: chatId,
-                },
-                include: {
-                    messages: {
-                        take: 20,
-                        orderBy: {
-                            createdAt: 'asc',
-                        },
-                    },
-                    contract: true,
-                },
-            });
-
-            if (!chat) {
-                res.status(404).json({ error: 'Chat not found' });
-                return;
-            }
-
             if (chat.userId !== String(userId)) {
                 res.status(403).json({ error: 'Unauthorized' });
                 return;
             }
-
             contract = chat.contract;
         }
 
@@ -94,11 +82,10 @@ export default async function startChatController(req: Request, res: Response) {
             res,
             currentUserMessage,
             chat,
-            contract?.id,
+            contract.id,
         );
     } catch (err) {
         console.error('Controller Error:', err);
-
         if (!res.headersSent) {
             res.status(500).json({
                 error: 'Internal server error',

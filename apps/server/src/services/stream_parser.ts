@@ -1,5 +1,6 @@
+import { Message, prisma, SystemMessageType } from '@repo/database';
 import { FileContent } from '../types/content_types';
-import { STREAM_EVENT_ENUM } from '../types/stream_event_types';
+import { FILE_STRUCTURE_TYPES, PHASE_TYPES } from '../types/stream_event_types';
 
 export default class StreamParser {
     private buffer: string;
@@ -8,7 +9,8 @@ export default class StreamParser {
     private currentCodeBlock: string;
     private insideCodeBlock: boolean;
     private isJsonBlock: boolean;
-    private eventHandlers: Map<STREAM_EVENT_ENUM, ((data: any) => void)[]> = new Map();
+    private eventHandlers: Map<PHASE_TYPES | FILE_STRUCTURE_TYPES, ((data: any) => void)[]> =
+        new Map();
     private generatedFiles: FileContent[] = [];
 
     constructor() {
@@ -19,85 +21,100 @@ export default class StreamParser {
         this.insideCodeBlock = false;
         this.isJsonBlock = false;
         this.generatedFiles = [];
-        this.emit(STREAM_EVENT_ENUM.START);
     }
 
-    public on(type: STREAM_EVENT_ENUM, callback: (data: any) => void) {
+    public on(type: PHASE_TYPES | FILE_STRUCTURE_TYPES, callback: (data: any) => void) {
         if (!this.eventHandlers.has(type)) this.eventHandlers.set(type, []);
         this.eventHandlers.get(type)!.push(callback);
     }
 
-    private emit(type: STREAM_EVENT_ENUM, data?: any) {
+    private emit(type: PHASE_TYPES | FILE_STRUCTURE_TYPES, data?: any, system_message?: Message) {
         const handlers = this.eventHandlers.get(type);
-        if (handlers) handlers.forEach((fn) => fn(data));
+        if (handlers) handlers.forEach((fn) => fn({ data, systemMessage: system_message }));
     }
 
-    public feed(chunk: string) {
+    public feed(chunk: string, system_message: Message) {
         this.buffer += chunk;
-        this.processBuffer();
+        this.processBuffer(system_message);
     }
 
-    private processBuffer() {
+    private async processBuffer(system_message: Message) {
         const lines = this.buffer.split('\n');
         this.buffer = lines.pop() || '';
 
         for (const line of lines) {
             const trimmed = line.trim();
 
-            // Only skip completely empty lines when NOT inside code block
             if (!trimmed && !this.insideCodeBlock) continue;
 
-            // Detect phase tags (these should be trimmed)
             const phaseMatch = trimmed.match(/<phase>(.*?)<\/phase>/);
-            if (phaseMatch) {
+            if (phaseMatch && !this.insideCodeBlock) {
                 const phase = phaseMatch[1].trim();
-                this.currentPhase = phase;
-                this.emit(STREAM_EVENT_ENUM.PHASE, { phase });
+
+                switch (phase) {
+                    case 'thinking':
+                        this.currentPhase = phase;
+                        this.emit(PHASE_TYPES.THINKING, { phase }, system_message);
+                        break;
+                    case 'generating':
+                        this.currentPhase = phase;
+                        this.emit(PHASE_TYPES.GENERATING, { phase }, system_message);
+                        break;
+                    case 'building':
+                        this.currentPhase = phase;
+                        this.emit(PHASE_TYPES.BUILDING, { phase }, system_message);
+                        break;
+                    case 'creating_files':
+                        this.currentPhase = phase;
+                        this.emit(PHASE_TYPES.CREATING_FILES, { phase }, system_message);
+                        break;
+                    case 'complete':
+                        this.currentPhase = phase;
+                        this.emit(PHASE_TYPES.COMPLETE, { phase }, system_message);
+                        break;
+                    default:
+                        this.handleError(new Error('Invalid phase'));
+                }
+
                 continue;
             }
 
-            // Detect file tags (these should be trimmed)
             const fileMatch = trimmed.match(/<file>(.*?)<\/file>/);
-            if (fileMatch) {
+            if (fileMatch && !this.insideCodeBlock) {
                 const filePath = fileMatch[1].trim();
                 this.currentFile = filePath;
-                this.emit(STREAM_EVENT_ENUM.EDITING_FILE, {
-                    file: filePath,
-                    phase: this.currentPhase,
-                });
+                this.emit(
+                    FILE_STRUCTURE_TYPES.EDITING_FILE,
+                    {
+                        file: filePath,
+                        phase: this.currentPhase,
+                    },
+                    system_message,
+                );
                 continue;
             }
 
-            // Handle code block delimiters
             if (trimmed.startsWith('```')) {
                 if (this.insideCodeBlock) {
-                    // End of code block
                     if (this.isJsonBlock && this.currentPhase === 'complete') {
-                        // Handle JSON file structure
                         try {
                             const parsed = JSON.parse(this.currentCodeBlock.trim());
-                            this.emit(STREAM_EVENT_ENUM.FILE_STRUCTURE, parsed);
-                            this.emit(STREAM_EVENT_ENUM.COMPLETE, {
-                                files: this.generatedFiles,
-                                structure: parsed,
+                            system_message = await prisma.message.update({
+                                where: {
+                                    id: system_message.id,
+                                },
+                                data: {
+                                    systemType: SystemMessageType.BUILD_COMPLETE,
+                                    content: 'working on your command',
+                                },
                             });
-                        } catch {
+                        } catch (e) {
                             this.handleError(new Error('Invalid JSON structure format'));
                         }
                     } else if (this.currentFile) {
-                        // Handle regular code file
                         const content = this.currentCodeBlock.trimEnd();
-
-                        // Store file content
                         this.generatedFiles.push({
                             path: this.currentFile,
-                            content: content,
-                        });
-
-                        // Emit context event
-                        this.emit(STREAM_EVENT_ENUM.CONTEXT, {
-                            phase: this.currentPhase,
-                            file: this.currentFile,
                             content: content,
                         });
                     }
@@ -106,7 +123,7 @@ export default class StreamParser {
                     this.isJsonBlock = false;
                     this.currentCodeBlock = '';
                 } else {
-                    // Start of code block
+                    // Opening code block
                     this.insideCodeBlock = true;
                     this.isJsonBlock = trimmed.startsWith('```json');
                     this.currentCodeBlock = '';
@@ -114,7 +131,7 @@ export default class StreamParser {
                 continue;
             }
 
-            // Inside code block - preserve original line INCLUDING indentation
+            // Accumulate code block content
             if (this.insideCodeBlock) {
                 this.currentCodeBlock += line + '\n';
                 continue;
@@ -124,13 +141,6 @@ export default class StreamParser {
 
     public getGeneratedFiles(): FileContent[] {
         return this.generatedFiles;
-    }
-
-    public complete() {
-        this.emit(STREAM_EVENT_ENUM.COMPLETE, {
-            files: this.generatedFiles,
-        });
-        this.reset();
     }
 
     public reset() {
@@ -144,6 +154,6 @@ export default class StreamParser {
     }
 
     public handleError(err: Error) {
-        this.emit(STREAM_EVENT_ENUM.ERROR, { message: err.message });
+        this.emit(PHASE_TYPES.ERROR, { message: err.message });
     }
 }

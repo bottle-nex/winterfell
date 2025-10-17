@@ -17,10 +17,9 @@ export default function Page() {
                 <Hero />
                 <Features />
                 <WhoWeAre />
-
                 <div ref={parallaxContainerRef} className="relative h-[200vh]">
                     <div className="sticky top-0 h-screen overflow-hidden">
-                        <Footer containerRef={parallaxContainerRef} />
+                        <Footer />
                     </div>
                 </div>
             </div>
