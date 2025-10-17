@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { motion, MotionValue, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import { LiaServicestack } from 'react-icons/lia';
 import { FaBolt, FaShieldAlt } from 'react-icons/fa';
 import { FaRust } from 'react-icons/fa6';
@@ -52,6 +52,9 @@ export default function Features() {
         offset: ['start start', 'end end'],
     });
 
+    // Memoize the subtitle opacity transform
+    const subtitleOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+
     return (
         <div ref={containerRef} className="relative bg-dark-base" style={{ height: '350vh' }}>
             <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
@@ -64,7 +67,7 @@ export default function Features() {
 
                 <motion.div
                     className="mt-26 flex flex-col w-full space-y-3 pointer-events-none"
-                    style={{ opacity: useTransform(scrollYProgress, [0, 0.2], [0, 1]) }}
+                    style={{ opacity: subtitleOpacity }}
                 >
                     <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-dark-base font-semibold">
                         Transform your blockchain ideas into&nbsp;
@@ -97,11 +100,10 @@ interface FeatureCardProps {
     icon: React.ElementType;
     color: string;
     index: number;
-    //@typescript-eslint/no-explicit-any
     scrollProgress: MotionValue<number>;
 }
 
-export function AnimatedFeatureCard({
+const AnimatedFeatureCard = React.memo(function AnimatedFeatureCard({
     topTitle,
     centerTitle,
     bottomTitle,
@@ -121,9 +123,11 @@ export function AnimatedFeatureCard({
 
     const timeline = [startAnimation, holdStart, holdEnd, vanishStart, Math.min(vanishEnd, 1)];
 
+    // Memoize random values so they don't change on re-render
     const randomRotate = React.useMemo(() => Math.random() * 20 - 10, []);
     const randomX = React.useMemo(() => Math.random() * 50 - 25, []);
 
+    // Call useTransform directly - they're already optimized by Framer Motion
     const y = useTransform(scrollProgress, timeline, [200, 0, 0, -30, -180]);
     const opacity = useTransform(scrollProgress, timeline, [0, 1, 1, 1, 0]);
     const rotate = useTransform(scrollProgress, [timeline[0], timeline[1]], [0, randomRotate]);
@@ -133,7 +137,7 @@ export function AnimatedFeatureCard({
         <motion.div
             style={{ y, opacity, rotate, x }}
             className="h-[20rem] w-[15rem] rounded-xl flex flex-col justify-center items-center 
-             bg-light border-2 border-neutral-800 backdrop-blur-xs shadow-lg shadow-black/20 relative p-4"
+             bg-light border-2 border-neutral-800 shadow-lg shadow-black/20 relative p-4 transform-gpu will-change-[transform,opacity]"
         >
             <div className="absolute top-2 right-3 text-sm text-dark-base tracking-wider">
                 {topTitle}
@@ -149,4 +153,4 @@ export function AnimatedFeatureCard({
             </div>
         </motion.div>
     );
-}
+});

@@ -7,12 +7,16 @@ export type StreamEventType =
     | 'COMPLETE'
     | 'ERROR';
 
-export enum STREAM_EVENT_ENUM {
-    START = 'START',
-    CONTEXT = 'CONTEXT',
+
+export enum FILE_STRUCTURE_TYPES {
     EDITING_FILE = 'EDITING_FILE',
-    PHASE = 'PHASE',
-    FILE_STRUCTURE = 'FILE_STRUCTURE',
+}
+
+export enum PHASE_TYPES {
+    THINKING = 'THINKING',
+    GENERATING = 'GENERATING',
+    BUILDING = 'BUILDING',
+    CREATING_FILES = 'CREATING_FILES',
     COMPLETE = 'COMPLETE',
     ERROR = 'ERROR',
 }
