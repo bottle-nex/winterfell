@@ -4,9 +4,11 @@ import CodeEditor from '../code/CodeEditor';
 
 export default function BuilderDashboard(): JSX.Element {
     return (
-        <div className="w-full flex-1 grid grid-cols-[30%_70%] bg-dark-base pb-4 pr-4 z-0">
+        <div className="w-full h-full grid grid-cols-[30%_70%] bg-dark-base z-0 overflow-hidden">
             <BuilderChats />
-            <CodeEditor />
+            <div className="pb-4 pr-4 h-full">
+                <CodeEditor />
+            </div>
         </div>
     );
 }
