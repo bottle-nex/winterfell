@@ -1,211 +1,350 @@
 import { GoogleGenAI } from '@google/genai';
+import Anthropic from '@anthropic-ai/sdk';
 import env from '../../configs/env';
 import { Response } from 'express';
 import { Chat, ChatRole, Message, prisma } from '@repo/database';
 import StreamParser from '../../services/stream_parser';
-import { STREAM_EVENT_ENUM } from '../../types/stream_event_types';
 import { SYSTEM_PROMPT } from '../../prompt/system';
 import { objectStore } from '../../services/init';
+import { logger } from '../../utils/logger';
+import {
+    FILE_STRUCTURE_TYPES,
+    PHASE_TYPES,
+    StartingData,
+    StreamEvent,
+    StreamEventData,
+} from '../../types/stream_event_types';
 
-interface CtxObject {
+type LLMProvider = 'gemini' | 'claude';
+
+interface GeminiMessage {
     role: 'user' | 'model';
     parts: {
         text: string;
     }[];
 }
 
+interface ClaudeMessage {
+    role: 'user' | 'assistant';
+    content: string;
+}
+
 export default class ContentGenerator {
-    public ai: GoogleGenAI;
-    public system_prompt: string;
+    public geminiAI: GoogleGenAI;
+    public claudeAI: Anthropic;
+    public systemPrompt: string;
     private parsers: Map<string, StreamParser>;
 
     constructor() {
-        this.system_prompt = SYSTEM_PROMPT;
-        this.ai = new GoogleGenAI({
+        this.systemPrompt = SYSTEM_PROMPT;
+
+        this.geminiAI = new GoogleGenAI({
             apiKey: env.SERVER_GEMINI_API_KEY,
         });
+
+        this.claudeAI = new Anthropic({
+            apiKey: env.SERVER_ANTHROPIC_API_KEY,
+        });
+
         this.parsers = new Map<string, StreamParser>();
     }
 
-    public async generate_initial_response(
+    public async generateInitialResponse(
         res: Response,
-        message: Message,
+        currentUserMessage: Message,
         chat: Chat & { messages: Message[] },
-        contract_id: string,
-    ) {
-        const parser = this.get_parser(contract_id, res);
-        this.generate_content_stream(res);
-
-        res.write(
-            `data: ${JSON.stringify({
-                type: STREAM_EVENT_ENUM.START,
-                data: {
-                    messageId: message.id,
-                    chatId: chat.id,
-                    contractId: contract_id,
-                    timestamp: Date.now(),
-                },
-            })}\n\n`,
-        );
-
+        contractId: string,
+        llmProvider: LLMProvider = 'gemini',
+    ): Promise<void> {
+        const parser = this.getParser(contractId, res);
+        this.createStream(res);
         try {
-            await this.generate_streaming_response(res, message, chat, parser);
+            await this.generateStreamingResponse(
+                res,
+                currentUserMessage,
+                chat,
+                contractId,
+                parser,
+                llmProvider,
+            );
 
             const generatedFiles = parser.getGeneratedFiles();
-            objectStore.uploadContractFiles(contract_id, generatedFiles);
+            objectStore.uploadContractFiles(contractId, generatedFiles);
             if (generatedFiles.length > 0) {
-                this.delete_parser(contract_id);
+                this.deleteParser(contractId);
                 res.end();
             } else {
                 throw new Error('No files were generated');
             }
         } catch (error) {
-            console.error('Error in generate_initial_response:', error);
-            this.sendSSE(res, STREAM_EVENT_ENUM.ERROR, {
-                message: 'Failed to generate response',
-                error: error instanceof Error ? error.message : 'Unknown error',
-            });
-
+            logger.error('Error in generateInitialResponse:', error);
             parser.reset();
-            this.delete_parser(contract_id);
+            this.deleteParser(contractId);
             res.end();
         }
     }
 
-    public async generate_streaming_response(
+    public async generateStreamingResponse(
         res: Response,
-        message: Message,
+        currentUserMessage: Message,
         chat: Chat & { messages: Message[] },
+        contractId: string,
+        parser: StreamParser,
+        llmProvider: LLMProvider = 'gemini',
+    ): Promise<string> {
+        if (llmProvider === 'claude') {
+            return this.generateClaudeStreamingResponse(
+                res,
+                currentUserMessage,
+                chat,
+                contractId,
+                parser,
+            );
+        } else {
+            return this.generateGeminiStreamingResponse(
+                res,
+                currentUserMessage,
+                chat,
+                contractId,
+                parser,
+            );
+        }
+    }
+
+    private async generateGeminiStreamingResponse(
+        res: Response,
+        currentUserMessage: Message,
+        chat: Chat & { messages: Message[] },
+        contractId: string,
         parser: StreamParser,
     ): Promise<string> {
-        const contents: CtxObject[] = [];
-        let full_response = '';
+        logger.info('gemini llm used');
+        const contents: GeminiMessage[] = [];
+        let fullResponse = '';
 
         try {
             contents.push({
                 role: 'user',
-                parts: [{ text: this.system_prompt }],
+                parts: [{ text: this.systemPrompt }],
             });
 
-            contents.push({
-                role: 'model',
-                parts: [
-                    {
-                        text: 'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
-                    },
-                ],
+            const llm_message = await prisma.message.create({
+                data: {
+                    content:
+                        'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
+                    chatId: chat.id,
+                    role: ChatRole.AI,
+                },
             });
+
+            const startingData: StartingData = {
+                phase: 'starting',
+                messageId: llm_message.id,
+                chatId: chat.id,
+                contractId: contractId,
+                timestamp: Date.now(),
+            };
+
+            this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
 
             for (const msg of chat.messages) {
-                contents.push({
-                    role: msg.role === 'USER' ? 'user' : 'model',
-                    parts: [{ text: msg.content }],
-                });
+                if (msg.role === ChatRole.AI || msg.role === ChatRole.USER) {
+                    contents.push({
+                        role: msg.role === 'USER' ? 'user' : 'model',
+                        parts: [{ text: msg.content }],
+                    });
+                }
             }
 
             contents.push({
                 role: 'user',
-                parts: [{ text: message.content }],
+                parts: [{ text: currentUserMessage.content }],
             });
 
-            const response = await this.ai.models.generateContentStream({
+            console.log('contents', contents);
+
+            const response = await this.geminiAI.models.generateContentStream({
                 model: 'gemini-2.0-flash-exp',
                 contents,
             });
 
+            let systemMessage = await prisma.message.create({
+                data: {
+                    chatId: chat.id,
+                    role: ChatRole.SYSTEM,
+                    content: 'starting to generate in a few seconds',
+                    buildStart: true,
+                },
+            });
+
             for await (const chunk of response) {
                 if (chunk.text) {
-                    full_response += chunk.text;
-                    parser.feed(chunk.text);
+                    fullResponse += chunk.text;
+                    parser.feed(chunk.text, systemMessage);
                 }
             }
 
-            await this.save_llm_response_to_db(full_response, chat.id);
-            return full_response;
-        } catch (llm_error) {
-            console.error('LLM Error:', llm_error);
-
-            res.write(
-                `data: ${JSON.stringify({
-                    type: 'error',
-                    data: {
-                        message: 'LLM generation failed',
-                        error: llm_error instanceof Error ? llm_error.message : 'Unknown error',
-                    },
-                    timestamp: Date.now(),
-                })}\n\n`,
-            );
-
-            throw llm_error;
+            await this.saveLLMResponseToDb(fullResponse, chat.id);
+            return fullResponse;
+        } catch (llmError) {
+            console.error('Gemini LLM Error:', llmError);
+            throw llmError;
         }
     }
 
-    private async save_llm_response_to_db(full_response: string, chat_id: string) {
+    private async generateClaudeStreamingResponse(
+        res: Response,
+        currentUserMessage: Message,
+        chat: Chat & { messages: Message[] },
+        contractId: string,
+        parser: StreamParser,
+    ): Promise<string> {
+        logger.info('claude llm used');
+        const messages: ClaudeMessage[] = [];
+        let fullResponse = '';
+
+        try {
+            const llm_message = await prisma.message.create({
+                data: {
+                    content:
+                        'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
+                    chatId: chat.id,
+                    role: ChatRole.AI,
+                },
+            });
+
+            const startingData: StartingData = {
+                phase: 'starting',
+                messageId: llm_message.id,
+                chatId: chat.id,
+                contractId: contractId,
+                timestamp: Date.now(),
+            };
+
+            this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
+
+            for (const msg of chat.messages) {
+                if (msg.role === ChatRole.AI || msg.role === ChatRole.USER) {
+                    messages.push({
+                        role: msg.role === 'USER' ? 'user' : 'assistant',
+                        content: msg.content,
+                    });
+                }
+            }
+
+            messages.push({
+                role: 'user',
+                content: currentUserMessage.content,
+            });
+
+            let systemMessage = await prisma.message.create({
+                data: {
+                    chatId: chat.id,
+                    role: ChatRole.SYSTEM,
+                    content: 'starting to generate in a few seconds',
+                    buildStart: true,
+                },
+            });
+
+            const stream = await this.claudeAI.messages.stream({
+                model: 'claude-sonnet-4-5-20250929',
+                max_tokens: 8096,
+                system: this.systemPrompt,
+                messages: messages,
+            });
+
+            for await (const event of stream) {
+                if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+                    const text = event.delta.text;
+                    fullResponse += text;
+                    parser.feed(text, systemMessage);
+                }
+            }
+
+            await this.saveLLMResponseToDb(fullResponse, chat.id);
+            return fullResponse;
+        } catch (llmError) {
+            console.error('Claude LLM Error:', llmError);
+            throw llmError;
+        }
+    }
+
+    private async saveLLMResponseToDb(fullResponse: string, chatId: string): Promise<void> {
         try {
             await prisma.message.create({
                 data: {
-                    chatId: chat_id,
+                    chatId: chatId,
                     role: ChatRole.AI,
-                    content: full_response,
+                    content: fullResponse,
                 },
             });
         } catch (error) {
-            console.error('error saving to database:', error);
+            console.error('Error saving to database:', error);
         }
     }
 
-    public generate_content_stream(res: Response) {
+    public createStream(res: Response): void {
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
-        res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+        res.setHeader('X-Accel-Buffering', 'no');
         res.flushHeaders();
     }
 
-    private get_parser(contract_id: string, res: Response): StreamParser {
-        if (!this.parsers.has(contract_id)) {
+    private getParser(contractId: string, res: Response): StreamParser {
+        if (!this.parsers.has(contractId)) {
             const parser = new StreamParser();
 
-            parser.on(STREAM_EVENT_ENUM.PHASE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.PHASE, data),
+            parser.on(PHASE_TYPES.THINKING, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.THINKING, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.EDITING_FILE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.EDITING_FILE, data),
+            parser.on(PHASE_TYPES.GENERATING, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.GENERATING, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.CONTEXT, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.CONTEXT, data),
+            parser.on(PHASE_TYPES.BUILDING, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.BUILDING, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.FILE_STRUCTURE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.FILE_STRUCTURE, data),
+            parser.on(PHASE_TYPES.CREATING_FILES, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.CREATING_FILES, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.COMPLETE, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.COMPLETE, data),
+            parser.on(PHASE_TYPES.COMPLETE, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.COMPLETE, data, systemMessage),
             );
 
-            parser.on(STREAM_EVENT_ENUM.ERROR, (data) =>
-                this.sendSSE(res, STREAM_EVENT_ENUM.ERROR, data),
+            parser.on(FILE_STRUCTURE_TYPES.EDITING_FILE, ({ data, systemMessage }) =>
+                this.sendSSE(res, FILE_STRUCTURE_TYPES.EDITING_FILE, data, systemMessage),
             );
 
-            this.parsers.set(contract_id, parser);
+            parser.on(PHASE_TYPES.ERROR, ({ data, systemMessage }) =>
+                this.sendSSE(res, PHASE_TYPES.ERROR, data, systemMessage),
+            );
+
+            this.parsers.set(contractId, parser);
         }
-        return this.parsers.get(contract_id)!;
+        return this.parsers.get(contractId)!;
     }
 
-    private delete_parser(contract_id: string) {
-        this.parsers.delete(contract_id);
+    private deleteParser(contractId: string): void {
+        this.parsers.delete(contractId);
     }
 
-    private sendSSE(res: Response, type: STREAM_EVENT_ENUM, data: any) {
-        res.write(
-            `data: ${JSON.stringify({
-                type,
-                data,
-                timestamp: Date.now(),
-            })}\n\n`,
-        );
+    private sendSSE(
+        res: Response,
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        data: StreamEventData,
+        systemMessage: Message,
+    ): void {
+        const event: StreamEvent = {
+            type,
+            data,
+            systemMessage: systemMessage as Message,
+            timestamp: Date.now(),
+        };
+
+        res.write(`data: ${JSON.stringify(event)}\n\n`);
     }
 }
