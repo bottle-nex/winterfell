@@ -8,6 +8,7 @@ interface CodeEditorState {
     currentCode: string;
     currentFile: FileNode | null;
     fileTree: FileNode[];
+    editedFiles: Record<string, FileNode>;
 
     setCurrentCode: (code: string) => void;
     updateFileContent: (fileId: string, content: string) => void;
@@ -15,12 +16,19 @@ interface CodeEditorState {
 }
 
 export const useCodeEditor = create<CodeEditorState>((set, get) => {
-    const debouncedSync = debounce(async (files: FileNode[]) => {
+    const debouncedSync = debounce(async () => {
+        const { editedFiles } = get();
+        const files = Object.values(editedFiles);
+
+        if(files.length === 0) return;
+
+
         await CodeEditorServer.syncFiles(files, 'pass-the-token-here');
         console.log(
             'Logging the files',
             files.map((f) => f.name),
         );
+        set({ editedFiles: {} });
     }, 1500);
 
     return {
@@ -94,35 +102,42 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                 ],
             },
         ],
+        editedFiles: {},
 
         setCurrentCode: (code: string) => {
             set({ currentCode: code });
         },
 
         updateFileContent: (fileId: string, content: string) => {
-            const { fileTree } = get();
+            const state = get();
 
-            const updateTree = (nodes: FileNode[]): FileNode[] =>
+            const updateNode = (nodes: FileNode[]): FileNode[] =>
                 nodes.map((n) =>
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                          ? { ...n, children: updateTree(n.children) }
+                          ? { ...n, children: updateNode(n.children) }
                           : n,
                 );
+            
+            const newTree = updateNode(state.fileTree);
 
-            const updatedTree = updateTree(fileTree);
-            set({ fileTree: updatedTree });
+            const file = findFileById(newTree, fileId);
+            if(!file) {
+                console.warn(`File with id: ${fileId} not found`);
+                set({ fileTree: newTree });
+                return;
+            }
+            const editedFiles = { ...state.editedFiles, [fileId]: file };
 
-            const updatedFile = findFileById(updatedTree, fileId);
-            if (updatedFile) debouncedSync([updatedFile]);
+            set({ fileTree: newTree, editedFiles });
         },
 
         selectFile: (node: FileNode) => {
             if (node.type === NODE.FILE) {
                 set({
                     currentFile: node,
-                    currentCode: node.content,
+                    currentCode: node.content ?? '',
                 });
             }
         },
