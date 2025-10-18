@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import { parse, z } from 'zod';
-
-const envSchema = z.object({
-   KUBERNETES_ENV: z.enum(['development', 'production']),
-   KUBERNETES_PORT: z.number(),
-=======
 import { z } from 'zod';
 import dotenv from 'dotenv';
 
@@ -13,7 +6,6 @@ dotenv.config({ path: '../../.env' });
 const envSchema = z.object({
    KUBERNETES_NODE_ENV: z.enum(['development', 'production']),
    KUBERNETES_PORT: z.string().transform((val) => parseInt(val, 10)),
->>>>>>> v2
    KUBERNETES_NAMESPACE: z.string().default('default'),
 });
 

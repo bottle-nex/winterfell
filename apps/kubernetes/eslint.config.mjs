@@ -1,19 +1,12 @@
-<<<<<<< HEAD
-// eslint.config.mjs
-=======
->>>>>>> v2
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
-<<<<<<< HEAD
-=======
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
->>>>>>> v2
 
 export default [
   js.configs.recommended,
@@ -26,13 +19,8 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-<<<<<<< HEAD
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
-=======
         project: './tsconfig.json',
         tsconfigRootDir: __dirname,
->>>>>>> v2
       },
     },
     plugins: {
@@ -48,8 +36,4 @@ export default [
     },
   },
   prettierConfig,
-<<<<<<< HEAD
-];
-=======
 ];;
->>>>>>> v2
