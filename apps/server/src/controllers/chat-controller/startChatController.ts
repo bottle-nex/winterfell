@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
-import { logger } from '../../utils/logger';
 
 export default async function startChatController(req: Request, res: Response) {
     const userId = req.user?.id;
-    logger.info(`userId: ${userId}`);
     if (!userId) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
@@ -78,7 +76,7 @@ export default async function startChatController(req: Request, res: Response) {
             },
         });
 
-        await contentGenerator.generate_initial_response(
+        await contentGenerator.generateInitialResponse(
             res,
             currentUserMessage,
             chat,

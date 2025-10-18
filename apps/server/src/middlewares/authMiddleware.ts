@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import env from '../configs/env';
 import jwt from 'jsonwebtoken';
-import { logger } from '../utils/logger';
 
 export default function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
@@ -32,7 +31,6 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
         });
         return;
     }
-    logger.info(`token: ${token}`);
     try {
         jwt.verify(token, secret, (err, decoded) => {
             if (err) {
@@ -42,7 +40,6 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
                 });
                 return;
             }
-            logger.info(`decoded: ${decoded}`);
             req.user = decoded as AuthUser;
             next();
         });

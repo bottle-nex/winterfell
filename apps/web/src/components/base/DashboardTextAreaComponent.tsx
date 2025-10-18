@@ -9,10 +9,12 @@ import { useRouter } from 'next/navigation';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
+import ModelSelect from './ModelSelect';
 
 export default function DashboardTextAreaComponent() {
     const [inputValue, setInputValue] = useState<string>('');
     const [isTyping, setIsTyping] = useState<boolean>(false);
+    const [model, setModel] = useState<'gemini' | 'claude'>('gemini');
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
     const { setMessage } = useBuilderChatStore();
@@ -27,13 +29,16 @@ export default function DashboardTextAreaComponent() {
         }
 
         const newChatId = uuid();
-
         setMessage({
+            id: uuid(),
+            chatId: newChatId,
             role: 'USER',
             content: inputValue,
+            buildProgress: false,
+            buildError: false,
+            buildStart: false,
+            buildComplete: false,
             createdAt: new Date(),
-            chatId: newChatId,
-            id: uuid(),
         });
 
         router.push(`/playground/${newChatId}`);
@@ -48,12 +53,7 @@ export default function DashboardTextAreaComponent() {
 
     return (
         <>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.6 }}
-                className="relative group"
-            >
+            <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-neutral-600/20 via-neutral-500/20 to-neutral-600/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <div className="relative bg-neutral-950 rounded-lg border border-neutral-800 overflow-hidden shadow-2xl">
@@ -109,6 +109,7 @@ export default function DashboardTextAreaComponent() {
 
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-neutral-800/50 bg-neutral-900/30">
                         <div className="flex items-center gap-3">
+                            <ModelSelect value={model} onChange={setModel} />
                             <Button
                                 type="button"
                                 className="group/btn bg-transparent hover:bg-transparent flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
@@ -150,9 +151,8 @@ export default function DashboardTextAreaComponent() {
                 </div>
 
                 <div className="absolute -bottom-px left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-600 to-transparent opacity-50" />
-            </motion.div>
+            </div>
 
-            {/* LoginModal rendered outside the main component structure */}
             <LoginModal opensignInModal={openLoginModal} setOpenSignInModal={setOpenLoginModal} />
         </>
     );

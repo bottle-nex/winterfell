@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Message" ALTER COLUMN "buildComplete" DROP NOT NULL,
+ALTER COLUMN "buildError" DROP NOT NULL,
+ALTER COLUMN "buildProgress" DROP NOT NULL,
+ALTER COLUMN "buildStart" DROP NOT NULL;

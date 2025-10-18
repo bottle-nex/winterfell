@@ -1,6 +1,23 @@
 import { Message, prisma, SystemMessageType } from '@repo/database';
 import { FileContent } from '../types/content_types';
-import { FILE_STRUCTURE_TYPES, PHASE_TYPES } from '../types/stream_event_types';
+import {
+    BuildingData,
+    CompleteData,
+    CreatingFilesData,
+    EditingFileData,
+    ErrorData,
+    FILE_STRUCTURE_TYPES,
+    GeneratingData,
+    PHASE_TYPES,
+    StreamEventData,
+    ThinkingData,
+} from '../types/stream_event_types';
+import { logger } from '../utils/logger';
+
+interface StreamEventPayload {
+    data: StreamEventData;
+    systemMessage: Message;
+}
 
 export default class StreamParser {
     private buffer: string;
@@ -9,9 +26,11 @@ export default class StreamParser {
     private currentCodeBlock: string;
     private insideCodeBlock: boolean;
     private isJsonBlock: boolean;
-    private eventHandlers: Map<PHASE_TYPES | FILE_STRUCTURE_TYPES, ((data: any) => void)[]> =
-        new Map();
-    private generatedFiles: FileContent[] = [];
+    private eventHandlers: Map<
+        PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        ((payload: StreamEventPayload) => void)[]
+    >;
+    private generatedFiles: FileContent[];
 
     constructor() {
         this.buffer = '';
@@ -21,24 +40,36 @@ export default class StreamParser {
         this.insideCodeBlock = false;
         this.isJsonBlock = false;
         this.generatedFiles = [];
+        this.eventHandlers = new Map();
     }
 
-    public on(type: PHASE_TYPES | FILE_STRUCTURE_TYPES, callback: (data: any) => void) {
-        if (!this.eventHandlers.has(type)) this.eventHandlers.set(type, []);
+    public on(
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        callback: (payload: StreamEventPayload) => void,
+    ): void {
+        if (!this.eventHandlers.has(type)) {
+            this.eventHandlers.set(type, []);
+        }
         this.eventHandlers.get(type)!.push(callback);
     }
 
-    private emit(type: PHASE_TYPES | FILE_STRUCTURE_TYPES, data?: any, system_message?: Message) {
+    private emit(
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        data: StreamEventData,
+        systemMessage: Message,
+    ): void {
         const handlers = this.eventHandlers.get(type);
-        if (handlers) handlers.forEach((fn) => fn({ data, systemMessage: system_message }));
+        if (handlers) {
+            handlers.forEach((fn) => fn({ data, systemMessage }));
+        }
     }
 
-    public feed(chunk: string, system_message: Message) {
+    public feed(chunk: string, systemMessage: Message): void {
         this.buffer += chunk;
-        this.processBuffer(system_message);
+        this.processBuffer(systemMessage);
     }
 
-    private async processBuffer(system_message: Message) {
+    private async processBuffer(systemMessage: Message): Promise<void> {
         const lines = this.buffer.split('\n');
         this.buffer = lines.pop() || '';
 
@@ -46,36 +77,66 @@ export default class StreamParser {
             const trimmed = line.trim();
 
             if (!trimmed && !this.insideCodeBlock) continue;
-
+            
             const phaseMatch = trimmed.match(/<phase>(.*?)<\/phase>/);
+            console.log("phase match is :", phaseMatch);
             if (phaseMatch && !this.insideCodeBlock) {
                 const phase = phaseMatch[1].trim();
-
                 switch (phase) {
-                    case 'thinking':
+                    case 'thinking': {
                         this.currentPhase = phase;
-                        this.emit(PHASE_TYPES.THINKING, { phase }, system_message);
+                        const data: ThinkingData = { phase: 'thinking' };
+                        this.emit(PHASE_TYPES.THINKING, data, systemMessage);
                         break;
-                    case 'generating':
+                    }
+                    case 'generating': {
                         this.currentPhase = phase;
-                        this.emit(PHASE_TYPES.GENERATING, { phase }, system_message);
+                        const data: GeneratingData = { phase: 'editing file' };
+                        this.emit(PHASE_TYPES.GENERATING, data, systemMessage);
                         break;
-                    case 'building':
+                    }
+                    case 'building': {
                         this.currentPhase = phase;
-                        this.emit(PHASE_TYPES.BUILDING, { phase }, system_message);
+                        systemMessage = await prisma.message.update({
+                            where: {
+                                id: systemMessage.id,
+                            },
+                            data: {
+                                buildProgress: true,
+                            },
+                        });
+                        const data: BuildingData = { phase: 'building' };
+                        this.emit(PHASE_TYPES.BUILDING, data, systemMessage);
                         break;
-                    case 'creating_files':
+                    }
+                    case 'creating_files': {
                         this.currentPhase = phase;
-                        this.emit(PHASE_TYPES.CREATING_FILES, { phase }, system_message);
+                        const data: CreatingFilesData = { phase: 'creating_files' };
+                        this.emit(PHASE_TYPES.CREATING_FILES, data, systemMessage);
                         break;
-                    case 'complete':
+                    }
+                    case 'complete': {
                         this.currentPhase = phase;
-                        this.emit(PHASE_TYPES.COMPLETE, { phase }, system_message);
+                        systemMessage = await prisma.message.update({
+                            where: {
+                                id: systemMessage.id,
+                            },
+                            data: {
+                                buildComplete: true,
+                            },
+                        });
+                        const data: CompleteData = { phase: 'complete' };
+                        this.emit(PHASE_TYPES.COMPLETE, data, systemMessage);
                         break;
-                    default:
-                        this.handleError(new Error('Invalid phase'));
+                    }
+                    default: {
+                        const errorData: ErrorData = {
+                            message: 'Invalid phase',
+                            error: `Unknown phase: ${phase}`,
+                        };
+                        this.handleError(new Error('Invalid phase'), errorData);
+                    }
                 }
-
                 continue;
             }
 
@@ -83,35 +144,17 @@ export default class StreamParser {
             if (fileMatch && !this.insideCodeBlock) {
                 const filePath = fileMatch[1].trim();
                 this.currentFile = filePath;
-                this.emit(
-                    FILE_STRUCTURE_TYPES.EDITING_FILE,
-                    {
-                        file: filePath,
-                        phase: this.currentPhase,
-                    },
-                    system_message,
-                );
+                const data: EditingFileData = {
+                    file: filePath,
+                    phase: this.currentPhase || 'unknown',
+                };
+                this.emit(FILE_STRUCTURE_TYPES.EDITING_FILE, data, systemMessage);
                 continue;
             }
 
             if (trimmed.startsWith('```')) {
                 if (this.insideCodeBlock) {
-                    if (this.isJsonBlock && this.currentPhase === 'complete') {
-                        try {
-                            const parsed = JSON.parse(this.currentCodeBlock.trim());
-                            system_message = await prisma.message.update({
-                                where: {
-                                    id: system_message.id,
-                                },
-                                data: {
-                                    systemType: SystemMessageType.BUILD_COMPLETE,
-                                    content: 'working on your command',
-                                },
-                            });
-                        } catch (e) {
-                            this.handleError(new Error('Invalid JSON structure format'));
-                        }
-                    } else if (this.currentFile) {
+                    if (this.currentFile) {
                         const content = this.currentCodeBlock.trimEnd();
                         this.generatedFiles.push({
                             path: this.currentFile,
@@ -123,7 +166,6 @@ export default class StreamParser {
                     this.isJsonBlock = false;
                     this.currentCodeBlock = '';
                 } else {
-                    // Opening code block
                     this.insideCodeBlock = true;
                     this.isJsonBlock = trimmed.startsWith('```json');
                     this.currentCodeBlock = '';
@@ -131,7 +173,6 @@ export default class StreamParser {
                 continue;
             }
 
-            // Accumulate code block content
             if (this.insideCodeBlock) {
                 this.currentCodeBlock += line + '\n';
                 continue;
@@ -143,7 +184,7 @@ export default class StreamParser {
         return this.generatedFiles;
     }
 
-    public reset() {
+    public reset(): void {
         this.buffer = '';
         this.currentFile = null;
         this.currentPhase = null;
@@ -153,7 +194,11 @@ export default class StreamParser {
         this.generatedFiles = [];
     }
 
-    public handleError(err: Error) {
-        this.emit(PHASE_TYPES.ERROR, { message: err.message });
+    public handleError(err: Error, errorData?: ErrorData): void {
+        const data: ErrorData = errorData || {
+            message: err.message,
+            error: err.name,
+        };
+        this.emit(PHASE_TYPES.ERROR, data, {} as Message);
     }
 }

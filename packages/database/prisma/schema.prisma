@@ -83,8 +83,10 @@ model Message {
   role    ChatRole
   content String   @db.Text
 
-  systemType SystemMessageType?
-  systemData Json?
+  buildProgress Boolean? @default(false)
+  buildError    Boolean? @default(false)
+  buildStart    Boolean? @default(false)
+  buildComplete Boolean? @default(false)
 
   createdAt DateTime @default(now())
 
