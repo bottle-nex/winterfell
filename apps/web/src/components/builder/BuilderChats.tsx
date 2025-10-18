@@ -25,6 +25,7 @@ export default function BuilderChats() {
         if (initialMessage) {
             startChat(initialMessage.content);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chatId]);
 
     async function startChat(message: string) {

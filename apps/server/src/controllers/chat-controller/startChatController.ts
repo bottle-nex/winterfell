@@ -8,7 +8,7 @@ export default async function startChatController(req: Request, res: Response) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
     }
-
+    console.log('userId', userId);
     const chatId = req.body.chatId as string;
     const message = req.body.message as string;
 
@@ -76,12 +76,7 @@ export default async function startChatController(req: Request, res: Response) {
             },
         });
 
-        await contentGenerator.generateInitialResponse(
-            res,
-            currentUserMessage,
-            chat,
-            contract.id,
-        );
+        await contentGenerator.generateInitialResponse(res, currentUserMessage, chat, contract.id);
     } catch (err) {
         console.error('Controller Error:', err);
         if (!res.headersSent) {
