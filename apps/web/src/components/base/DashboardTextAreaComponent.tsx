@@ -69,60 +69,6 @@ export default function DashboardTextAreaComponent() {
                                 <span>winterfell.dev</span>
                             </div>
                         </div>
-<<<<<<< HEAD
-                        <div className="flex items-center gap-2 text-neutral-500 text-xs font-mono h-full">
-                            <Terminal className="w-3.5 h-3.5" />
-                            <span>winterfell.dev</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-x-1.5 justify-center">
-                        <div
-                            className={cn(
-                                'w-1.5 h-1.5 rounded-full transition-colors duration-300 mb-0.5',
-                                isTyping
-                                    ? 'bg-green-500 shadow-lg shadow-green-500/50'
-                                    : 'bg-neutral-700',
-                            )}
-                        />
-                        <span className="text-xs text-neutral-600 font-mono">
-                            {isTyping ? 'active' : 'idle'}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="relative">
-                    <div className="absolute left-4 top-5 text-neutral-600 font-mono text-sm select-none">
-                        &gt;
-                    </div>
-                    <Textarea
-                        value={inputValue}
-                        onChange={(e) => {
-                            setInputValue(e.target.value);
-                            setIsTyping(e.target.value.length > 0);
-                        }}
-                        placeholder="create a counter program..."
-                        className={cn(
-                            'w-full h-28 bg-transparent pl-10 pr-4 py-5 text-neutral-200 border-0',
-                            'placeholder:text-neutral-800 placeholder:font-mono placeholder:text-sm resize-none',
-                            'focus:outline-none transition-all duration-200',
-                            'text-md tracking-wider',
-                            'caret-[#e6e0d4]',
-                        )}
-                        rows={3}
-                    />
-                </div>
-
-                <div className="flex items-center justify-between px-4 py-2.5 border-t border-neutral-800/50 bg-neutral-900/30">
-                    <div className="flex items-center gap-3">
-                        <Button className="group/btn bg-transparent hover:bg-transparent flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-300 transition-colors">
-                            <FileCode className="w-3.5 h-3.5 mb-0.5" />
-                            <span className="font-mono">templates</span>
-                        </Button>
-                        <div className="w-px h-3 bg-neutral-800" />
-                        <div className="flex items-center gap-1.5 text-xs text-neutral-600 font-mono">
-                            <span className={cn(inputValue.length > 200 && 'text-red-500')}>
-                                {inputValue.length}
-=======
                         <div className="flex items-center gap-x-1.5 justify-center">
                             <div
                                 className={cn(
@@ -134,7 +80,6 @@ export default function DashboardTextAreaComponent() {
                             />
                             <span className="text-xs text-neutral-600 font-mono">
                                 {isTyping ? 'active' : 'idle'}
->>>>>>> v2
                             </span>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import { JSX, useCallback } from 'react';
 import { Editor, Monaco } from '@monaco-editor/react';
 import Filetree from './Filetree';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import StatusBar from './StatusBar';
 
 export default function CodeEditor(): JSX.Element {
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
@@ -98,7 +99,7 @@ export default function CodeEditor(): JSX.Element {
 
     const { currentCode } = useCodeEditor();
     return (
-        <div className="w-full h-full flex z-10 border-neutral-800 border rounded-[4px] overflow-hidden">
+        <div className="w-full h-full flex z-10 border-neutral-800 border rounded-[4px] overflow-hidden relative">
             <Filetree />
             <Editor
                 height="100%"
@@ -107,6 +108,7 @@ export default function CodeEditor(): JSX.Element {
                 theme="clean-dark"
                 value={currentCode}
             />
+            <StatusBar/>
         </div>
     );
 }

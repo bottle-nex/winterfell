@@ -24,54 +24,6 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
         <div>
             {opensignInModal && (
                 <OpacityBackground onBackgroundClick={() => setOpenSignInModal(false)}>
-<<<<<<< HEAD
-                    <Card className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 z-50 bg-dark-base text-lightz">
-                        <div className="text-center space-y-2">
-                            <h2 className="text-2xl font-semibold text-light">
-                                Sign in to continue
-                            </h2>
-                            <p className="text-sm text-neutral-400 font-normal">
-                                Log in to access your personalized dashboard, track your quiz
-                                performance, and compete with others.
-                            </p>
-                        </div>
-
-                        <Button
-                            onClick={() => signinHandler('GOOGLE')}
-                            className="w-full flex items-center justify-center gap-3 px-6 py-[22px] text-sm font-medium bg-dark-base hover:bg-neutral-900 rounded-md border border-neutral-800 cursor-pointer"
-                        >
-                            <Image
-                                src="/images/google.png"
-                                height={24}
-                                width={24}
-                                alt="Google"
-                                priority
-                                unoptimized
-                            />
-                            <span className="text-light text-xs">Sign in with Google</span>
-                        </Button>
-
-                        <Button
-                            onClick={() => signinHandler('GITHUB')}
-                            className="w-full flex items-center justify-center gap-3 px-6 py-[22px] text-sm font-medium bg-dark-base hover:bg-neutral-900 rounded-md border border-neutral-800 cursor-pointer"
-                        >
-                            <FaGithub className="text-light text-[28px]" />
-                            <span className="text-light text-xs">Sign in with GitHub</span>
-                        </Button>
-
-                        <p className="text-xs text-neutral-400 text-center leading-relaxed">
-                            By signing in, you agree to our
-                            <span className="text-blue-400 hover:underline cursor-pointer">
-                                {' '}
-                                Terms of Service
-                            </span>{' '}
-                            and
-                            <span className="text-blue-400 hover:underline cursor-pointer">
-                                {' '}
-                                Privacy Policy
-                            </span>
-                        </p>
-=======
                     <Card className="w-full max-w-[420px] px-10 py-8 flex flex-col items-center justify-center z-50 bg-gradient-to-br from-[#150e2e] via-[#0a0a0a] to-[#0a0a0a] text-white rounded-[8px] relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-50 h-20 bg-gradient-to-r from-[#6640EF] to-transparent blur-xl opacity-30 pointer-events-none" />
 
@@ -103,7 +55,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
 
                             <Button
                                 onClick={() => signinHandler('GOOGLE')}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-5 text-sm font-medium bg-[#0f0f0f] hover:bg-[#141414] border border-neutral-800 rounded-full transition-all"
+                                className="w-full flex items-center justify-center gap-3 px-6 py-5 text-sm font-medium bg-[#0f0f0f] hover:bg-[#141414] border border-neutral-800 rounded-[8px] transition-all"
                             >
                                 <Image
                                     src="/Images/google.png"
@@ -120,7 +72,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
 
                             <Button
                                 onClick={() => signinHandler('GITHUB')}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-5 text-sm font-medium bg-[#0f0f0f] hover:bg-[#141414] border border-neutral-800 rounded-full transition-all"
+                                className="w-full flex items-center justify-center gap-3 px-6 py-5 text-sm font-medium bg-[#0f0f0f] hover:bg-[#141414] border border-neutral-800 rounded-[8px] transition-all"
                             >
                                 <FaGithub className="text-[#d4d8de] size-5" />
                                 <span className="text-[#d4d8de] text-sm tracking-wide">
@@ -143,7 +95,6 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                 </span>
                             </div>
                         </div>
->>>>>>> v2
                     </Card>
                 </OpacityBackground>
             )}
