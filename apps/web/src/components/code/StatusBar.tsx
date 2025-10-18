@@ -21,7 +21,7 @@ export default function StatusBar() {
     const helpScrollRef = useRef<HTMLDivElement>(null);
 
     const Prompt = () => (
-        <span className="text-green-400 select-none">
+        <span className="text-green-500 select-none">
             ➜ <span className="text-blue-400">~</span>
         </span>
     );
