@@ -1,5 +1,4 @@
-import { LiaServicestack } from "react-icons/lia";
-
+import { LiaServicestack } from 'react-icons/lia';
 
 export default function SubscriptionCard() {
     return (
@@ -8,9 +7,7 @@ export default function SubscriptionCard() {
                 Premium+
             </div>
             <div>
-                <div>
-
-                </div>
+                <div></div>
                 <div className="flex justify-between items-center">
                     <div className="flex justify-center items-center gap-x-2">
                         <div className="flex flex-col text-[8px] font-semibold">
@@ -18,12 +15,14 @@ export default function SubscriptionCard() {
                             <div>END</div>
                         </div>
                         <div className="text-xl">
-                            {new Date().getMonth() + "/" + new Date().getFullYear().toString().substring(2)}
+                            {new Date().getMonth() +
+                                '/' +
+                                new Date().getFullYear().toString().substring(2)}
                         </div>
                     </div>
                     <LiaServicestack className="text-primary size-14 transition-all duration-500" />
                 </div>
             </div>
         </div>
-    )
+    );
 }

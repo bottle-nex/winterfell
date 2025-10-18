@@ -18,13 +18,13 @@ router.post('/new', authMiddleware, startChatController);
 router.get('/files/:contractId', authMiddleware, getFilesController);
 
 // payment-routes
-router.post('/subscription/create-subscription-order', authMiddleware, createOrderController);
+router.post('/subscription/create-order', authMiddleware, createOrderController);
 router.post(
-    '/subscription/update-subscription',
+    '/subscription/update',
     authMiddleware,
     subscriptionMiddleware,
     updateSubscriptionController,
 );
-router.get('/subscription/plan', authMiddleware, getUserPlanController);
+router.get('/subscription/get-plan', authMiddleware, getUserPlanController);
 
 export default router;
