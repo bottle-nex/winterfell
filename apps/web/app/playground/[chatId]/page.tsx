@@ -2,21 +2,22 @@
 import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 interface PageProps {
     params: { chatId: string };
 }
 
-export default function Page({ params }: PageProps) {
+export default function Page({ params }: { params: Promise<{ chatId: string }>}) {
     const { cleanStore } = useBuilderChatStore();
+    const unwrappedParams = React.use(params);
+    const { chatId } = unwrappedParams;
 
     useEffect(() => {
         return () => {
             cleanStore();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params.chatId]);
+    }, [chatId]);
 
     return (
         <div className="h-screen w-screen flex flex-col overflow-hidden">

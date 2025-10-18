@@ -144,7 +144,7 @@ const AnimatedFeatureCard = React.memo(function AnimatedFeatureCard({
             </div>
 
             <div className="flex flex-col items-center gap-y-3 text-md text-dark-base">
-                <Icon className="text-4xl" style={{ color }} />
+                <Icon className="text-4xl drop-shadow-xs" style={{ color }} />
                 <span className="tracking-wide">{centerTitle}</span>
             </div>
 
