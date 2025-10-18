@@ -2,7 +2,8 @@
 import React, { useMemo } from 'react';
 import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
-import { useCodeEditor, FileNode, NODE } from '@/src/store/code/useCodeEditor';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { FileNode, NODE } from '@/src/types/prisma-types';
 import { AiFillFolder } from 'react-icons/ai';
 import { AiFillFolderOpen } from 'react-icons/ai';
 import FileIcon from '../tickers/FileIcon';
