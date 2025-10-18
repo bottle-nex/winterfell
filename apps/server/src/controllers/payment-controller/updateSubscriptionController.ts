@@ -4,7 +4,7 @@ import { prisma } from '@repo/database';
 
 export default async function updateSubscriptionController(req: Request, res: Response) {
     try {
-        const { paymentId, signature } = req.body;
+        const { orderId, paymentId, signature } = req.body;
         const user = req.user;
 
         if (!user) {
@@ -18,6 +18,7 @@ export default async function updateSubscriptionController(req: Request, res: Re
         const userSubscription = await prisma.subscription.findUnique({
             where: {
                 userId: user.id,
+                razorpayOrderId: orderId,
             },
         });
 
