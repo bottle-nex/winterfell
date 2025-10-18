@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 
 enum TerminalTabOptions {
     SHELL = 'shell',
-    HELP = 'help'
+    HELP = 'help',
 }
 
 export default function StatusBar() {
@@ -34,7 +34,7 @@ export default function StatusBar() {
         if (activeTab === TerminalTabOptions.HELP) {
             helpScrollRef.current?.scrollTo({
                 top: helpScrollRef.current.scrollHeight,
-                behavior: 'smooth'
+                behavior: 'smooth',
             });
         }
     }, [helpOutput, activeTab]);
@@ -42,17 +42,25 @@ export default function StatusBar() {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMac = navigator.platform.toUpperCase().includes('MAC');
-            const toggleKey = isMac ? e.metaKey && e.key.toLowerCase() === 'k' : e.ctrlKey && e.key.toLowerCase() === 'k';
-            const switchTabKey = isMac ? e.metaKey && e.key.toLowerCase() === 's' : e.ctrlKey && e.key.toLowerCase() === 's';
+            const toggleKey = isMac
+                ? e.metaKey && e.key.toLowerCase() === 'k'
+                : e.ctrlKey && e.key.toLowerCase() === 'k';
+            const switchTabKey = isMac
+                ? e.metaKey && e.key.toLowerCase() === 's'
+                : e.ctrlKey && e.key.toLowerCase() === 's';
 
             if (toggleKey) {
                 e.preventDefault();
-                setShowTerminal(prev => !prev);
+                setShowTerminal((prev) => !prev);
             }
 
             if (switchTabKey && showTerminal) {
                 e.preventDefault();
-                setActiveTab(prev => prev === TerminalTabOptions.SHELL ? TerminalTabOptions.HELP : TerminalTabOptions.SHELL);
+                setActiveTab((prev) =>
+                    prev === TerminalTabOptions.SHELL
+                        ? TerminalTabOptions.HELP
+                        : TerminalTabOptions.SHELL,
+                );
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -105,7 +113,7 @@ clear              Clear the terminal
             case '--hotkeys':
                 output = `Hot Keys:
 Ctrl/ Cmd + S          Switch Terminal Tabs
-Ctrl/ Cmd + K          Toggle shell`
+Ctrl/ Cmd + K          Toggle shell`;
                 break;
 
             case '--platform':
@@ -121,9 +129,9 @@ shell               shark`;
         }
 
         if (activeTab === TerminalTabOptions.SHELL) {
-            setLogs(prev => [...prev, `➜ ~ ${trimmed}`, output]);
+            setLogs((prev) => [...prev, `➜ ~ ${trimmed}`, output]);
         } else {
-            setHelpOutput(prev => [...prev, `➜ ~ ${trimmed}`, output]);
+            setHelpOutput((prev) => [...prev, `➜ ~ ${trimmed}`, output]);
         }
     };
 
@@ -136,7 +144,13 @@ shell               shark`;
         lines.length > 0 ? (
             lines.map((line, i) => (
                 <div key={i} className="whitespace-pre-wrap text-left">
-                    {line.startsWith("➜") ? line : <><Prompt /> <span className="ml-2">{line}</span></>}
+                    {line.startsWith('➜') ? (
+                        line
+                    ) : (
+                        <>
+                            <Prompt /> <span className="ml-2">{line}</span>
+                        </>
+                    )}
                 </div>
             ))
         ) : (
@@ -153,7 +167,10 @@ shell               shark`;
                     style={{ height }}
                 >
                     <div
-                        onMouseDown={(e) => { e.preventDefault(); setIsResizing(true); }}
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            setIsResizing(true);
+                        }}
                         className="cursor-ns-resize bg-dark-base text-light/50 py-1 px-4 border-b border-neutral-800 flex space-x-3 select-none"
                     >
                         <Button
@@ -176,8 +193,8 @@ shell               shark`;
                             className="flex-1 overflow-y-auto w-full p-3 pb-6 text-light/80 text-left"
                         >
                             {activeTab === TerminalTabOptions.SHELL
-                                ? renderOutput(logs, "All your logs will be displayed here")
-                                : renderOutput(helpOutput, "Type a command below or use --help")}
+                                ? renderOutput(logs, 'All your logs will be displayed here')
+                                : renderOutput(helpOutput, 'Type a command below or use --help')}
                         </div>
 
                         {activeTab === TerminalTabOptions.HELP && (
@@ -203,7 +220,7 @@ shell               shark`;
                 <div className="flex items-center space-x-3">
                     <div
                         className="flex items-center space-x-1.5 hover:bg-neutral-800/50 px-2 py-[2px] rounded-md cursor-pointer transition text-[11px]"
-                        onClick={() => setShowTerminal(prev => !prev)}
+                        onClick={() => setShowTerminal((prev) => !prev)}
                     >
                         <span className="font-bold text-light/50 tracking-wider">Ctrl/Cmd + K</span>
                         <span className="text-light/50 flex items-center space-x-1 tracking-widest">
@@ -224,4 +241,4 @@ shell               shark`;
             </div>
         </>
     );
-};
+}

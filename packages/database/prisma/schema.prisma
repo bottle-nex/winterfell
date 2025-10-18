@@ -88,6 +88,10 @@ model Message {
   buildStart    Boolean? @default(false)
   buildComplete Boolean? @default(false)
 
+
+  // isCodeBuilt Boolean? @default(false)
+  // buildStatus
+
   createdAt DateTime @default(now())
 
   @@index([chatId])

@@ -77,9 +77,9 @@ export default class StreamParser {
             const trimmed = line.trim();
 
             if (!trimmed && !this.insideCodeBlock) continue;
-            
+
             const phaseMatch = trimmed.match(/<phase>(.*?)<\/phase>/);
-            console.log("phase match is :", phaseMatch);
+            console.log('phase match is :', phaseMatch);
             if (phaseMatch && !this.insideCodeBlock) {
                 const phase = phaseMatch[1].trim();
                 switch (phase) {
