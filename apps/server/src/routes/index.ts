@@ -7,6 +7,7 @@ import createOrderController from '../controllers/payment-controller/createOrder
 import updateSubscriptionController from '../controllers/payment-controller/updateSubscriptionController';
 import subscriptionMiddleware from '../middlewares/subscriptionMiddleware';
 import getUserPlanController from '../controllers/payment-controller/getUserPlanController';
+import syncFilesController from '../controllers/files/syncFilesController';
 
 const router: Router = Router();
 
@@ -15,16 +16,20 @@ router.post('/sign-in', signInController);
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);
+
+// file-routes
 router.get('/files/:contractId', authMiddleware, getFilesController);
+// use this or write a ws layer to share directly to kubernetes
+router.get('/files/sync', authMiddleware, syncFilesController);
 
 // payment-routes
-router.post('/subscription/create-subscription-order', authMiddleware, createOrderController);
+router.post('/subscription/create-order', authMiddleware, createOrderController);
 router.post(
-    '/subscription/update-subscription',
+    '/subscription/update',
     authMiddleware,
     subscriptionMiddleware,
     updateSubscriptionController,
 );
-router.get('/subscription/plan', authMiddleware, getUserPlanController);
+router.get('/subscription/get-plan', authMiddleware, getUserPlanController);
 
 export default router;
