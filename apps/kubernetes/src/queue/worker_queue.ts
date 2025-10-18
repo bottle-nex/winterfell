@@ -1,17 +1,35 @@
 import { createClient, RedisClientType } from "redis";
+import Bull from 'bull';
+import { WORKER_QUEUE_TYPES } from "../types/worker_queue_types";
+import { pod_service } from "../services/init_services";
 
 
 export default class ServerToOrchestratorQueue {
-    private client: RedisClientType;
+    private client: Bull.Queue;
     private queue_name: string;
     private listening: boolean = false;
 
     constructor(queue_name: string) {
         this.queue_name = queue_name;
-        this.client = createClient({
-            url: 'redis://localhost:6379',
+        this.client = new Bull(queue_name, {redis: 'redis://localhost:6379'});
+        this.setup_queue_processors();
+    }
+
+    private setup_queue_processors() {
+        this.client.process(WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND)
+    }
+
+    private async anchor_build_command_processor(job: Bull.Job) {
+        const { codebase, userId, sessionId, projectName } = job.data;
+        // data -> code, userId, sessionId, projectName
+        const pod_name = await pod_service.create_pod({
+            userId,
+            sessionId,
+            projectName
         });
-        this.client.connect();
+         
+        
+
     }
 
     async listen(callback: (data: any) => Promise<void> | void) {
@@ -19,7 +37,7 @@ export default class ServerToOrchestratorQueue {
 
         while (this.listening) {
             try {
-                const result = await this.client.brPop(this.queue_name, 0);
+                const result = await this.client.process(this.queue_name, 0);
                 if (result) {
                     const value = (result as any).element || (Array.isArray(result) ? result[1] : null);
                     if (!value) return;
@@ -33,6 +51,8 @@ export default class ServerToOrchestratorQueue {
             }
         }
     }
+
+    async 
 
     stop() {
         this.listening = false;

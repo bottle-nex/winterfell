@@ -31,12 +31,9 @@ export default class PodService {
          const podName = response.metadata?.name as string;
 
          await this.wait_for_pod_running(podName, 60);
+         
+         return podName;
 
-         logger.debug('Pod created successfully', {
-            podName,
-            userId: req.userId,
-            sessionId: req.sessionId,
-         });
       } catch (err) {
          logger.error('Failed to create pod', {
             error: err instanceof Error ? err.message : String(err),
