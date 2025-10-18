@@ -24,7 +24,7 @@ export default class PodTemplate {
             containers: [
                {
                   name: 'anchor-dev',
-                  image: 'nginx',
+                  image: 'kantdocker1/winterfell-base-image:latest',
                   command: ['/bin/sh'],
                   args: ['-c', 'tail -f /dev/null'],
                   stdin: true,
