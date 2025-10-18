@@ -10,3 +10,6 @@ export const SUBSCRIPTION_URL = API_URL + '/subscription';
 export const CREATE_ORDER_URL = SUBSCRIPTION_URL + '/create-order';
 export const UPDATE_URL = SUBSCRIPTION_URL + '/update';
 export const GET_PLAN_URL = SUBSCRIPTION_URL + '/get-plan';
+
+export const FILES_URL = API_URL + '/files';
+export const SYNC_FILES_URL = FILES_URL + '/sync';
