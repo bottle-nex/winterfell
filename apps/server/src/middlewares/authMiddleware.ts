@@ -31,7 +31,6 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
         });
         return;
     }
-
     try {
         jwt.verify(token, secret, (err, decoded) => {
             if (err) {

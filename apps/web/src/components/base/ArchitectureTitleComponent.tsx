@@ -1,4 +1,4 @@
-import { motion, useInView, Variants } from 'framer-motion';
+import { AnimatePresence, motion, useInView, Variants } from 'framer-motion';
 import { useRef } from 'react';
 
 export default function ArchitectureTitleComponent() {
@@ -38,6 +38,7 @@ export default function ArchitectureTitleComponent() {
             ref={ref}
             className="h-[60vh] w-screen flex flex-col justify-center text-light gap-y-5 bg-[#0a0c0d] z-20"
         >
+<<<<<<< HEAD
             <motion.div
                 className="h-[90%] px-8 mt-8"
                 variants={containerVariants}
@@ -68,6 +69,33 @@ export default function ArchitectureTitleComponent() {
                 transition={{ duration: 1, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 style={{ transformOrigin: 'left' }}
             />
+=======
+            <AnimatePresence>
+                <motion.div
+                    className="h-[90%] px-8 mt-8"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate={isInView ? 'visible' : 'hidden'}
+                >
+                    <div className="w-full flex items-center justify-start border-b border-t border-primary overflow-hidden">
+                        <motion.span
+                            variants={textVariants}
+                            className="text-[7rem] font-semibold tracking-widest"
+                        >
+                            WINTERFELL&apos;s
+                        </motion.span>
+                    </div>
+                    <div className="w-full flex items-center justify-start border-b border-t border-primary overflow-hidden">
+                        <motion.span
+                            variants={textVariants}
+                            className="text-[7rem] ml-[24rem] font-semibold tracking-widest"
+                        >
+                            ARCHITECTURE
+                        </motion.span>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+>>>>>>> v2
         </div>
     );
 }
