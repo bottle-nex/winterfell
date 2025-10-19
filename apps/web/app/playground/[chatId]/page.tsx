@@ -9,7 +9,7 @@ interface PageProps {
     params: { chatId: string };
 }
 
-export default function Page({ params }: { params: Promise<{ chatId: string }>}) {
+export default function Page({ params }: { params: Promise<{ chatId: string }> }) {
     const { cleanStore } = useBuilderChatStore();
     const { reset} = useCodeEditor();
     const unwrappedParams = React.use(params);

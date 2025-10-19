@@ -33,11 +33,23 @@ export default function ModelSelect({ value, onChange }: ModelSelectProps) {
 
             <SelectContent className="bg-neutral-900 border-neutral-800 text-neutral-300">
                 <SelectItem value="gemini" className="text-xs flex items-center gap-2">
-                    <Image src="/icons/gemini.png" alt="Gemini" width={14} height={14} unoptimized />
+                    <Image
+                        src="/icons/gemini.png"
+                        alt="Gemini"
+                        width={14}
+                        height={14}
+                        unoptimized
+                    />
                     Gemini
                 </SelectItem>
                 <SelectItem value="claude" className="text-xs flex items-center gap-2">
-                    <Image src="/icons/claude.png" alt="Claude" width={14} height={14} unoptimized />
+                    <Image
+                        src="/icons/claude.png"
+                        alt="Claude"
+                        width={14}
+                        height={14}
+                        unoptimized
+                    />
                     Claude
                 </SelectItem>
             </SelectContent>
