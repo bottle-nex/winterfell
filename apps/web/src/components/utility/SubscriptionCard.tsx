@@ -128,7 +128,7 @@ function SubscriptionCard({ plan, price, features, isBest = false }: Subscriptio
 
 export default function SubscriptionPlans() {
     return (
-        <section className="w-full min-h-screen bg-[#0a0b0d] text-center text-white relative flex flex-col items-center justify-center z-10">
+        <section className="w-full min-h-screen bg-[#0a0b0d] text-center text-white relative flex flex-col items-center justify-center z-20">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
             <div className="relative z-10 my-32">
                 <h1 className="text-5xl font-extrabold tracking-tight text-light">
