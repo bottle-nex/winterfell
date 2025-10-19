@@ -1,4 +1,5 @@
 import { Message } from '@repo/database';
+import { STAGE } from './content_types';
 
 export type StreamEventType =
     | 'START'
@@ -35,6 +36,14 @@ export interface StartingData {
     timestamp?: number;
 }
 
+export interface ContextData {
+    context: string;
+}
+
+export interface StageData {
+    stage: string;
+}
+
 export interface GeneratingData {
     phase: 'editing file';
 }
@@ -63,6 +72,8 @@ export interface ErrorData {
 
 export type StreamEventData =
     | StartingData
+    | ContextData
+    | StageData
     | ThinkingData
     | GeneratingData
     | EditingFileData
@@ -72,7 +83,7 @@ export type StreamEventData =
     | ErrorData;
 
 export interface StreamEvent {
-    type: PHASE_TYPES | FILE_STRUCTURE_TYPES;
+    type: PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE;
     data: StreamEventData;
     systemMessage: Message;
     timestamp: number;

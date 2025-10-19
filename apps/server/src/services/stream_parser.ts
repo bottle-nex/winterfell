@@ -1,18 +1,20 @@
 import { Message, prisma, SystemMessageType } from '@repo/database';
-import { FileContent } from '../types/content_types';
+import { FileContent, STAGE } from '../types/content_types';
 import {
     BuildingData,
     CompleteData,
+    ContextData,
     CreatingFilesData,
     EditingFileData,
     ErrorData,
     FILE_STRUCTURE_TYPES,
     GeneratingData,
     PHASE_TYPES,
+    StageData,
     StreamEventData,
     ThinkingData,
 } from '../types/stream_event_types';
-import { logger } from '../utils/logger';
+import chalk from 'chalk';
 
 interface StreamEventPayload {
     data: StreamEventData;
@@ -27,10 +29,11 @@ export default class StreamParser {
     private insideCodeBlock: boolean;
     private isJsonBlock: boolean;
     private eventHandlers: Map<
-        PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE,
         ((payload: StreamEventPayload) => void)[]
     >;
     private generatedFiles: FileContent[];
+    private pendingContext: string | null = null;
 
     constructor() {
         this.buffer = '';
@@ -44,7 +47,7 @@ export default class StreamParser {
     }
 
     public on(
-        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE,
         callback: (payload: StreamEventPayload) => void,
     ): void {
         if (!this.eventHandlers.has(type)) {
@@ -54,7 +57,7 @@ export default class StreamParser {
     }
 
     private emit(
-        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE,
         data: StreamEventData,
         systemMessage: Message,
     ): void {
@@ -78,71 +81,43 @@ export default class StreamParser {
 
             if (!trimmed && !this.insideCodeBlock) continue;
 
+            // const contextRegex = /<\s*context\s*>([\s\S]*?)<\s*\/\s*context\s*>/i;
+            // console.log('context regex: ')
+            // const contextMatch = this.buffer.match(contextRegex);
+            // if (contextMatch && !this.insideCodeBlock) {
+            //     const context = contextMatch[1].trim();
+            //     console.log('the context:', chalk.red(context));
+
+            //     const data: ContextData = { context };
+            //     this.emit(STAGE.CONTEXT, data, systemMessage);
+
+            //     // Remove the matched portion from buffer so it's not reprocessed
+            //     this.buffer = this.buffer.replace(contextRegex, '');
+            //     continue;
+            // }
+
+            // if(this.handleContext(systemMessage)) continue;
+
+            const stageMatch = trimmed.match(/<stage>(.*?)<\/stage>/);
+            if (stageMatch && !this.insideCodeBlock) {
+                const stage = stageMatch[1].trim();
+                console.log('the stage: ', chalk.green(stage));
+                this.stageMatch(stage, systemMessage);
+                continue;
+            }
+
             const phaseMatch = trimmed.match(/<phase>(.*?)<\/phase>/);
-            console.log('phase match is :', phaseMatch);
             if (phaseMatch && !this.insideCodeBlock) {
                 const phase = phaseMatch[1].trim();
-                switch (phase) {
-                    case 'thinking': {
-                        this.currentPhase = phase;
-                        const data: ThinkingData = { phase: 'thinking' };
-                        this.emit(PHASE_TYPES.THINKING, data, systemMessage);
-                        break;
-                    }
-                    case 'generating': {
-                        this.currentPhase = phase;
-                        const data: GeneratingData = { phase: 'editing file' };
-                        this.emit(PHASE_TYPES.GENERATING, data, systemMessage);
-                        break;
-                    }
-                    case 'building': {
-                        this.currentPhase = phase;
-                        systemMessage = await prisma.message.update({
-                            where: {
-                                id: systemMessage.id,
-                            },
-                            data: {
-                                buildProgress: true,
-                            },
-                        });
-                        const data: BuildingData = { phase: 'building' };
-                        this.emit(PHASE_TYPES.BUILDING, data, systemMessage);
-                        break;
-                    }
-                    case 'creating_files': {
-                        this.currentPhase = phase;
-                        const data: CreatingFilesData = { phase: 'creating_files' };
-                        this.emit(PHASE_TYPES.CREATING_FILES, data, systemMessage);
-                        break;
-                    }
-                    case 'complete': {
-                        this.currentPhase = phase;
-                        systemMessage = await prisma.message.update({
-                            where: {
-                                id: systemMessage.id,
-                            },
-                            data: {
-                                buildComplete: true,
-                            },
-                        });
-                        const data: CompleteData = { phase: 'complete' };
-                        this.emit(PHASE_TYPES.COMPLETE, data, systemMessage);
-                        break;
-                    }
-                    default: {
-                        const errorData: ErrorData = {
-                            message: 'Invalid phase',
-                            error: `Unknown phase: ${phase}`,
-                        };
-                        this.handleError(new Error('Invalid phase'), errorData);
-                    }
-                }
+                console.log('the phase: ', chalk.yellow(phase));
+                await this.phaseMatch(phase, systemMessage);
                 continue;
             }
 
             const fileMatch = trimmed.match(/<file>(.*?)<\/file>/);
             if (fileMatch && !this.insideCodeBlock) {
                 const filePath = fileMatch[1].trim();
+                console.log('the file path: ', chalk.magenta(filePath));
                 this.currentFile = filePath;
                 const data: EditingFileData = {
                     file: filePath,
@@ -176,6 +151,123 @@ export default class StreamParser {
             if (this.insideCodeBlock) {
                 this.currentCodeBlock += line + '\n';
                 continue;
+            }
+        }
+        this.handleContext(systemMessage);
+    }
+
+    private handleContext(systemMessage: Message): boolean {
+        // Match <context> ... </context> even if tags are split with newlines
+        const contextRegex = /<\s*\n?\s*context\s*\n?\s*>([\s\S]*?)<\s*\/\s*\n?\s*context\s*>/i;
+
+        const match = this.buffer.match(contextRegex);
+        if (match) {
+            const context = match[1].trim();
+            console.log('the context:', chalk.red(context));
+
+            const data: ContextData = { context };
+            this.emit(STAGE.CONTEXT, data, systemMessage);
+
+            // Remove matched portion
+            this.buffer = this.buffer.replace(contextRegex, '');
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    private async stageMatch(stage: string, systemMessage: Message) {
+
+        switch (stage) {
+            case 'Planning':
+                // this.currentStage = stage;
+                this.emit(STAGE.PLANNING, { stage }, systemMessage);
+                break;
+
+            case 'Generating Code':
+                this.emit(STAGE.GENERATING_CODE, { stage }, systemMessage);
+                break;
+
+            case 'Building':
+                this.emit(STAGE.BUILDING, { stage }, systemMessage);
+                break;
+
+            case 'Creating Files':
+                this.emit(STAGE.CREATING_FILES, { stage }, systemMessage);
+                break;
+
+            case 'Finalizing':
+                this.emit(STAGE.FINALIZING, { stage }, systemMessage);
+                break;
+
+            default:
+                const errorData: ErrorData = {
+                    message: 'Invalid stage',
+                    error: `Unknown stage ${stage}`,
+                };
+                this.handleError(new Error('Invalid stage'), errorData);
+                break;
+        }
+
+    }
+
+    private async phaseMatch(phase: string, systemMessage: Message) {
+
+        switch (phase) {
+            case 'thinking': {
+                this.currentPhase = phase;
+                const data: ThinkingData = { phase: 'thinking' };
+                this.emit(PHASE_TYPES.THINKING, data, systemMessage);
+                break;
+            }
+            case 'generating': {
+                this.currentPhase = phase;
+                const data: GeneratingData = { phase: 'editing file' };
+                this.emit(PHASE_TYPES.GENERATING, data, systemMessage);
+                break;
+            }
+            case 'building': {
+                this.currentPhase = phase;
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        buildProgress: true,
+                    },
+                });
+                const data: BuildingData = { phase: 'building' };
+                this.emit(PHASE_TYPES.BUILDING, data, systemMessage);
+                break;
+            }
+            case 'creating_files': {
+                this.currentPhase = phase;
+                const data: CreatingFilesData = { phase: 'creating_files' };
+                this.emit(PHASE_TYPES.CREATING_FILES, data, systemMessage);
+                break;
+            }
+            case 'complete': {
+                this.currentPhase = phase;
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        buildComplete: true,
+                    },
+                });
+                const data: CompleteData = { phase: 'complete' };
+                this.emit(PHASE_TYPES.COMPLETE, data, systemMessage);
+                break;
+            }
+            default: {
+                const errorData: ErrorData = {
+                    message: 'Invalid phase',
+                    error: `Unknown phase: ${phase}`,
+                };
+                this.handleError(new Error('Invalid phase'), errorData);
             }
         }
     }

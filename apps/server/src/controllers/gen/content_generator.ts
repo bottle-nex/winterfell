@@ -14,6 +14,7 @@ import {
     StreamEvent,
     StreamEventData,
 } from '../../types/stream_event_types';
+import { STAGE } from '../../types/content_types';
 
 type LLMProvider = 'gemini' | 'claude';
 
@@ -161,8 +162,6 @@ export default class ContentGenerator {
                 parts: [{ text: currentUserMessage.content }],
             });
 
-            console.log('contents', contents);
-
             const response = await this.geminiAI.models.generateContentStream({
                 model: 'gemini-2.0-flash-exp',
                 contents,
@@ -179,6 +178,7 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
+                    // console.log(chunk.text);
                     fullResponse += chunk.text;
                     parser.feed(chunk.text, systemMessage);
                 }
@@ -323,6 +323,30 @@ export default class ContentGenerator {
                 this.sendSSE(res, PHASE_TYPES.ERROR, data, systemMessage),
             );
 
+            parser.on(STAGE.CONTEXT, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.CONTEXT, data, systemMessage),
+            );
+
+            parser.on(STAGE.PLANNING, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.PLANNING, data, systemMessage),
+            );
+
+            parser.on(STAGE.GENERATING_CODE, ({ data, systemMessage }) =>
+                this.sendSSE(res, STAGE.GENERATING_CODE, data, systemMessage),
+            );
+
+            parser.on(STAGE.BUILDING, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.BUILDING, data, systemMessage),
+            );
+
+            parser.on(STAGE.CREATING_FILES, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.CREATING_FILES, data, systemMessage),
+            );
+
+            parser.on(STAGE.FINALIZING, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.FINALIZING, data, systemMessage),
+            );
+
             this.parsers.set(contractId, parser);
         }
         return this.parsers.get(contractId)!;
@@ -334,7 +358,7 @@ export default class ContentGenerator {
 
     private sendSSE(
         res: Response,
-        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE,
         data: StreamEventData,
         systemMessage: Message,
     ): void {

@@ -3,15 +3,15 @@ import { prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
 
 export default async function startChatController(req: Request, res: Response) {
-    const userId = req.user?.id;
-    if (!userId) {
-        res.status(401).json({ error: 'Unauthorized' });
-        return;
-    }
+    // const userId = req.user?.id;
+    // if (!userId) {
+    //     res.status(401).json({ error: 'Unauthorized' });
+    //     return;
+    // }
+    const userId = 'cmgwq5oau0000fl20fxtb9o2u';
     console.log('userId', userId);
     const chatId = req.body.chatId as string;
-    const message = req.body.message as string;
-
+    const message = req.body.message as string
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
         res.status(400).json({ error: 'Message is required' });
         return;
