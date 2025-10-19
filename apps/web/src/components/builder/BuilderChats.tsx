@@ -6,12 +6,14 @@ import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { CHAT_URL } from '@/routes/api_routes';
-import { PHASE_TYPES, StreamEvent } from '@/src/types/stream_event_types';
+import { FILE_STRUCTURE_TYPES, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
 import BuilderChatSystemMessage from './BuilderChatSystemMessage';
 import { IoIosOptions } from 'react-icons/io';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
 export default function BuilderChats() {
     const { messages, upsertMessage, setPhase } = useBuilderChatStore();
+    const { parseFileStructure } = useCodeEditor()
     const { session } = useUserSessionStore();
     const params = useParams();
     const chatId = params.chatId as string;
@@ -66,45 +68,111 @@ export default function BuilderChats() {
                         const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
 
                         const data: StreamEvent = JSON.parse(jsonString);
+                        console.log(data);
 
                         switch (data.type) {
-                            case PHASE_TYPES.STARTING:
-                                upsertMessage(data.systemMessage);
-                                if ('phase' in data.data) {
-                                    setPhase(data.data.phase);
-                                }
+                            case STAGE.START:
+                                // giving you a priority and starting to think
+                                console.log(data.data);
                                 break;
+                            
+                            case STAGE.CONTEXT:
+                                // show the message data.data
+                                upsertMessage({
+                                    id: 'fasdf2',
+                                    content: data.data.context || '',
+                                })
+                                console.log(data.data.context);
+                                break;
+
+                            case STAGE.PLANNING:
+                                // show the card with planning
+                                console.log(data.data);
+                                break;
+                            
+                            case STAGE.GENERATING_CODE:
+                                // show generating code in the card and accept phase now onwards
+                                console.log(data.data);
+                                break;
+
                             case PHASE_TYPES.THINKING:
-                                upsertMessage(data.systemMessage);
-                                if ('phase' in data.data) {
-                                    setPhase(data.data.phase);
-                                }
+                                // thinking
+                                console.log(data.data);
                                 break;
+
                             case PHASE_TYPES.GENERATING:
-                                upsertMessage(data.systemMessage);
-                                if ('phase' in data.data) {
-                                    setPhase(data.data.phase);
-                                }
+                                // generating
+                                console.log(data.data);
                                 break;
-                            case PHASE_TYPES.BUILDING:
-                                upsertMessage(data.systemMessage);
-                                if ('phase' in data.data) {
-                                    setPhase(data.data.phase);
-                                }
+
+                            case FILE_STRUCTURE_TYPES.EDITING_FILE:
+                                // show what file is getting edited
+                                console.log(data.data);
                                 break;
-                            case PHASE_TYPES.CREATING_FILES:
-                                upsertMessage(data.systemMessage);
-                                if ('phase' in data.data) {
-                                    setPhase(data.data.phase);
-                                }
-                                break;
+
                             case PHASE_TYPES.COMPLETE:
-                                upsertMessage(data.systemMessage);
-                                if ('phase' in data.data) {
-                                    setPhase(data.data.phase);
-                                }
+                                // all phase completed
+                                console.log(data.data);
+                                break;
+
+                            case STAGE.BUILDING:
+                                // show building code in the card
+                                console.log(data.data);
+                                break;
+
+                            case STAGE.CREATING_FILES:
+                                // show creating file structure
+                                console.log(data.data);
+                                break;
+
+                            case STAGE.FINALIZING:
+                                // show finalizing the code base
+                                console.log(data.data);
+                                break;
+
+                            case STAGE.END:
+                                const parsedFileData = parseFileStructure(data.data.data);
                                 break;
                         }
+
+                        // switch (data.type) {
+                        //     case PHASE_TYPES.STARTING:
+                        //         upsertMessage(data.systemMessage);
+                        //         if ('phase' in data.data) {
+                        //             setPhase(data.data.phase);
+                        //         }
+                        //         break;
+                        //     case PHASE_TYPES.THINKING:
+                        //         upsertMessage(data.systemMessage);
+                        //         if ('phase' in data.data) {
+                        //             setPhase(data.data.phase);
+                        //         }
+                        //         break;
+                        //     case PHASE_TYPES.GENERATING:
+                        //         upsertMessage(data.systemMessage);
+                        //         if ('phase' in data.data) {
+                        //             setPhase(data.data.phase);
+                        //         }
+                        //         break;
+                        //     case PHASE_TYPES.BUILDING:
+                        //         upsertMessage(data.systemMessage);
+                        //         if ('phase' in data.data) {
+                        //             setPhase(data.data.phase);
+                        //         }
+                        //         break;
+                        //     case PHASE_TYPES.CREATING_FILES:
+                        //         upsertMessage(data.systemMessage);
+                        //         if ('phase' in data.data) {
+                        //             setPhase(data.data.phase);
+                        //         }
+                        //         break;
+                        //     case PHASE_TYPES.COMPLETE:
+                        //         upsertMessage(data.systemMessage);
+                        //         if ('phase' in data.data) {
+                        //             setPhase(data.data.phase);
+                        //         }
+                        //         break;
+                        // }
                     } catch {
                         console.error('Failed to parse stream chunk:', line);
                     }

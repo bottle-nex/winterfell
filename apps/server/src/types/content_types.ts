@@ -13,13 +13,14 @@ export interface FileNode {
 }
 
 export enum STAGE {
-    THINKING = 'THINKING',
-    ANALYZING = 'ANALYZING',
-    GENERATING = 'GENERATING',
-    STRUCTURING = 'STRUCTURING',
+    START = 'START',
+    CONTEXT = 'CONTEXT',
+    PLANNING = 'PLANNING',
+    GENERATING_CODE = 'GENERATING_CODE',
     BUILDING = 'BUILDING',
-    COMPLETE = 'COMPLETE',
-    ERROR = 'ERROR',
+    CREATING_FILES = 'CREATING_FILES',
+    FINALIZING = 'FINALIZING',
+    END = 'END',
 }
 
 export interface ContextEventData {
