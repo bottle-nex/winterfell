@@ -1,68 +1,34 @@
-# Multi-stage build for optimized Anchor environment
-FROM rust:1.78-slim AS rust-builder
+# Lightweight Anchor development image - minimal overhead
+FROM --platform=linux/amd64 debian:bookworm-slim
 
-# Install build dependencies
+# Install only essential dependencies
 RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    libudev-dev \
-    build-essential \
-    git \
     curl \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Solana CLI with error checking
-ENV SOLANA_VERSION=1.18.22
-RUN curl -sSfL https://release.solana.com/v${SOLANA_VERSION}/install | sh && \
-    test -f /root/.local/share/solana/install/active_release/bin/solana || \
-    (echo "Solana installation failed"; exit 1)
-
-# Install Anchor CLI
-ENV ANCHOR_VERSION=0.30.1
-RUN cargo install --git https://github.com/coral-xyz/anchor --tag v${ANCHOR_VERSION} anchor-cli --locked --force
-
-# Stage 2: Final lightweight runtime image
-FROM rust:1.78-slim
-RUN apt-get update && apt-get install -y \
     ca-certificates \
     libssl3 \
-    libudev1 \
-    curl \
-    jq \
-    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Solana from builder - ensure the full directory structure
-COPY --from=rust-builder /root/.local/share/solana /root/.local/share/solana
+# Install Rust (minimal, no docs)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.78.0 --profile minimal
+ENV PATH="/root/.cargo/bin:$PATH"
 
-# Copy Anchor and Rust tools from builder
-COPY --from=rust-builder /root/.cargo /root/.cargo
+# Install Solana CLI
+RUN bash -c 'curl -sSfL https://release.solana.com/v1.18.22/install | sh' || \
+    bash -c 'curl -sSfL https://release.solana.com/stable/install | sh'
+ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
 
-# Set up environment paths (explicitly in ENV so they persist)
-ENV PATH="/root/.local/share/solana/install/active_release/bin:/root/.cargo/bin:$PATH"
-ENV ANCHOR_WALLET="/root/.config/solana/id.json"
+# Install Anchor CLI (just the binary, no extra tools)
+RUN cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 anchor-cli --locked
 
-# Create workspace directory
+# Minimal config
 WORKDIR /workspace
-
-# Copy mount script
-COPY scripts/mount-code.sh /usr/local/bin/mount-code
-RUN chmod +x /usr/local/bin/mount-code
-
-# Create Solana config directory and generate a keypair
 RUN mkdir -p /root/.config/solana && \
     solana-keygen new --no-bip39-passphrase -o /root/.config/solana/id.json -s && \
     solana config set --url localhost
 
-# Verify installations
-RUN solana --version && \
-    anchor --version && \
-    rustc --version
+ENV ANCHOR_WALLET="/root/.config/solana/id.json"
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD anchor --version || exit 1
+# Verify
+RUN solana --version && anchor --version
 
-# Default command
 CMD ["/bin/bash"]
