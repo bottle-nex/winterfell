@@ -73,31 +73,18 @@ export default class StreamParser {
     }
 
     private async processBuffer(systemMessage: Message): Promise<void> {
+
+        if (this.pendingContext !== null || this.buffer.includes('<')) {
+            this.handleContext(systemMessage);
+        }
+
         const lines = this.buffer.split('\n');
         this.buffer = lines.pop() || '';
-
         for (const line of lines) {
             const trimmed = line.trim();
-
             if (!trimmed && !this.insideCodeBlock) continue;
 
-            // const contextRegex = /<\s*context\s*>([\s\S]*?)<\s*\/\s*context\s*>/i;
-            // console.log('context regex: ')
-            // const contextMatch = this.buffer.match(contextRegex);
-            // if (contextMatch && !this.insideCodeBlock) {
-            //     const context = contextMatch[1].trim();
-            //     console.log('the context:', chalk.red(context));
-
-            //     const data: ContextData = { context };
-            //     this.emit(STAGE.CONTEXT, data, systemMessage);
-
-            //     // Remove the matched portion from buffer so it's not reprocessed
-            //     this.buffer = this.buffer.replace(contextRegex, '');
-            //     continue;
-            // }
-
-            // if(this.handleContext(systemMessage)) continue;
-
+            // Handle stages
             const stageMatch = trimmed.match(/<stage>(.*?)<\/stage>/);
             if (stageMatch && !this.insideCodeBlock) {
                 const stage = stageMatch[1].trim();
@@ -106,6 +93,7 @@ export default class StreamParser {
                 continue;
             }
 
+            // Handle phases
             const phaseMatch = trimmed.match(/<phase>(.*?)<\/phase>/);
             if (phaseMatch && !this.insideCodeBlock) {
                 const phase = phaseMatch[1].trim();
@@ -114,6 +102,7 @@ export default class StreamParser {
                 continue;
             }
 
+            // Handle files
             const fileMatch = trimmed.match(/<file>(.*?)<\/file>/);
             if (fileMatch && !this.insideCodeBlock) {
                 const filePath = fileMatch[1].trim();
@@ -127,8 +116,10 @@ export default class StreamParser {
                 continue;
             }
 
+            // Handle code blocks
             if (trimmed.startsWith('```')) {
                 if (this.insideCodeBlock) {
+                    // Closing code block
                     if (this.currentFile) {
                         const content = this.currentCodeBlock.trimEnd();
                         this.generatedFiles.push({
@@ -136,11 +127,11 @@ export default class StreamParser {
                             content: content,
                         });
                     }
-
                     this.insideCodeBlock = false;
                     this.isJsonBlock = false;
                     this.currentCodeBlock = '';
                 } else {
+                    // Opening code block
                     this.insideCodeBlock = true;
                     this.isJsonBlock = trimmed.startsWith('```json');
                     this.currentCodeBlock = '';
@@ -153,30 +144,61 @@ export default class StreamParser {
                 continue;
             }
         }
-        this.handleContext(systemMessage);
+
+        // After processing lines, check again if buffer contains context start
+        if (this.buffer.includes('<')) {
+            this.handleContext(systemMessage);
+        }
     }
 
     private handleContext(systemMessage: Message): boolean {
-        // Match <context> ... </context> even if tags are split with newlines
-        const contextRegex = /<\s*\n?\s*context\s*\n?\s*>([\s\S]*?)<\s*\/\s*\n?\s*context\s*>/i;
+        // If already accumulating context from previous chunk
+        if (this.pendingContext !== null) {
+            this.pendingContext += '\n' + this.buffer;
+            const endMatch = this.pendingContext.match(/<\/\s*context\s*>/i);
+            if (endMatch) {
 
-        const match = this.buffer.match(contextRegex);
-        if (match) {
-            const context = match[1].trim();
-            console.log('the context:', chalk.red(context));
+                // Full context block found
+                const content = this.pendingContext.replace(/<\s*context\s*>/i, '').replace(/<\/\s*context\s*>/i, '').trim();
 
-            const data: ContextData = { context };
-            this.emit(STAGE.CONTEXT, data, systemMessage);
+                console.log('the context:', chalk.red(content));
+                // store content in the backend, call the database-queue
 
-            // Remove matched portion
-            this.buffer = this.buffer.replace(contextRegex, '');
-            return true;
+                this.emit(STAGE.CONTEXT, { context: content }, systemMessage);
+
+                this.pendingContext = null;
+                this.buffer = '';
+                return true;
+            } else {
+                this.buffer = '';
+                return false;
+            }
+        }
+
+        // Look for start tag
+        const startMatch = this.buffer.match(/<\s*context\s*>/i);
+        if (startMatch) {
+
+            const rest = this.buffer.split(startMatch[0])[1] || '';
+            const endMatch = rest.match(/<\/\s*context\s*>/i);
+
+            if (endMatch) {
+                // Full context in one buffer
+                const content = rest.split(endMatch[0])[0].trim();
+                this.emit(STAGE.CONTEXT, { context: content }, systemMessage);
+
+                this.buffer = rest.split(endMatch[0]).slice(1).join(endMatch[0]);
+                return true;
+            } else {
+                // Start tag found, but no end yet — begin accumulation
+                this.pendingContext = rest;
+                this.buffer = this.buffer.split(startMatch[0])[0]; // keep content before <context>
+                return false;
+            }
         }
 
         return false;
     }
-
-
 
     private async stageMatch(stage: string, systemMessage: Message) {
 

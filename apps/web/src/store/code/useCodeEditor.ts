@@ -2,6 +2,7 @@ import { anchor_toml, cargo_toml, lib_rs, my_program_ts } from '@/src/lib/code/d
 import debounce from '@/src/lib/debounce';
 import CodeEditorServer from '@/src/lib/server/code-editor-server';
 import { FileNode, NODE } from '@/src/types/prisma-types';
+import { FileContent } from '@/src/types/stream_event_types';
 import { create } from 'zustand';
 
 interface CodeEditorState {
@@ -13,6 +14,7 @@ interface CodeEditorState {
     setCurrentCode: (code: string) => void;
     updateFileContent: (fileId: string, content: string) => void;
     selectFile: (node: FileNode) => void;
+    parseFileStructure: (files: FileContent[]) => FileNode;
 }
 
 export const useCodeEditor = create<CodeEditorState>((set, get) => {
@@ -20,7 +22,7 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
         const { editedFiles } = get();
         const files = Object.values(editedFiles);
 
-        if(files.length === 0) return;
+        if (files.length === 0) return;
 
 
         await CodeEditorServer.syncFiles(files, 'pass-the-token-here');
@@ -116,14 +118,14 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                          ? { ...n, children: updateNode(n.children) }
-                          : n,
+                            ? { ...n, children: updateNode(n.children) }
+                            : n,
                 );
-            
+
             const newTree = updateNode(state.fileTree);
 
             const file = findFileById(newTree, fileId);
-            if(!file) {
+            if (!file) {
                 console.warn(`File with id: ${fileId} not found`);
                 set({ fileTree: newTree });
                 return;
@@ -141,6 +143,46 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                 });
             }
         },
+
+        parseFileStructure: (files: FileContent[]) => {
+            const root: FileNode = {
+                id: "root",
+                name: "root",
+                type: NODE.FOLDER,
+                children: [],
+            };
+
+            for (const { path, content } of files) {
+                const parts = path.split("/").filter(Boolean);
+                let current = root;
+
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i];
+                    const isFile = i === parts.length - 1;
+
+                    let existing = current.children?.find((child) => child.name === part);
+
+                    if (!existing) {
+                        existing = {
+                            id: crypto.randomUUID(),
+                            name: part,
+                            type: isFile ? NODE.FILE : NODE.FOLDER,
+                            ...(isFile ? { content } : { children: [] }),
+                        };
+                        current.children!.push(existing);
+                    } else if (isFile && content) {
+                        // Update content if re-parsed
+                        existing.content = content;
+                    }
+
+                    current = existing;
+                }
+            }
+
+            set({ fileTree: [root] });
+            return root;
+        },
+
     };
 });
 
