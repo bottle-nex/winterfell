@@ -70,7 +70,6 @@ export default class ContentGenerator {
             );
 
             const generatedFiles = parser.getGeneratedFiles();
-            console.log(generatedFiles);
             this.sendSSE(res, STAGE.END, { data: generatedFiles });
             objectStore.uploadContractFiles(contractId, generatedFiles);
             if (generatedFiles.length > 0) {

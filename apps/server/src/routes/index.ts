@@ -15,7 +15,7 @@ const router: Router = Router();
 router.post('/sign-in', signInController);
 
 // code-routes
-router.post('/new', startChatController);
+router.post('/new', authMiddleware, startChatController);
 
 // file-routes
 router.get('/files/:contractId', authMiddleware, getFilesController);
