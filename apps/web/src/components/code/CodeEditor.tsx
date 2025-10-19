@@ -7,6 +7,8 @@ import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import StatusBar from './StatusBar';
 
 export default function CodeEditor(): JSX.Element {
+
+
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
             base: 'vs-dark',
@@ -106,9 +108,12 @@ export default function CodeEditor(): JSX.Element {
                 language={'rust'}
                 beforeMount={handleEditorWillMount}
                 theme="clean-dark"
+                options={{
+                    readOnly: true,
+                }}
                 value={currentCode}
             />
-            <StatusBar/>
+            <StatusBar />
         </div>
     );
 }

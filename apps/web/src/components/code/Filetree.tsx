@@ -68,7 +68,11 @@ export default function Filetree() {
                     canDropOnFolder={false}
                     canReorderItems={false}
                     onSelectItems={(items) => {
+                        console.log('Selected items:', items);
                         const itemId = items[0];
+                        console.log('Selected item ID:', itemId);
+                        console.log('Current fileTree:', fileTree);
+
                         if (itemId && itemId !== 'root') {
                             const findNode = (nodes: FileNode[], id: string): FileNode | null => {
                                 for (const node of nodes) {
@@ -81,6 +85,8 @@ export default function Filetree() {
                                 return null;
                             };
                             const node = findNode(fileTree, itemId as string);
+                            console.log('Found node:', node);
+
                             if (node && node.type === NODE.FILE) {
                                 selectFile(node);
                             }
