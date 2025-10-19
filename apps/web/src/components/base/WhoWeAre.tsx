@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, MotionValue, useScroll, useTransform } from "framer-motion";
 import { FaRust } from "react-icons/fa";
 import ArchitectureTitleComponent from "./ArchitectureTitleComponent";
 import FeatureOne from "./FeatureOne";
@@ -59,7 +59,7 @@ export default function WhoWeAre() {
     );
 }
 
-function RustLogo({ scrollYProgress }: { scrollYProgress: any }) {
+function RustLogo({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
     const waveY = useTransform(scrollYProgress, [0, 1], [300, 0]);
 
     return (
