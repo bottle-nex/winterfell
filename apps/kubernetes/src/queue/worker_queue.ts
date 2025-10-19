@@ -1,66 +1,66 @@
-import { createClient, RedisClientType } from "redis";
-import Bull from 'bull';
-import { WORKER_QUEUE_TYPES } from "../types/worker_queue_types";
-import { pod_service } from "../services/init_services";
-
+import Bull, { Job } from 'bull';
+import { WORKER_QUEUE_TYPES } from '../types/worker_queue_types';
+import { pod_service } from '../services/init_services';
+import { logger } from '../utils/logger';
 
 export default class ServerToOrchestratorQueue {
-    private client: Bull.Queue;
-    private queue_name: string;
-    private listening: boolean = false;
+   private client: Bull.Queue;
 
-    constructor(queue_name: string) {
-        this.queue_name = queue_name;
-        this.client = new Bull(queue_name, {redis: 'redis://localhost:6379'});
-        this.setup_queue_processors();
-    }
+   constructor(queue_name: string) {
+      this.client = new Bull(queue_name, { redis: 'redis://localhost:6379' });
+      this.setup_queue_processors();
+   }
 
-    private setup_queue_processors() {
-        this.client.process(WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND)
-    }
+   private setup_queue_processors() {
+      this.client.process(
+         WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND,
+         this.run_command_on_pod.bind(this, ['anchor', 'build']),
+      );
 
-    private async anchor_build_command_processor(job: Bull.Job) {
-        const { codebase, userId, sessionId, projectName } = job.data;
-        // data -> code, userId, sessionId, projectName
-        const pod_name = await pod_service.create_pod({
-            userId,
-            sessionId,
-            projectName
-        });
-         
-        
+      this.client.process(
+         WORKER_QUEUE_TYPES.ANCHOR_TEST_COMMAND,
+         this.run_command_on_pod.bind(this, ['anchor', 'test']),
+      );
 
-    }
+      this.client.process(
+         WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND,
+         this.run_command_on_pod.bind(this, ['anchor', 'deploy']),
+      );
+   }
 
-    async listen(callback: (data: any) => Promise<void> | void) {
-        this.listening = true;
+   private async run_command_on_pod(
+      command: string[],
+      job: Job,
+   ): Promise<{ success: boolean; stdout: string; stderr: string }> {
+      const { userId, sessionId, projectName } = job.data;
 
-        while (this.listening) {
-            try {
-                const result = await this.client.process(this.queue_name, 0);
-                if (result) {
-                    const value = (result as any).element || (Array.isArray(result) ? result[1] : null);
-                    if (!value) return;
-                    const parsed = JSON.parse(value);
-                    console.log(`Pulled data: `, parsed);
-                    await callback(parsed);
-                }
-            } catch (err) {
-                console.error('Error while listening data: ', err);
-                await new Promise(res => setTimeout(res, 1000));
-            }
-        }
-    }
+      // copy codebase to pod
 
-    async 
+      const pod_name = await pod_service.create_pod({ userId, sessionId, projectName });
 
-    stop() {
-        this.listening = false;
-    }
+      try {
+         pod_service.stream_logs(
+            pod_name,
+            (chunk) => logger.info(`[${pod_name}] ${chunk}`),
+            (chunk) => logger.error(`[${[pod_name]}] ${chunk}`),
+         );
 
-    public async disconnect() {
-        this.listening = false;
-        await this.client.quit();
-    }
+         const result = await pod_service.execute_command(pod_name, command);
 
+         return {
+            success: true,
+            stdout: result.stdout,
+            stderr: result.stderr,
+         };
+      } catch (error) {
+         logger.error(`Command ${command.join(' ')} failed`, error);
+         throw error;
+      } finally {
+         await pod_service.delete_pod(userId, sessionId);
+      }
+   }
+
+   public async disconnect(): Promise<void> {
+      await this.client.close();
+   }
 }

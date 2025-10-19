@@ -93,32 +93,31 @@ function SelectLabel({ className, ...props }: React.ComponentProps<typeof Select
 }
 
 function SelectItem({
-  className,
-  children,
-  ...props
+    className,
+    children,
+    ...props
 }: React.ComponentProps<typeof SelectPrimitive.Item>) {
-  return (
-    <SelectPrimitive.Item
-      data-slot="select-item"
-      className={cn(
-        "relative flex w-full cursor-pointer items-center gap-2 rounded-[4px] py-1.5 pr-8 pl-2 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
-        // Highlighted (hover/focus)
-        "data-[highlighted]:bg-neutral-800 data-[highlighted]:text-neutral-100",
-        "data-[state=checked]:bg-neutral-700 data-[state=checked]:text-neutral-200",
-        className
-      )}
-      {...props}
-    >
-      <span className="absolute right-2 flex size-3.5 items-center justify-center">
-        <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
-        </SelectPrimitive.ItemIndicator>
-      </span>
-      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-    </SelectPrimitive.Item>
-  );
+    return (
+        <SelectPrimitive.Item
+            data-slot="select-item"
+            className={cn(
+                "relative flex w-full cursor-pointer items-center gap-2 rounded-[4px] py-1.5 pr-8 pl-2 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+                // Highlighted (hover/focus)
+                'data-[highlighted]:bg-neutral-800 data-[highlighted]:text-neutral-100',
+                'data-[state=checked]:bg-neutral-700 data-[state=checked]:text-neutral-200',
+                className,
+            )}
+            {...props}
+        >
+            <span className="absolute right-2 flex size-3.5 items-center justify-center">
+                <SelectPrimitive.ItemIndicator>
+                    <CheckIcon className="size-4" />
+                </SelectPrimitive.ItemIndicator>
+            </span>
+            <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+        </SelectPrimitive.Item>
+    );
 }
-
 
 function SelectSeparator({
     className,

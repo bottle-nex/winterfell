@@ -1,4 +1,3 @@
-
 // lib.rs file data
 export const lib_rs = `use anchor_lang::prelude::*;
 

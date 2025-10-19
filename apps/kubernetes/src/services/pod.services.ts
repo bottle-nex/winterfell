@@ -1,12 +1,13 @@
 import { V1Pod } from '@kubernetes/client-node';
 import { env } from '../configs/env.config';
 import { k8s_config } from '../configs/kubernetes.config';
-import { CreatePodRequest, PodInfo } from '../types/k8_types';
+import { CreatePodRequest } from '../types/k8_types';
 import PodTemplate from '../utils/pod-templates';
 import { logger } from '../utils/logger';
 
 export default class PodService {
-   private namespace: string = env.KUBERNETES_NAMESPACE;
+   public namespace: string = env.KUBERNETES_NAMESPACE;
+   private container_name: string = '';
 
    public async create_pod(req: CreatePodRequest) {
       try {
@@ -31,9 +32,8 @@ export default class PodService {
          const podName = response.metadata?.name as string;
 
          await this.wait_for_pod_running(podName, 60);
-         
-         return podName;
 
+         return podName;
       } catch (err) {
          logger.error('Failed to create pod', {
             error: err instanceof Error ? err.message : String(err),
@@ -183,5 +183,31 @@ export default class PodService {
          default:
             return 'unknown';
       }
+   }
+
+   public async execute_command(
+      pod_name: string,
+      command: string[],
+   ): Promise<{ stdout: string; stderr: string }> {
+      return k8s_config.exec_command_in_pod({
+         namespace: this.namespace,
+         pod_name,
+         container_name: this.container_name,
+         command,
+      });
+   }
+
+   public async stream_logs(
+      pod_name: string,
+      onData: (chunk: string) => void,
+      onError: (chunk: string) => void,
+   ) {
+      return k8s_config.stream_pod_logs({
+         namespace: this.namespace,
+         pod_name,
+         container_name: this.container_name,
+         onData,
+         onError,
+      });
    }
 }
