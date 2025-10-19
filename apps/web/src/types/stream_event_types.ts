@@ -1,4 +1,4 @@
-import { Message } from "@repo/database";
+import { Message } from '@repo/database';
 
 export enum FILE_STRUCTURE_TYPES {
     EDITING_FILE = 'EDITING_FILE',

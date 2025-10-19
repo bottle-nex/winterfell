@@ -9,16 +9,21 @@ enum TerminalTabOptions {
     HELP = 'help',
 }
 
+interface Line {
+    type: 'command' | 'output';
+    text: string;
+}
+
 export default function StatusBar() {
     const [showTerminal, setShowTerminal] = useState<boolean>(false);
     const [height, setHeight] = useState<number>(220);
     const [isResizing, setIsResizing] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<TerminalTabOptions>(TerminalTabOptions.SHELL);
-    const [logs, setLogs] = useState<string[]>([]);
-    const [helpOutput, setHelpOutput] = useState<string[]>([]);
+    const [logs, setLogs] = useState<Line[]>([]);
+    const [helpLogs, setHelpLogs] = useState<Line[]>([]);
     const [input, setInput] = useState<string>('');
+    const outputRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const helpScrollRef = useRef<HTMLDivElement>(null);
 
     const Prompt = () => (
         <span className="text-green-500 select-none">
@@ -28,16 +33,14 @@ export default function StatusBar() {
 
     useEffect(() => {
         inputRef.current?.focus();
-    }, [activeTab, showTerminal]);
+    }, [showTerminal, activeTab]);
 
     useEffect(() => {
-        if (activeTab === TerminalTabOptions.HELP) {
-            helpScrollRef.current?.scrollTo({
-                top: helpScrollRef.current.scrollHeight,
-                behavior: 'smooth',
-            });
-        }
-    }, [helpOutput, activeTab]);
+        outputRef.current?.scrollTo({
+            top: outputRef.current.scrollHeight,
+            behavior: 'smooth',
+        });
+    }, [logs, helpLogs, input]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,6 +70,7 @@ export default function StatusBar() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [showTerminal]);
 
+    // Resize terminal
     useEffect(() => {
         const doResize = (e: MouseEvent) => {
             if (!isResizing) return;
@@ -91,6 +95,7 @@ export default function StatusBar() {
         };
     }, [isResizing]);
 
+    // Handle commands
     const handleCommand = (command: string) => {
         const trimmed = command.trim();
         if (!trimmed) return;
@@ -98,10 +103,9 @@ export default function StatusBar() {
         let output = '';
         switch (trimmed) {
             case 'clear':
-                setLogs([]);
-                setHelpOutput([]);
+                if (activeTab === TerminalTabOptions.SHELL) setLogs([]);
+                else setHelpLogs([]);
                 return;
-
             case '--help':
                 output = `Available commands:
 clear              Clear the terminal
@@ -109,63 +113,63 @@ clear              Clear the terminal
 --platform         Show platform details
 --hotkeys          Show hot keys/ shortcuts`;
                 break;
-
             case '--hotkeys':
                 output = `Hot Keys:
 Ctrl/ Cmd + S          Switch Terminal Tabs
 Ctrl/ Cmd + K          Toggle shell`;
                 break;
-
             case '--platform':
                 output = `Platform details:
 portal              Winterfell
 version             1.0.0
-shell               shark`;
+shell               winterfell`;
                 break;
-
             default:
-                output = `shark: command not found: ${trimmed}. Try --help`;
+                output = `winterfell: command not found: ${trimmed}. Try --help`;
                 break;
         }
 
-        if (activeTab === TerminalTabOptions.SHELL) {
-            setLogs((prev) => [...prev, `➜ ~ ${trimmed}`, output]);
-        } else {
-            setHelpOutput((prev) => [...prev, `➜ ~ ${trimmed}`, output]);
+        const targetLogs = activeTab === TerminalTabOptions.SHELL ? logs : helpLogs;
+        const setTargetLogs = activeTab === TerminalTabOptions.SHELL ? setLogs : setHelpLogs;
+
+        setTargetLogs([
+            ...targetLogs,
+            { type: 'command', text: trimmed },
+            { type: 'output', text: output },
+        ]);
+    };
+
+    const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleCommand(input);
+            setInput('');
         }
     };
 
-    const handleEnter = () => {
-        handleCommand(input);
-        setInput('');
-    };
-
-    const renderOutput = (lines: string[], emptyMsg: string) =>
-        lines.length > 0 ? (
-            lines.map((line, i) => (
-                <div key={i} className="whitespace-pre-wrap text-left">
-                    {line.startsWith('➜') ? (
-                        line
-                    ) : (
-                        <>
-                            <Prompt /> <span className="ml-2">{line}</span>
-                        </>
-                    )}
-                </div>
-            ))
-        ) : (
-            <div className="text-light/60 text-left">
-                <Prompt /> <span className="ml-2">{emptyMsg}</span>
+    const renderLines = (lines: Line[]) =>
+        lines.map((line, i) => (
+            <div key={i} className="whitespace-pre-wrap text-left">
+                {line.type === 'command' ? (
+                    <>
+                        <Prompt /> <span className="ml-2">{line.text}</span>
+                    </>
+                ) : (
+                    <span className="ml-6">{line.text}</span>
+                )}
             </div>
-        );
+        ));
+
+    const activeLogs = activeTab === TerminalTabOptions.SHELL ? logs : helpLogs;
 
     return (
         <>
             {showTerminal && (
                 <div
-                    className="absolute bottom-6 left-0 w-full bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 z-10 font-mono transition-[height] duration-100"
+                    className="absolute bottom-6 left-0 w-full bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 z-10 font-mono flex flex-col"
                     style={{ height }}
                 >
+                    {/* Tabs */}
                     <div
                         onMouseDown={(e) => {
                             e.preventDefault();
@@ -175,43 +179,45 @@ shell               shark`;
                     >
                         <Button
                             onClick={() => setActiveTab(TerminalTabOptions.SHELL)}
-                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] ${activeTab === TerminalTabOptions.SHELL ? 'text-light/70 border-b border-light/70' : 'text-light/50'}`}
+                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] ${
+                                activeTab === TerminalTabOptions.SHELL
+                                    ? 'text-light/70 border-b border-light/70'
+                                    : 'text-light/50'
+                            }`}
                         >
                             SHELL
                         </Button>
                         <Button
                             onClick={() => setActiveTab(TerminalTabOptions.HELP)}
-                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none ${activeTab === TerminalTabOptions.HELP ? 'text-light/70 border-b border-light/70' : 'text-light/50'}`}
+                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none ${
+                                activeTab === TerminalTabOptions.HELP
+                                    ? 'text-light/70 border-b border-light/70'
+                                    : 'text-light/50'
+                            }`}
                         >
                             ACTIONS
                         </Button>
                     </div>
 
-                    <div className="relative flex flex-col h-[calc(100%-20px)]">
-                        <div
-                            ref={activeTab === TerminalTabOptions.HELP ? helpScrollRef : null}
-                            className="flex-1 overflow-y-auto w-full p-3 pb-6 text-light/80 text-left"
-                        >
-                            {activeTab === TerminalTabOptions.SHELL
-                                ? renderOutput(logs, 'All your logs will be displayed here')
-                                : renderOutput(helpOutput, 'Type a command below or use --help')}
-                        </div>
+                    <div
+                        ref={outputRef}
+                        className="flex-1 overflow-y-auto px-3 py-2 text-light/80 flex flex-col"
+                    >
+                        {renderLines(activeLogs)}
 
-                        {activeTab === TerminalTabOptions.HELP && (
-                            <div className="px-3 py-2 flex">
-                                <Prompt />
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleEnter()}
-                                    autoFocus
-                                    className="bg-transparent outline-none flex-1 text-light/80 caret-green-400 ml-2"
-                                    placeholder="type a command..."
-                                />
-                            </div>
-                        )}
+                        <div className="flex mt-1">
+                            <Prompt />
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleEnter}
+                                className="bg-transparent outline-none flex-1 text-light/80 caret-green-400 ml-2"
+                                placeholder="type a command or use --help"
+                                autoFocus
+                            />
+                        </div>
                     </div>
                 </div>
             )}

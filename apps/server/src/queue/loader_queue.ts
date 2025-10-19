@@ -1,4 +1,4 @@
-import { createClient, RedisClientType } from "redis";
+import { createClient, RedisClientType } from 'redis';
 
 export class ServerToOrchestratorQueue {
     private client: RedisClientType;
@@ -20,5 +20,4 @@ export class ServerToOrchestratorQueue {
     disconnect() {
         this.client.quit();
     }
-
 }

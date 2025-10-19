@@ -1,10 +1,8 @@
-import { prisma } from "@repo/database";
-import { Request, Response } from "express";
-
+import { prisma } from '@repo/database';
+import { Request, Response } from 'express';
 
 export default async function syncFilesController(req: Request, res: Response) {
     try {
-
         const user = req.user;
 
         if (!user) {
@@ -33,7 +31,6 @@ export default async function syncFilesController(req: Request, res: Response) {
         }
 
         // now upload the files to s3 and send this changed data to the kubernetes cluster, so that it can change the data in the container as well
-
     } catch (error) {
         console.error('Error while syncing files: ', error);
         res.status(500).json({
