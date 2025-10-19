@@ -1,4 +1,5 @@
 import { Message } from '@repo/database';
+import { FileContent, STAGE } from './content_types';
 
 export type StreamEventType =
     | 'START'
@@ -28,11 +29,19 @@ export interface ThinkingData {
 }
 
 export interface StartingData {
-    phase: 'starting';
+    stage: 'starting';
     messageId?: string;
     chatId?: string;
     contractId?: string;
     timestamp?: number;
+}
+
+export interface ContextData {
+    context: string;
+}
+
+export interface StageData {
+    stage: string;
 }
 
 export interface GeneratingData {
@@ -61,18 +70,25 @@ export interface ErrorData {
     error?: string;
 }
 
+export interface EndData {
+    data: FileContent[];
+}
+
 export type StreamEventData =
     | StartingData
+    | ContextData
+    | StageData
     | ThinkingData
     | GeneratingData
     | EditingFileData
     | BuildingData
     | CreatingFilesData
     | CompleteData
+    | EndData
     | ErrorData;
 
 export interface StreamEvent {
-    type: PHASE_TYPES | FILE_STRUCTURE_TYPES;
+    type: PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE;
     data: StreamEventData;
     systemMessage: Message;
     timestamp: number;

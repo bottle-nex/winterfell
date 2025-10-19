@@ -14,6 +14,7 @@ import {
     StreamEvent,
     StreamEventData,
 } from '../../types/stream_event_types';
+import { STAGE } from '../../types/content_types';
 
 type LLMProvider = 'gemini' | 'claude';
 
@@ -69,6 +70,8 @@ export default class ContentGenerator {
             );
 
             const generatedFiles = parser.getGeneratedFiles();
+            console.log(generatedFiles);
+            this.sendSSE(res, STAGE.END, { data: generatedFiles });
             objectStore.uploadContractFiles(contractId, generatedFiles);
             if (generatedFiles.length > 0) {
                 this.deleteParser(contractId);
@@ -128,24 +131,33 @@ export default class ContentGenerator {
                 parts: [{ text: this.systemPrompt }],
             });
 
-            const llm_message = await prisma.message.create({
-                data: {
-                    content:
-                        'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
-                    chatId: chat.id,
-                    role: ChatRole.AI,
-                },
-            });
+            // const llm_message = await prisma.message.create({
+            //     data: {
+            //         content:
+            //             'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
+            //         chatId: chat.id,
+            //         role: ChatRole.AI,
+            //     },
+            // });
+
+            // const startingData: StartingData = {
+            //     phase: 'starting',
+            //     messageId: llm_message.id,
+            //     chatId: chat.id,
+            //     contractId: contractId,
+            //     timestamp: Date.now(),
+            // };
+
+            // this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
 
             const startingData: StartingData = {
-                phase: 'starting',
-                messageId: llm_message.id,
+                stage: 'starting',
                 chatId: chat.id,
                 contractId: contractId,
                 timestamp: Date.now(),
-            };
+            }
 
-            this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
+            this.sendSSE(res, STAGE.START, startingData);
 
             for (const msg of chat.messages) {
                 if (msg.role === ChatRole.AI || msg.role === ChatRole.USER) {
@@ -160,8 +172,6 @@ export default class ContentGenerator {
                 role: 'user',
                 parts: [{ text: currentUserMessage.content }],
             });
-
-            console.log('contents', contents);
 
             const response = await this.geminiAI.models.generateContentStream({
                 model: 'gemini-2.0-flash-exp',
@@ -179,6 +189,7 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
+                    // console.log(chunk.text);
                     fullResponse += chunk.text;
                     parser.feed(chunk.text, systemMessage);
                 }
@@ -214,7 +225,7 @@ export default class ContentGenerator {
             });
 
             const startingData: StartingData = {
-                phase: 'starting',
+                stage: 'starting',
                 messageId: llm_message.id,
                 chatId: chat.id,
                 contractId: contractId,
@@ -323,6 +334,30 @@ export default class ContentGenerator {
                 this.sendSSE(res, PHASE_TYPES.ERROR, data, systemMessage),
             );
 
+            parser.on(STAGE.CONTEXT, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.CONTEXT, data, systemMessage),
+            );
+
+            parser.on(STAGE.PLANNING, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.PLANNING, data, systemMessage),
+            );
+
+            parser.on(STAGE.GENERATING_CODE, ({ data, systemMessage }) =>
+                this.sendSSE(res, STAGE.GENERATING_CODE, data, systemMessage),
+            );
+
+            parser.on(STAGE.BUILDING, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.BUILDING, data, systemMessage),
+            );
+
+            parser.on(STAGE.CREATING_FILES, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.CREATING_FILES, data, systemMessage),
+            );
+
+            parser.on(STAGE.FINALIZING, ({ data, systemMessage }) => 
+                this.sendSSE(res, STAGE.FINALIZING, data, systemMessage),
+            );
+
             this.parsers.set(contractId, parser);
         }
         return this.parsers.get(contractId)!;
@@ -334,9 +369,9 @@ export default class ContentGenerator {
 
     private sendSSE(
         res: Response,
-        type: PHASE_TYPES | FILE_STRUCTURE_TYPES,
+        type: PHASE_TYPES | FILE_STRUCTURE_TYPES | STAGE,
         data: StreamEventData,
-        systemMessage: Message,
+        systemMessage?: Message,
     ): void {
         const event: StreamEvent = {
             type,
