@@ -4,12 +4,13 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import Image from 'next/image';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CHAT_URL } from '@/routes/api_routes';
 import { FILE_STRUCTURE_TYPES, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
 import BuilderChatSystemMessage from './BuilderChatSystemMessage';
 import { IoIosOptions } from 'react-icons/io';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import SystemMessage from './SystemMessage';
 
 export default function BuilderChats() {
     const { messages, upsertMessage, setPhase } = useBuilderChatStore();
@@ -18,6 +19,10 @@ export default function BuilderChats() {
     const params = useParams();
     const chatId = params.chatId as string;
     const hasInitialized = useRef(false);
+    const [appearSystemMessage, setAppearSystemMessage] = useState<number>(0);
+    const [currentStage, setCurrentStage] = useState<STAGE>(STAGE.START);
+    const [currentPhase, setCurrentPhase] = useState<PHASE_TYPES | FILE_STRUCTURE_TYPES>(PHASE_TYPES.THINKING);
+    const [currentFile, setCurrentFile] = useState<string>('');
 
     useEffect(() => {
         if (hasInitialized.current) return;
@@ -75,104 +80,73 @@ export default function BuilderChats() {
                                 // giving you a priority and starting to think
                                 console.log(data.data);
                                 break;
-                            
+
                             case STAGE.CONTEXT:
                                 // show the message data.data
-                                upsertMessage({
-                                    id: 'fasdf2',
-                                    content: data.data.context || '',
-                                })
-                                console.log(data.data.context);
+                                if ('content' in data.data) {
+                                    upsertMessage({
+                                        id: 'fasdf2',
+                                        content: data.data.content as string,
+                                        role: 'AI',
+                                    })
+                                }
+                                setAppearSystemMessage(1);
                                 break;
 
                             case STAGE.PLANNING:
-                                // show the card with planning
-                                console.log(data.data);
+                                setCurrentStage(data.type);
                                 break;
-                            
+
                             case STAGE.GENERATING_CODE:
-                                // show generating code in the card and accept phase now onwards
-                                console.log(data.data);
+                                setCurrentStage(data.type);
                                 break;
 
                             case PHASE_TYPES.THINKING:
                                 // thinking
+                                setCurrentPhase(data.type);
                                 console.log(data.data);
                                 break;
 
                             case PHASE_TYPES.GENERATING:
                                 // generating
+                                setCurrentPhase(data.type);
+
                                 console.log(data.data);
                                 break;
 
                             case FILE_STRUCTURE_TYPES.EDITING_FILE:
                                 // show what file is getting edited
-                                console.log(data.data);
+                                console.log(data.type);
+                                setCurrentPhase(data.type);
+                                if ('file' in data.data) {
+                                    setCurrentFile(data.data.file);
+                                    console.log(data.data.file);
+                                }
                                 break;
 
                             case PHASE_TYPES.COMPLETE:
                                 // all phase completed
+                                setCurrentPhase(data.type);
                                 console.log(data.data);
                                 break;
 
                             case STAGE.BUILDING:
-                                // show building code in the card
-                                console.log(data.data);
+                                setCurrentStage(data.type);
                                 break;
 
                             case STAGE.CREATING_FILES:
-                                // show creating file structure
-                                console.log(data.data);
+                                setCurrentStage(data.type);
                                 break;
 
                             case STAGE.FINALIZING:
-                                // show finalizing the code base
-                                console.log(data.data);
+                                setCurrentStage(data.type);
                                 break;
 
                             case STAGE.END:
+                                setCurrentStage(data.type);
                                 const parsedFileData = parseFileStructure(data.data.data);
                                 break;
                         }
-
-                        // switch (data.type) {
-                        //     case PHASE_TYPES.STARTING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.THINKING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.GENERATING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.BUILDING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.CREATING_FILES:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.COMPLETE:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        // }
                     } catch {
                         console.error('Failed to parse stream chunk:', line);
                     }
@@ -235,8 +209,16 @@ export default function BuilderChats() {
                                 </div>
                             </div>
                         )}
+
                     </div>
                 ))}
+                {appearSystemMessage && (
+                    <SystemMessage
+                        currentStage={currentStage}
+                        currentPhase={currentPhase}
+                        currentFile={currentFile}
+                    />
+                )}
             </div>
             <div className="flex items-center justify-center w-full py-4 px-6 flex-shrink-0">
                 <BuilderChatInput />

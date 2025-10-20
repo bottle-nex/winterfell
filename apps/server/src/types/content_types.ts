@@ -13,14 +13,14 @@ export interface FileNode {
 }
 
 export enum STAGE {
-    START = 'START',
-    CONTEXT = 'CONTEXT',
+    START = 'START', // this is just to mention that the work has started
+    CONTEXT = 'CONTEXT', // this is just for having context, not an actual stage
     PLANNING = 'PLANNING',
     GENERATING_CODE = 'GENERATING_CODE',
     BUILDING = 'BUILDING',
     CREATING_FILES = 'CREATING_FILES',
     FINALIZING = 'FINALIZING',
-    END = 'END',
+    END = 'END', // this is just to mention that the work has beed completed
 }
 
 export interface ContextEventData {
