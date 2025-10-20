@@ -19,21 +19,7 @@ export default function BuilderNavbar() {
                 <LiaServicestack size={28} className="text-primary" />
                 WINTERFELL
             </div>
-            <div className="flex items-center justify-between">
-                <div className="flex items-center justify-start bg-dark rounded-[4px] p-[3px] border border-neutral-800">
-                    <ToolTipComponent side="bottom" content="Preview your project in real-time">
-                        <FaPlay
-                            size={24}
-                            className={cn('py-2 rounded-[4px] cursor-pointer transition w-8')}
-                        />
-                    </ToolTipComponent>
-                    <ToolTipComponent side="bottom" content="View and edit the source code">
-                        <FaCode
-                            size={24}
-                            className={cn('py-2 rounded-[4px] cursor-pointer transition w-8')}
-                        />
-                    </ToolTipComponent>
-                </div>
+            <div className="flex items-center justify-end">
 
                 <div className="flex items-center justify-between gap-x-5">
                     <NetworkTicker />
