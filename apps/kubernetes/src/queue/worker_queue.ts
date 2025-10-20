@@ -42,7 +42,6 @@ export default class ServerToOrchestratorQueue {
          pod_service.stream_logs(
             pod_name,
             (chunk) => logger.info(`[${pod_name}] ${chunk}`),
-            (chunk) => logger.error(`[${[pod_name]}] ${chunk}`),
          );
 
          const result = await pod_service.execute_command(pod_name, command);

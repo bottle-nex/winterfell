@@ -107,23 +107,41 @@ export default function StatusBar() {
                 else setHelpLogs([]);
                 return;
             case '--help':
-                output = `Available commands:
+                output = `
+AVAILABLE COMMANDS:
 clear              Clear the terminal
 --help             Show available commands
+--commands         Show winterfell commands
 --platform         Show platform details
---hotkeys          Show hot keys/ shortcuts`;
+--hotkeys          Show hot keys/ shortcuts
+`;
                 break;
             case '--hotkeys':
-                output = `Hot Keys:
+                output = `
+HOT KEYS:
 Ctrl/ Cmd + S          Switch Terminal Tabs
 Ctrl/ Cmd + K          Toggle shell`;
                 break;
             case '--platform':
-                output = `Platform details:
+                output = `
+PLATFORM DETAILS:
 portal              Winterfell
 version             1.0.0
 shell               winterfell`;
                 break;
+
+            case '--commands':
+                output = `
+WINTERFELL SHELL COMMANDS:
+winterfell build                to build the contract
+winterfell test                 to run the test file
+
+
+PREMIUM FEATURES:
+winterfell deploy --devnet      to deploy the contract on devnet
+winterfell deploy --mainnet     to deploy the contract on mainnet`
+                break;
+
             default:
                 output = `winterfell: command not found: ${trimmed}. Try --help`;
                 break;
