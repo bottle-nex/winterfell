@@ -19,6 +19,7 @@ export default function BuilderChats() {
     const params = useParams();
     const chatId = params.chatId as string;
     const hasInitialized = useRef(false);
+    const [appearSystemMessage, setAppearSystemMessage] = useState<number>(0);
     const [currentStage, setCurrentStage] = useState<STAGE>(STAGE.START);
     const [currentPhase, setCurrentPhase] = useState<PHASE_TYPES | FILE_STRUCTURE_TYPES>(PHASE_TYPES.THINKING);
     const [currentFile, setCurrentFile] = useState<string>('');
@@ -89,6 +90,7 @@ export default function BuilderChats() {
                                         role: 'AI',
                                     })
                                 }
+                                setAppearSystemMessage(1);
                                 break;
 
                             case STAGE.PLANNING:
@@ -114,9 +116,12 @@ export default function BuilderChats() {
 
                             case FILE_STRUCTURE_TYPES.EDITING_FILE:
                                 // show what file is getting edited
-                                console.log(data.data);
+                                console.log(data.type);
                                 setCurrentPhase(data.type);
-                                if('file' in data.data) setCurrentFile(data.data.file);
+                                if ('file' in data.data) {
+                                    setCurrentFile(data.data.file);
+                                    console.log(data.data.file);
+                                }
                                 break;
 
                             case PHASE_TYPES.COMPLETE:
@@ -142,45 +147,6 @@ export default function BuilderChats() {
                                 const parsedFileData = parseFileStructure(data.data.data);
                                 break;
                         }
-
-                        // switch (data.type) {
-                        //     case PHASE_TYPES.STARTING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.THINKING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.GENERATING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.BUILDING:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.CREATING_FILES:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        //     case PHASE_TYPES.COMPLETE:
-                        //         upsertMessage(data.systemMessage);
-                        //         if ('phase' in data.data) {
-                        //             setPhase(data.data.phase);
-                        //         }
-                        //         break;
-                        // }
                     } catch {
                         console.error('Failed to parse stream chunk:', line);
                     }
@@ -194,10 +160,6 @@ export default function BuilderChats() {
     return (
         <div className="w-full flex flex-col pt-4" style={{ height: 'calc(100vh - 3.5rem)' }}>
             <div className="flex-1 flex flex-col gap-y-3 text-light text-sm px-6 overflow-y-auto min-h-0 custom-scrollbar">
-                <SystemMessage
-                    currentStage={currentStage}
-                    currentPhase={currentPhase}
-                />
                 {messages.map((message) => (
                     <div key={message.id} className="w-full flex flex-shrink-0">
                         {message.role === 'USER' && (
@@ -247,8 +209,16 @@ export default function BuilderChats() {
                                 </div>
                             </div>
                         )}
+
                     </div>
                 ))}
+                {appearSystemMessage && (
+                    <SystemMessage
+                        currentStage={currentStage}
+                        currentPhase={currentPhase}
+                        currentFile={currentFile}
+                    />
+                )}
             </div>
             <div className="flex items-center justify-center w-full py-4 px-6 flex-shrink-0">
                 <BuilderChatInput />

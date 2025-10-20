@@ -16,7 +16,7 @@ const stages: StageItem[] = [
 ];
 
 interface PhaseItem {
-    phase: PHASE_TYPES;
+    phase: PHASE_TYPES | FILE_STRUCTURE_TYPES;
     show: string;
 }
 
@@ -24,6 +24,7 @@ const phases: PhaseItem[] = [
     { phase: PHASE_TYPES.THINKING, show: 'thinking...' },
     { phase: PHASE_TYPES.GENERATING, show: 'generating' },
     { phase: PHASE_TYPES.COMPLETE, show: 'completed' },
+    { phase: FILE_STRUCTURE_TYPES.EDITING_FILE, show: 'editing file' },
 ];
 
 interface SystemMessageProps {
@@ -35,6 +36,14 @@ interface SystemMessageProps {
 export default function SystemMessage({ currentStage, currentPhase, currentFile }: SystemMessageProps) {
 
     const currentIndex = currentStage === STAGE.END ? stages.length : stages.findIndex(s => s.stage === currentStage);
+
+    function truncate(str: string): string {
+        if (!str) return "";
+        if (str.length <= 10) return str;
+        const parts = str.split("/");
+        const lastPart = parts[parts.length - 1];
+        return `.../${lastPart}`;
+    }
 
     return (
         <div className="relative w-[80%] rounded-2xl overflow-hidden border border-neutral-700/50 bg-neutral-900 text-neutral-300 backdrop-blur-sm select-none">
@@ -71,7 +80,7 @@ export default function SystemMessage({ currentStage, currentPhase, currentFile 
                                     <Check className="w-3.5 h-3.5" />
                                 )}
                             </div>
-                            <div className="flex flex-col gap-y-1.5 ">
+                            <div className="flex flex-col items-start justify-center gap-y-1.5 ">
                                 <div
                                     className={cn(
                                         "text-base font-semibold transition-all",
@@ -85,9 +94,9 @@ export default function SystemMessage({ currentStage, currentPhase, currentFile 
                                 </div>
                                 {stage === STAGE.GENERATING_CODE && currentStage === STAGE.GENERATING_CODE && (
                                     <div className="pl-5 opacity-50 text-sm ">
-                                        {currentPhase}
+                                        {phases.find(p => p.phase === currentPhase)?.show + " "}
                                         {currentFile && currentPhase === FILE_STRUCTURE_TYPES.EDITING_FILE && (
-                                            currentFile
+                                            truncate(currentFile)
                                         )}
                                     </div>
                                 )}
