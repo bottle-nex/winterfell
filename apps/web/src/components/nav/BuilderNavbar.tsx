@@ -61,6 +61,18 @@ export default function BuilderNavbar() {
                             <span className="text-xs">Deploy</span>
                         </Button>
                     </ToolTipComponent>
+
+                    <ToolTipComponent
+                        content="Publish the code snippet to GitHub"
+                        side="bottom"
+                    >
+                        <Button
+                            size={'sm'}
+                            className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                        >
+                            <span className="text-xs">Publish</span>
+                        </Button>
+                    </ToolTipComponent>
                     {session?.user.image && (
                         <Image
                             src={session?.user.image}

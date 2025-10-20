@@ -31,7 +31,6 @@ export default function BuilderSettingsPanel({
         <Sidebar
             open={openSettingsPanel}
             setOpen={setOpenSettingsPanel}
-            width="40rem"
             content={
                 <>
                     <div className="mb-4">

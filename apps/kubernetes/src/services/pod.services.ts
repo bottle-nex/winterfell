@@ -200,14 +200,12 @@ export default class PodService {
    public async stream_logs(
       pod_name: string,
       onData: (chunk: string) => void,
-      onError: (chunk: string) => void,
    ) {
       return k8s_config.stream_pod_logs({
          namespace: this.namespace,
          pod_name,
          container_name: this.container_name,
          onData,
-         onError,
       });
    }
 }

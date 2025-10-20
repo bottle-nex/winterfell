@@ -82,9 +82,8 @@ export default class KubernetesConfig {
       pod_name: string;
       container_name?: string;
       onData: (chunk: string) => void;
-      onError: (chunk: string) => void;
    }) {
-      const { namespace, pod_name, container_name, onData, onError } = params;
+      const { namespace, pod_name, container_name, onData } = params;
 
       return new Promise<void>((resolve, reject) => {
          const stdout_stream = new Writable({
