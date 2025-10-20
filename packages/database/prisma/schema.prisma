@@ -9,13 +9,15 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  image     String?
-  password  String? // if using credentials login
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String?
+  image             String?
+  password          String? // if using credentials login
+  provider          String?
+  githubAccessToken String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   subscription Subscription?
   contracts    Contract[]
@@ -87,7 +89,6 @@ model Message {
   buildError    Boolean? @default(false)
   buildStart    Boolean? @default(false)
   buildComplete Boolean? @default(false)
-
 
   // isCodeBuilt Boolean? @default(false)
   // buildStatus
