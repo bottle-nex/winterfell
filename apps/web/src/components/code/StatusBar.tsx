@@ -197,7 +197,7 @@ winterfell deploy --mainnet     to deploy the contract on mainnet`
                     >
                         <Button
                             onClick={() => setActiveTab(TerminalTabOptions.SHELL)}
-                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] ${
+                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] cursor-pointer ${
                                 activeTab === TerminalTabOptions.SHELL
                                     ? 'text-light/70 border-b border-light/70'
                                     : 'text-light/50'
@@ -207,7 +207,7 @@ winterfell deploy --mainnet     to deploy the contract on mainnet`
                         </Button>
                         <Button
                             onClick={() => setActiveTab(TerminalTabOptions.HELP)}
-                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none ${
+                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none cursor-pointer ${
                                 activeTab === TerminalTabOptions.HELP
                                     ? 'text-light/70 border-b border-light/70'
                                     : 'text-light/50'

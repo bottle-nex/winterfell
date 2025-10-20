@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
+import { startChatSchema } from '../../schemas/start_chat_schema';
 
 export default async function startChatController(req: Request, res: Response) {
     const userId = req.user?.id;
@@ -8,19 +9,14 @@ export default async function startChatController(req: Request, res: Response) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
     }
-    // const userId = 'cmgwq5oau0000fl20fxtb9o2u';
-    console.log('userId', userId);
-    const chatId = req.body.chatId as string;
-    const message = req.body.message as string
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
-        res.status(400).json({ error: 'Message is required' });
+
+    const data = startChatSchema.safeParse(req.body);
+    if (!data.success) {
+        res.status(400).json({ error: "Invalid request" + data.error });
         return;
     }
 
-    if (!chatId || typeof chatId !== 'string') {
-        res.status(400).json({ error: 'Invalid chatId' });
-        return;
-    }
+    const { chatId, message } = data.data;
 
     try {
         let chat = await prisma.chat.findUnique({

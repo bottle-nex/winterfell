@@ -52,7 +52,7 @@ export default function Filetree() {
     }));
 
     return (
-        <div className="h-full bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[24rem]">
+        <div className="h-full overflow-y-auto bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[24rem]">
             <div className="p-3 border-b border-neutral-800">
                 <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                     Project Files
