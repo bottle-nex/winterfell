@@ -14,6 +14,14 @@ RUN apt-get update && apt-get install -y \
     bzip2 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js 20.x
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# Verify Node.js installation
+RUN node --version && npm --version
+
 # Install Solana from pre-built binary
 RUN curl -sSfL https://github.com/solana-labs/solana/releases/download/v1.18.22/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
     tar jxf /tmp/solana.tar.bz2 -C /tmp && \
@@ -41,6 +49,6 @@ RUN mkdir -p /root/.config/solana && \
 ENV ANCHOR_WALLET="/root/.config/solana/id.json"
 
 # Final verification
-RUN solana --version && anchor --version
+RUN solana --version && anchor --version && node --version && npm --version
 
 CMD ["/bin/bash"]
