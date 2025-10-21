@@ -36,7 +36,7 @@ export default function ArchitectureTitleComponent() {
     return (
         <div
             ref={ref}
-            className="h-[60vh] w-screen flex flex-col justify-center text-light gap-y-5 bg-[#0a0c0d] z-20"
+            className="md:h-[60vh] w-screen flex flex-col justify-center text-light gap-y-5 bg-[#0a0c0d] z-20"
         >
             <AnimatePresence>
                 <motion.div
@@ -48,7 +48,7 @@ export default function ArchitectureTitleComponent() {
                     <div className="w-full flex items-center justify-start border-b border-t border-primary overflow-hidden">
                         <motion.span
                             variants={textVariants}
-                            className="text-[7rem] font-semibold tracking-widest"
+                            className="text-3xl md:text-[7rem] font-semibold tracking-widest"
                         >
                             WINTERFELL&apos;s
                         </motion.span>
@@ -56,7 +56,7 @@ export default function ArchitectureTitleComponent() {
                     <div className="w-full flex items-center justify-start border-b border-t border-primary overflow-hidden">
                         <motion.span
                             variants={textVariants}
-                            className="text-[7rem] ml-[24rem] font-semibold tracking-widest"
+                            className="text-3xl md:text-[7rem] ml-12 md:ml-[24rem] font-semibold tracking-widest"
                         >
                             ARCHITECTURE
                         </motion.span>

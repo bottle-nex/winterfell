@@ -7,7 +7,7 @@ export default function HighlighterTicker() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className="text-[#a7a7a7] text-sm mb-6 font-mono tracking-wider"
+            className="text-[#a7a7a7] text-xs md:text-sm mb-6 font-mono tracking-normal md:tracking-wider"
         >
             Winterfell eats{' '}
             <span className="text-white">

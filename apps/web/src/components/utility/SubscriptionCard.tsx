@@ -41,54 +41,52 @@ function SubscriptionCard({
 }) {
     return (
         <div
-            className={`rounded-2xl relative overflow-hidden border backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
-                isBest ? 'w-[460px] h-[285px]' : 'w-[420px] h-[260px]'
-            } ${planStyles[plan]} ${
-                isBest && 'shadow-[0_0_40px_rgba(255,255,255,0.2)] ring-2 ring-white/20'
-            }`}
-            style={{
-                aspectRatio: '1.586 / 1',
-            }}
+            className={`rounded-2xl relative overflow-hidden border backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl 
+            ${isBest ? 'md:w-[480px] md:h-[285px]' : 'md:w-[480px] md:h-[260px]'} 
+            w-full max-w-[420px] h-auto 
+            ${planStyles[plan]} 
+            ${isBest && 'shadow-[0_0_40px_rgba(255,255,255,0.2)] ring-2 ring-white/20'}
+            `}
         >
             <div className={`absolute inset-0 opacity-60 ${planAccents[plan]}`} />
 
             <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/5 blur-2xl" />
             <div className="absolute -left-12 -bottom-12 w-40 h-40 rounded-full bg-black/10 blur-3xl" />
 
-            <div className="relative z-10 h-full flex flex-col p-7">
-                <div className="flex justify-between items-start mb-6">
+            <div className="relative z-10 h-full flex flex-col p-6 sm:p-7">
+                <div className="flex justify-between items-start mb-5 sm:mb-6">
                     <div>
-                        <div className="text-xs font-medium opacity-70 uppercase tracking-wider mb-1">
+                        <div className="text-[10px] sm:text-xs font-medium opacity-70 uppercase tracking-wider mb-1">
                             Winterfell
                         </div>
-                        <h2 className="text-2xl font-bold tracking-tight">
+                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
                             {plan === 'PREMIUM_PLUS' ? 'Premium+' : plan}
                         </h2>
                     </div>
                     <div
-                        className={`p-2.5 rounded-xl backdrop-blur-sm ${
+                        className={`p-2 rounded-lg sm:p-2.5 sm:rounded-xl backdrop-blur-sm ${
                             plan === 'FREE'
                                 ? 'bg-neutral-800/50'
                                 : plan === 'PREMIUM'
-                                  ? 'bg-white/20'
-                                  : 'bg-white/15'
+                                ? 'bg-white/20'
+                                : 'bg-white/15'
                         }`}
                     >
-                        <LiaServicestack className="size-7" />
+                        <LiaServicestack className="size-6 sm:size-7" />
                     </div>
                 </div>
 
-                <div className="flex-1 mb-5">
+                <div className="flex-1 mb-4 sm:mb-5">
                     <div className="flex flex-wrap gap-1.5">
                         {features.slice(0, 4).map((feature, idx) => (
                             <div
                                 key={idx}
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+                                className={`flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium backdrop-blur-sm ${
                                     plan === 'FREE'
                                         ? 'bg-neutral-800/60'
                                         : plan === 'PREMIUM'
-                                          ? 'bg-white/25'
-                                          : 'bg-white/15'
+                                        ? 'bg-white/25'
+                                        : 'bg-white/15'
                                 }`}
                             >
                                 <Check className="size-3" />
@@ -97,21 +95,21 @@ function SubscriptionCard({
                         ))}
                     </div>
                     {features.length > 4 && (
-                        <div className="mt-1.5 text-xs opacity-60">
+                        <div className="mt-1.5 text-[10px] sm:text-xs opacity-60">
                             +{features.length - 4} more features
                         </div>
                     )}
                 </div>
 
-                <div className="flex items-end justify-between pt-2">
-                    <div className="pb-1 flex items-center gap-x-3">
-                        <div className="text-3xl font-bold tracking-tight">{price}</div>
-                        <div className="text-xs opacity-60 mt-1">
+                <div className="flex items-end justify-between pt-2 flex-wrap gap-3 sm:gap-0">
+                    <div className="pb-1 flex items-center gap-x-2 sm:gap-x-3">
+                        <div className="text-2xl sm:text-3xl font-bold tracking-tight">{price}</div>
+                        <div className="text-[10px] sm:text-xs opacity-60 mt-1">
                             {billing === 'MONTHLY' ? 'per month' : 'per year'}
                         </div>
                     </div>
                     <Button
-                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${
+                        className={`px-4 sm:px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg w-full sm:w-auto ${
                             plan === 'FREE' || plan === 'PREMIUM'
                                 ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
                                 : 'bg-neutral-900 hover:bg-neutral-800 text-white'
@@ -122,7 +120,7 @@ function SubscriptionCard({
                 </div>
             </div>
 
-            <div className="absolute bottom-4 left-7 flex gap-2 opacity-20 pointer-events-none">
+            <div className="absolute bottom-4 left-7 hidden sm:flex gap-2 opacity-20 pointer-events-none">
                 {[...Array(4)].map((_, i) => (
                     <div key={i} className="flex gap-1">
                         {[...Array(4)].map((_, j) => (
@@ -173,21 +171,23 @@ export default function SubscriptionPlans() {
     ];
 
     return (
-        <section className="w-full min-h-screen bg-[#0a0b0d] text-center text-white relative flex flex-col items-center justify-center z-20">
+        <section className="w-full min-h-screen bg-[#0a0b0d] text-center text-white relative flex flex-col items-center justify-center z-20 px-4">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
 
-            <div className="relative z-10 mt-32 mb-15">
-                <h1 className="text-5xl font-extrabold text-light">Choose Your Winterfell Plan</h1>
-                <div className="mt-4 text-light/60 max-w-2xl mx-auto text-lg tracking-wide">
+            <div className="relative z-10 mt-28 sm:mt-32 mb-12 sm:mb-15">
+                <h1 className="text-3xl sm:text-5xl font-extrabold text-light">
+                    Choose Your Winterfell Plan
+                </h1>
+                <div className="mt-3 sm:mt-4 text-light/60 max-w-2xl mx-auto text-sm sm:text-lg tracking-wide px-2">
                     Get access to premium features designed to boost productivity and simplify your
                     workflow with seamless performance
                 </div>
             </div>
 
-            <div className="mb-4 border border-neutral-800 flex rounded-[8px] overflow-hidden bg-neutral-900/30 w-fit z-10">
+            <div className="mb-4 border border-neutral-800 flex rounded-[8px] overflow-hidden bg-neutral-900/30 w-fit z-10 text-sm sm:text-base">
                 <Button
                     onClick={() => setBilling('MONTHLY')}
-                    className={`px-6 py-2 text-base tracking-wide rounded-[8px] transition-all ${
+                    className={`px-4 sm:px-6 py-2 tracking-wide rounded-[8px] transition-all ${
                         billing === 'MONTHLY'
                             ? 'bg-light hover:bg-light text-neutral-900'
                             : 'text-light/70 hover:text-light bg-transparent hover:bg-transparent'
@@ -197,7 +197,7 @@ export default function SubscriptionPlans() {
                 </Button>
                 <Button
                     onClick={() => setBilling('YEARLY')}
-                    className={`px-6 py-2 text-base tracking-wide rounded-[8px] transition-all ${
+                    className={`px-4 sm:px-6 py-2 tracking-wide rounded-[8px] transition-all ${
                         billing === 'YEARLY'
                             ? 'bg-light hover:bg-light text-neutral-900'
                             : 'text-light/70 hover:text-light bg-transparent hover:bg-transparent'
@@ -207,13 +207,13 @@ export default function SubscriptionPlans() {
                 </Button>
             </div>
 
-            <span className="mb-15 tracking-wider text-light/60">
+            <span className="mb-12 sm:mb-15 tracking-wider text-light/60 text-xs sm:text-sm">
                 {billing === 'YEARLY'
                     ? 'Save up to 10% off with yearly billing'
                     : 'Switch to yearly for better savings'}
             </span>
 
-            <div className="relative z-10 flex justify-center items-center gap-8 flex-wrap px-4 mb-20">
+            <div className="relative z-10 flex justify-center items-center gap-6 sm:gap-8 flex-wrap px-2 sm:px-4 mb-16 sm:mb-20">
                 {plans.map((planData) => (
                     <SubscriptionCard
                         key={planData.plan}
