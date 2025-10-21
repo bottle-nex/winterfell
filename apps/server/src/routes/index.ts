@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import signInController from '../controllers/user-controller/signInController';
 import startChatController from '../controllers/chat-controller/startChatController';
 import getFilesController from '../controllers/chat-controller/getFilesController';
@@ -13,6 +13,9 @@ const router: Router = Router();
 
 // user-routes
 router.post('/sign-in', signInController);
+router.get('/health', (_req: Request, res: Response) => {
+    res.status(200).json({ message: 'Server is running' });
+});
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);
