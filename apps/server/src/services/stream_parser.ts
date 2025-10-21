@@ -1,16 +1,14 @@
-import { ChatRole, Message, Prisma, prisma, SystemMessageType } from '@repo/database';
+import { ChatRole, Message, prisma } from '@repo/database';
 import { FileContent, STAGE } from '../types/content_types';
 import {
     BuildingData,
     CompleteData,
-    ContextData,
     CreatingFilesData,
     EditingFileData,
     ErrorData,
     FILE_STRUCTURE_TYPES,
     GeneratingData,
     PHASE_TYPES,
-    StageData,
     StreamEventData,
     ThinkingData,
 } from '../types/stream_event_types';
@@ -53,7 +51,10 @@ export default class StreamParser {
         if (!this.eventHandlers.has(type)) {
             this.eventHandlers.set(type, []);
         }
-        this.eventHandlers.get(type)!.push(callback);
+        const event_handlers = this.eventHandlers.get(type);
+        if (event_handlers) {
+            event_handlers.push(callback);
+        }
     }
 
     private emit(
@@ -73,7 +74,6 @@ export default class StreamParser {
     }
 
     private async processBuffer(systemMessage: Message): Promise<void> {
-
         if (this.pendingContext !== null || this.buffer.includes('<')) {
             this.handleContext(systemMessage);
         }
@@ -157,15 +157,22 @@ export default class StreamParser {
             this.pendingContext += '\n' + this.buffer;
             const endMatch = this.pendingContext.match(/<\/\s*context\s*>/i);
             if (endMatch) {
-                const content = this.pendingContext.replace(/<\s*context\s*>/i, '').replace(/<\/\s*context\s*>/i, '').trim();
+                const content = this.pendingContext
+                    .replace(/<\s*context\s*>/i, '')
+                    .replace(/<\/\s*context\s*>/i, '')
+                    .trim();
                 llm_message = await prisma.message.create({
                     data: {
                         content: content,
                         chatId: systemMessage.chatId,
                         role: ChatRole.AI,
-                    }
-                })
-                this.emit(STAGE.CONTEXT, { context: content, llmMessage: llm_message }, systemMessage);
+                    },
+                });
+                this.emit(
+                    STAGE.CONTEXT,
+                    { context: content, llmMessage: llm_message },
+                    systemMessage,
+                );
                 this.pendingContext = null;
                 this.buffer = '';
                 return true;
@@ -177,7 +184,6 @@ export default class StreamParser {
 
         const startMatch = this.buffer.match(/<\s*context\s*>/i);
         if (startMatch) {
-
             const rest = this.buffer.split(startMatch[0])[1] || '';
             const endMatch = rest.match(/<\/\s*context\s*>/i);
 
@@ -188,9 +194,13 @@ export default class StreamParser {
                         content: content,
                         chatId: systemMessage.chatId,
                         role: ChatRole.AI,
-                    }
-                })
-                this.emit(STAGE.CONTEXT, { context: content, llmMessage: llm_message }, systemMessage);
+                    },
+                });
+                this.emit(
+                    STAGE.CONTEXT,
+                    { context: content, llmMessage: llm_message },
+                    systemMessage,
+                );
 
                 this.buffer = rest.split(endMatch[0]).slice(1).join(endMatch[0]);
                 return true;
@@ -205,18 +215,16 @@ export default class StreamParser {
     }
 
     private async stageMatch(stage: string, systemMessage: Message) {
-
         switch (stage) {
             case 'Planning':
-
                 systemMessage = await prisma.message.update({
                     where: {
                         id: systemMessage.id,
                     },
                     data: {
                         planning: true,
-                    }
-                })
+                    },
+                });
                 this.emit(STAGE.PLANNING, { stage }, systemMessage);
                 break;
 
@@ -227,8 +235,8 @@ export default class StreamParser {
                     },
                     data: {
                         generatingCode: true,
-                    }
-                })
+                    },
+                });
                 this.emit(STAGE.GENERATING_CODE, { stage }, systemMessage);
                 break;
 
@@ -239,8 +247,8 @@ export default class StreamParser {
                     },
                     data: {
                         building: true,
-                    }
-                })
+                    },
+                });
                 this.emit(STAGE.BUILDING, { stage }, systemMessage);
                 break;
 
@@ -251,8 +259,8 @@ export default class StreamParser {
                     },
                     data: {
                         creatingFiles: true,
-                    }
-                })
+                    },
+                });
                 this.emit(STAGE.CREATING_FILES, { stage }, systemMessage);
                 break;
 
@@ -263,12 +271,12 @@ export default class StreamParser {
                     },
                     data: {
                         finalzing: true,
-                    }
-                })
+                    },
+                });
                 this.emit(STAGE.FINALIZING, { stage }, systemMessage);
                 break;
 
-            default:
+            default: {
                 const errorData: ErrorData = {
                     message: 'Invalid stage',
                     error: `Unknown stage ${stage}`,
@@ -279,16 +287,15 @@ export default class StreamParser {
                     },
                     data: {
                         error: true,
-                    }
-                })
+                    },
+                });
                 this.handleError(new Error('Invalid stage'), errorData);
                 break;
+            }
         }
-
     }
 
     private async phaseMatch(phase: string, systemMessage: Message) {
-
         switch (phase) {
             case 'thinking': {
                 this.currentPhase = phase;

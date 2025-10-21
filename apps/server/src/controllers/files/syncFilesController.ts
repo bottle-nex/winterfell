@@ -13,7 +13,7 @@ export default async function syncFilesController(req: Request, res: Response) {
             return;
         }
 
-        const { contractId, files } = req.body;
+        const { contractId } = req.body;
 
         const isValidContract = await prisma.contract.findUnique({
             where: {

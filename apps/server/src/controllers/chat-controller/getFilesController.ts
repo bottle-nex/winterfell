@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { CloudfrontFileParser } from '../../services/code_editor_parser';
-
 export default async function getFilesController(req: Request, res: Response) {
     const contractId = req.params.contractId;
 

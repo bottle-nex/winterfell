@@ -113,7 +113,7 @@ export default function BuilderChatInput() {
                                 className={cn(
                                     'w-3 h-3 transition-transform',
                                     inputValue.trim() &&
-                                    'group-hover/submit:translate-x-0.5 duration-200',
+                                        'group-hover/submit:translate-x-0.5 duration-200',
                                 )}
                             />
                         </Button>

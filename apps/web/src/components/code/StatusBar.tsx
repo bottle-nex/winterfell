@@ -139,7 +139,7 @@ winterfell test                 to run the test file
 
 PREMIUM FEATURES:
 winterfell deploy --devnet      to deploy the contract on devnet
-winterfell deploy --mainnet     to deploy the contract on mainnet`
+winterfell deploy --mainnet     to deploy the contract on mainnet`;
                 break;
 
             default:

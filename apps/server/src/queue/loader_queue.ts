@@ -12,6 +12,7 @@ export class ServerToOrchestratorQueue {
         this.client.connect();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async push(data: any) {
         const payload = JSON.stringify(data);
         await this.client.lPush(this.queue_name, payload);

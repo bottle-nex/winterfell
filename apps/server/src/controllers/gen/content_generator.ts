@@ -135,7 +135,7 @@ export default class ContentGenerator {
                 chatId: chat.id,
                 contractId: contractId,
                 timestamp: Date.now(),
-            }
+            };
 
             this.sendSSE(res, STAGE.START, startingData);
 
@@ -158,7 +158,7 @@ export default class ContentGenerator {
                 contents,
             });
 
-            let systemMessage = await prisma.message.create({
+            const systemMessage = await prisma.message.create({
                 data: {
                     chatId: chat.id,
                     role: ChatRole.SYSTEM,
@@ -227,7 +227,7 @@ export default class ContentGenerator {
                 content: currentUserMessage.content,
             });
 
-            let systemMessage = await prisma.message.create({
+            const systemMessage = await prisma.message.create({
                 data: {
                     chatId: chat.id,
                     role: ChatRole.SYSTEM,
@@ -338,7 +338,7 @@ export default class ContentGenerator {
 
             this.parsers.set(contractId, parser);
         }
-        return this.parsers.get(contractId)!;
+        return this.parsers.get(contractId) as StreamParser;
     }
 
     private deleteParser(contractId: string): void {
