@@ -39,10 +39,7 @@ export default class ServerToOrchestratorQueue {
       const pod_name = await pod_service.create_pod({ userId, sessionId, projectName });
 
       try {
-         pod_service.stream_logs(
-            pod_name,
-            (chunk) => logger.info(`[${pod_name}] ${chunk}`),
-         );
+         pod_service.stream_logs(pod_name, (chunk) => logger.info(`[${pod_name}] ${chunk}`));
 
          const result = await pod_service.execute_command(pod_name, command);
 

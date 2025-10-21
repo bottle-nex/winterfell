@@ -1,6 +1,7 @@
 {
   "name": "@repo/database",
   "version": "1.0.0",
+  "type": "module",
   "exports": {
     ".": "./src/client.ts"
   },
@@ -12,7 +13,6 @@
     "dev": "tsup src/* --watch",
     "format": "prisma format",
     "generate": "prisma generate",
-    "lint": "eslint . --max-warnings 0",
     "prebuild": "npm run generate",
     "predev": "npm run generate",
     "studio": "prisma studio"
@@ -23,7 +23,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "eslint": "^8.57.0",
+    "eslint": "^9.32.0",
     "prisma": "latest",
     "rimraf": "^5.0.5",
     "tsup": "^8.0.2",

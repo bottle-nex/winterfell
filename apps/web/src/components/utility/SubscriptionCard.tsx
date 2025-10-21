@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { LiaServicestack } from "react-icons/lia";
-import { Check } from "lucide-react";
-import { Button } from "../ui/button";
+import { useState } from 'react';
+import { LiaServicestack } from 'react-icons/lia';
+import { Check } from 'lucide-react';
+import { Button } from '../ui/button';
 
-type PlanType = "FREE" | "PREMIUM" | "PREMIUM_PLUS";
-type BillingPeriod = "MONTHLY" | "YEARLY";
+type PlanType = 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
+type BillingPeriod = 'MONTHLY' | 'YEARLY';
 
 interface Plan {
     plan: PlanType;
@@ -15,15 +15,15 @@ interface Plan {
 }
 
 const planStyles = {
-    FREE: "bg-neutral-900 text-neutral-300 border-neutral-700/50",
-    PREMIUM: "bg-neutral-200 text-neutral-900 border-neutral-400/30",
-    PREMIUM_PLUS: "bg-primary text-light border-primary-light/20",
+    FREE: 'bg-neutral-900 text-neutral-300 border-neutral-700/50',
+    PREMIUM: 'bg-neutral-200 text-neutral-900 border-neutral-400/30',
+    PREMIUM_PLUS: 'bg-primary text-light border-primary-light/20',
 };
 
 const planAccents = {
-    FREE: "bg-gradient-to-br from-neutral-700/30 to-transparent",
-    PREMIUM: "bg-gradient-to-br from-neutral-400/20 to-transparent",
-    PREMIUM_PLUS: "bg-gradient-to-br from-white/10 to-transparent",
+    FREE: 'bg-gradient-to-br from-neutral-700/30 to-transparent',
+    PREMIUM: 'bg-gradient-to-br from-neutral-400/20 to-transparent',
+    PREMIUM_PLUS: 'bg-gradient-to-br from-white/10 to-transparent',
 };
 
 function SubscriptionCard({
@@ -41,11 +41,13 @@ function SubscriptionCard({
 }) {
     return (
         <div
-            className={`rounded-2xl relative overflow-hidden border backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl ${isBest ? "w-[460px] h-[285px]" : "w-[420px] h-[260px]"
-                } ${planStyles[plan]} ${isBest && "shadow-[0_0_40px_rgba(255,255,255,0.2)] ring-2 ring-white/20"
-                }`}
+            className={`rounded-2xl relative overflow-hidden border backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
+                isBest ? 'w-[460px] h-[285px]' : 'w-[420px] h-[260px]'
+            } ${planStyles[plan]} ${
+                isBest && 'shadow-[0_0_40px_rgba(255,255,255,0.2)] ring-2 ring-white/20'
+            }`}
             style={{
-                aspectRatio: "1.586 / 1",
+                aspectRatio: '1.586 / 1',
             }}
         >
             <div className={`absolute inset-0 opacity-60 ${planAccents[plan]}`} />
@@ -60,16 +62,17 @@ function SubscriptionCard({
                             Winterfell
                         </div>
                         <h2 className="text-2xl font-bold tracking-tight">
-                            {plan === "PREMIUM_PLUS" ? "Premium+" : plan}
+                            {plan === 'PREMIUM_PLUS' ? 'Premium+' : plan}
                         </h2>
                     </div>
                     <div
-                        className={`p-2.5 rounded-xl backdrop-blur-sm ${plan === "FREE"
-                                ? "bg-neutral-800/50"
-                                : plan === "PREMIUM"
-                                    ? "bg-white/20"
-                                    : "bg-white/15"
-                            }`}
+                        className={`p-2.5 rounded-xl backdrop-blur-sm ${
+                            plan === 'FREE'
+                                ? 'bg-neutral-800/50'
+                                : plan === 'PREMIUM'
+                                  ? 'bg-white/20'
+                                  : 'bg-white/15'
+                        }`}
                     >
                         <LiaServicestack className="size-7" />
                     </div>
@@ -80,12 +83,13 @@ function SubscriptionCard({
                         {features.slice(0, 4).map((feature, idx) => (
                             <div
                                 key={idx}
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${plan === "FREE"
-                                        ? "bg-neutral-800/60"
-                                        : plan === "PREMIUM"
-                                            ? "bg-white/25"
-                                            : "bg-white/15"
-                                    }`}
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+                                    plan === 'FREE'
+                                        ? 'bg-neutral-800/60'
+                                        : plan === 'PREMIUM'
+                                          ? 'bg-white/25'
+                                          : 'bg-white/15'
+                                }`}
                             >
                                 <Check className="size-3" />
                                 <span className="whitespace-nowrap">{feature}</span>
@@ -103,16 +107,17 @@ function SubscriptionCard({
                     <div className="pb-1 flex items-center gap-x-3">
                         <div className="text-3xl font-bold tracking-tight">{price}</div>
                         <div className="text-xs opacity-60 mt-1">
-                            {billing === "MONTHLY" ? "per month" : "per year"}
+                            {billing === 'MONTHLY' ? 'per month' : 'per year'}
                         </div>
                     </div>
                     <Button
-                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${plan === "FREE" || plan === "PREMIUM"
-                                ? "bg-[#7049FC] hover:bg-[#754fff] text-white"
-                                : "bg-neutral-900 hover:bg-neutral-800 text-white"
-                            }`}
+                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${
+                            plan === 'FREE' || plan === 'PREMIUM'
+                                ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
+                                : 'bg-neutral-900 hover:bg-neutral-800 text-white'
+                        }`}
                     >
-                        {plan === "FREE" ? "Start Free" : "Upgrade"}
+                        {plan === 'FREE' ? 'Start Free' : 'Upgrade'}
                     </Button>
                 </div>
             </div>
@@ -131,43 +136,38 @@ function SubscriptionCard({
 }
 
 export default function SubscriptionPlans() {
-    const [billing, setBilling] = useState<BillingPeriod>("MONTHLY");
+    const [billing, setBilling] = useState<BillingPeriod>('MONTHLY');
 
     const plans: Plan[] = [
         {
-            plan: "FREE",
-            priceMonthly: "₹0",
-            priceYearly: "₹0",
-            features: [
-                "1 Contract / Week",
-                "30 AI Messages",
-                "Devnet Only",
-                "Basic Support",
-            ],
+            plan: 'FREE',
+            priceMonthly: '₹0',
+            priceYearly: '₹0',
+            features: ['1 Contract / Week', '30 AI Messages', 'Devnet Only', 'Basic Support'],
         },
         {
-            plan: "PREMIUM_PLUS",
-            priceMonthly: "₹1,999",
-            priceYearly: "₹19,990",
+            plan: 'PREMIUM_PLUS',
+            priceMonthly: '₹1,999',
+            priceYearly: '₹19,990',
             features: [
-                "Unlimited Contracts",
-                "Unlimited AI Chat",
-                "Mainnet Access",
-                "10+ Deployments",
-                "Fast Build Priority",
-                "Priority Support",
+                'Unlimited Contracts',
+                'Unlimited AI Chat',
+                'Mainnet Access',
+                '10+ Deployments',
+                'Fast Build Priority',
+                'Priority Support',
             ],
             isBest: true,
         },
         {
-            plan: "PREMIUM",
-            priceMonthly: "₹799",
-            priceYearly: "₹7,990",
+            plan: 'PREMIUM',
+            priceMonthly: '₹799',
+            priceYearly: '₹7,990',
             features: [
-                "10 Contracts / Month",
-                "300 AI Messages",
-                "Devnet + Testnet",
-                "Standard Support",
+                '10 Contracts / Month',
+                '300 AI Messages',
+                'Devnet + Testnet',
+                'Standard Support',
             ],
         },
     ];
@@ -177,39 +177,40 @@ export default function SubscriptionPlans() {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
 
             <div className="relative z-10 mt-32 mb-15">
-                <h1 className="text-5xl font-extrabold text-light">
-                    Choose Your Winterfell Plan
-                </h1>
+                <h1 className="text-5xl font-extrabold text-light">Choose Your Winterfell Plan</h1>
                 <div className="mt-4 text-light/60 max-w-2xl mx-auto text-lg tracking-wide">
-                    Get access to premium features designed to boost productivity and simplify your workflow with seamless performance
+                    Get access to premium features designed to boost productivity and simplify your
+                    workflow with seamless performance
                 </div>
             </div>
 
             <div className="mb-4 border border-neutral-800 flex rounded-[8px] overflow-hidden bg-neutral-900/30 w-fit z-10">
                 <Button
-                    onClick={() => setBilling("MONTHLY")}
-                    className={`px-6 py-2 text-base tracking-wide rounded-[8px] transition-all ${billing === "MONTHLY"
-                            ? "bg-light hover:bg-light text-neutral-900"
-                            : "text-light/70 hover:text-light bg-transparent hover:bg-transparent"
-                        }`}
+                    onClick={() => setBilling('MONTHLY')}
+                    className={`px-6 py-2 text-base tracking-wide rounded-[8px] transition-all ${
+                        billing === 'MONTHLY'
+                            ? 'bg-light hover:bg-light text-neutral-900'
+                            : 'text-light/70 hover:text-light bg-transparent hover:bg-transparent'
+                    }`}
                 >
                     Pay monthly
                 </Button>
                 <Button
-                    onClick={() => setBilling("YEARLY")}
-                    className={`px-6 py-2 text-base tracking-wide rounded-[8px] transition-all ${billing === "YEARLY"
-                            ? "bg-light hover:bg-light text-neutral-900"
-                            : "text-light/70 hover:text-light bg-transparent hover:bg-transparent"
-                        }`}
+                    onClick={() => setBilling('YEARLY')}
+                    className={`px-6 py-2 text-base tracking-wide rounded-[8px] transition-all ${
+                        billing === 'YEARLY'
+                            ? 'bg-light hover:bg-light text-neutral-900'
+                            : 'text-light/70 hover:text-light bg-transparent hover:bg-transparent'
+                    }`}
                 >
                     Pay yearly
                 </Button>
             </div>
 
             <span className="mb-15 tracking-wider text-light/60">
-                {billing === "YEARLY"
-                    ? "Save up to 10% off with yearly billing"
-                    : "Switch to yearly for better savings"}
+                {billing === 'YEARLY'
+                    ? 'Save up to 10% off with yearly billing'
+                    : 'Switch to yearly for better savings'}
             </span>
 
             <div className="relative z-10 flex justify-center items-center gap-8 flex-wrap px-4 mb-20">
@@ -217,11 +218,7 @@ export default function SubscriptionPlans() {
                     <SubscriptionCard
                         key={planData.plan}
                         plan={planData.plan}
-                        price={
-                            billing === "MONTHLY"
-                                ? planData.priceMonthly
-                                : planData.priceYearly
-                        }
+                        price={billing === 'MONTHLY' ? planData.priceMonthly : planData.priceYearly}
                         billing={billing}
                         features={planData.features}
                         isBest={planData.isBest}
