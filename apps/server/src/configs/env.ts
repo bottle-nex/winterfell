@@ -1,13 +1,14 @@
 import dotenv from 'dotenv';
 import z from 'zod';
+import path from 'path';
 
 dotenv.config({
-    path: '../../.env',
+    path: path.resolve(__dirname, '../../../.env'),
 });
 
 const envScehma = z.object({
     SERVER_NODE_ENV: z.enum(['development', 'production']),
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z.url(),
     SERVER_PORT: z
         .string()
         .default('8787')
