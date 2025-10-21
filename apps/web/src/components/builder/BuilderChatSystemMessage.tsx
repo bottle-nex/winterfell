@@ -1,4 +1,4 @@
-import { Message } from '@repo/database';
+import { Message } from '@/src/types/prisma-types';
 import { LucideLoaderCircle } from 'lucide-react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { MdError } from 'react-icons/md';
