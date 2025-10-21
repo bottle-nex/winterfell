@@ -9,6 +9,7 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
 import ModelSelect from '../base/ModelSelect';
+import { ChatRole } from '@/src/types/prisma-types';
 
 export default function BuilderChatInput() {
     const [inputValue, setInputValue] = useState<string>('');
@@ -31,7 +32,7 @@ export default function BuilderChatInput() {
         setMessage({
             id: uuid(),
             chatId: newChatId,
-            role: 'USER',
+            role: ChatRole.USER,
             content: inputValue,
             planning: false,
             generatingCode: false,
