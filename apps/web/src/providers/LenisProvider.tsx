@@ -9,13 +9,13 @@ export default function LenisProvider({ children }: LenisProviderProps) {
         <ReactLenis
             root
             options={{
-                lerp: 0.1,
-                duration: 1.5,
+                lerp: 0.03, // Lower = smoother
+                duration: 1.8, // Higher = more glide
                 orientation: 'vertical',
                 gestureOrientation: 'vertical',
                 smoothWheel: true,
-                wheelMultiplier: 1,
-                touchMultiplier: 2,
+                wheelMultiplier: 0.8, // Lower for softer scroll
+                touchMultiplier: 1.5,
             }}
         >
             {children}

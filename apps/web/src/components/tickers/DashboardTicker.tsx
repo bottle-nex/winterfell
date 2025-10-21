@@ -1,4 +1,4 @@
-import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { AnimatedShinyText } from '@/src/components/ui/animated-shiny-text';
 import { cn } from '@/src/lib/utils';
 import { ArrowRightIcon } from 'lucide-react';
 

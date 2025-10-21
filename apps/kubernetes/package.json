@@ -1,0 +1,41 @@
+{
+  "name": "kubernetes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:bull --external:ioredis --external:ws --external:@google/genai --external:@anthropic-ai/sdk",
+    "start": "node dist/index.js",
+    "dev": "yarn build && yarn start",
+    "remove-logs": "npx ts-node src/scripts/remove-logs",
+    "lint": "eslint './src/**/*.{ts,js}'",
+    "format": "prettier --write './src/**/*.{ts,tsx,js,jsx,json,md}'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
+    "@types/bull": "^4.10.4",
+    "@types/express": "^5.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "bull": "^4.16.5",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.32.0",
+    "express": "^5.1.0",
+    "winston": "^3.18.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
+    "prettier": "^3.6.2",
+    "typescript": "^5.6.0"
+  }
+}

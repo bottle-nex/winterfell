@@ -1,43 +1,156 @@
 'use client';
-import Image from 'next/image';
+import React from 'react';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
+import { LiaServicestack } from 'react-icons/lia';
+import { FaBolt, FaShieldAlt } from 'react-icons/fa';
+import { FaRust } from 'react-icons/fa6';
+import { Highlighter } from '@/src/components/ui/highlighter';
+import { TbAnchor } from 'react-icons/tb';
+
+const featureData = [
+    {
+        topTitle: 'WINTERFELL POWER',
+        centerTitle: 'Smart Contracts',
+        bottomTitle: 'Build with ease',
+        icon: FaRust,
+        color: '#CE422B',
+    },
+    {
+        topTitle: 'LIGHTNING FAST',
+        centerTitle: 'Deploy Instantly',
+        bottomTitle: 'No delays, just code',
+        icon: FaBolt,
+        color: '#FFC400',
+    },
+    {
+        topTitle: 'ENHANCED EXPERIENCE',
+        centerTitle: 'WINTERFELL',
+        bottomTitle: 'Fins dont wait',
+        icon: LiaServicestack,
+        color: '#6C44FC',
+    },
+    {
+        topTitle: 'FUN CODING',
+        centerTitle: 'Anchor',
+        bottomTitle: 'Enjoy creating',
+        icon: TbAnchor,
+        color: '#106DE1',
+    },
+    {
+        topTitle: 'ROCK-SOLID',
+        centerTitle: 'Security',
+        bottomTitle: 'Safe & reliable',
+        icon: FaShieldAlt,
+        color: '#00C6A7',
+    },
+];
 
 export default function Features() {
+    const containerRef = React.useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ['start start', 'end end'],
+    });
+
+    // Memoize the subtitle opacity transform
+    const subtitleOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+
     return (
-        <section className="w-full flex flex-col md:flex-row py-20 px-4 gap-x-16 bg-primary z-10">
-            <div className="md:w-1/3 flex-shrink-0">
-                <div className="md:sticky md:top-24 font-bold text-5xl leading-[1.2] text-[#F2EFEC] whitespace-nowrap flex flex-col">
-                    <span>SIMPLIFY WRITING</span>
-                    <span>CONTRACTS</span>
+        <div ref={containerRef} className="relative bg-dark-base" style={{ height: '350vh' }}>
+            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
+                <div className="w-full max-w-[60%] text-5xl font-bold tracking-wider text-[#FDF9F0] leading-[1.2] relative">
+                    BECAUSE CODING SHOULDN&apos;T RUIN YOUR SLEEP SCHEDULE
+                    <div className="absolute text-[15px] -top-8 font-extralight w-full flex justify-center text-[#d6caae]">
+                        fin-tastic features. zero-hassle.
+                    </div>
+                </div>
+
+                <motion.div
+                    className="mt-26 flex flex-col w-full space-y-3 pointer-events-none"
+                    style={{ opacity: subtitleOpacity }}
+                >
+                    <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-dark-base font-semibold">
+                        Transform your blockchain ideas into&nbsp;
+                        <Highlighter action="underline" color="#6C44FC">
+                            production-ready
+                        </Highlighter>
+                        &nbsp;contracts seamlessly.
+                    </div>
+                </motion.div>
+
+                <div className="relative w-full flex justify-center items-center mt-20 space-x-2 h-[2rem] bg-primary">
+                    {featureData.map((feature, index) => (
+                        <AnimatedFeatureCard
+                            key={index}
+                            index={index}
+                            scrollProgress={scrollYProgress}
+                            {...feature}
+                        />
+                    ))}
                 </div>
             </div>
-
-            <div className="md:w-2/3 flex flex-col space-y-15">
-                {[1, 2, 3].map((i) => (
-                    <div
-                        key={i}
-                        className="h-[400px] w-full md:w-[500px] shadow-xl rounded-[8px] p-5 space-y-2 bg-[#0f0f0f] mx-auto"
-                    >
-                        <div className="w-full h-[65%] border border-neutral-700 rounded-[4px] relative overflow-hidden">
-                            <Image
-                                src={'/Images/vscode.png'}
-                                alt=""
-                                fill
-                                className="object-cover"
-                                unoptimized
-                            />
-                        </div>
-                        <div className="w-full h-[35%] space-y-2 py-2 flex flex-col justify-center">
-                            <div className="text-[22px] font-extralight tracking-wider text-[#c2c2c2]">
-                                Give Inputs
-                            </div>
-                            <div className="text-[#a5a3a1] text-sm tracking-wide">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum, sint
-                                fugit! Sunt assumenda laudantium.
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
+        </div>
     );
 }
+
+interface FeatureCardProps {
+    topTitle: string;
+    centerTitle: string;
+    bottomTitle: string;
+    icon: React.ElementType;
+    color: string;
+    index: number;
+    scrollProgress: MotionValue<number>;
+}
+
+const AnimatedFeatureCard = React.memo(function AnimatedFeatureCard({
+    topTitle,
+    centerTitle,
+    bottomTitle,
+    icon: Icon,
+    color,
+    index,
+    scrollProgress,
+}: FeatureCardProps) {
+    const totalCards = 4;
+    const delayFactor = index / totalCards;
+
+    const startAnimation = 0.2 + delayFactor * 0.2;
+    const holdStart = 0.45 + delayFactor * 0.2;
+    const holdEnd = 0.7 + delayFactor * 0.2;
+    const vanishStart = 0.75 + delayFactor * 0.2;
+    const vanishEnd = 0.95 + delayFactor * 0.2;
+
+    const timeline = [startAnimation, holdStart, holdEnd, vanishStart, Math.min(vanishEnd, 1)];
+
+    // Memoize random values so they don't change on re-render
+    const randomRotate = React.useMemo(() => Math.random() * 20 - 10, []);
+    const randomX = React.useMemo(() => Math.random() * 50 - 25, []);
+
+    // Call useTransform directly - they're already optimized by Framer Motion
+    const y = useTransform(scrollProgress, timeline, [200, 0, 0, -30, -180]);
+    const opacity = useTransform(scrollProgress, timeline, [0, 1, 1, 1, 0]);
+    const rotate = useTransform(scrollProgress, [timeline[0], timeline[1]], [0, randomRotate]);
+    const x = useTransform(scrollProgress, [timeline[0], timeline[1]], [0, randomX]);
+
+    return (
+        <motion.div
+            style={{ y, opacity, rotate, x }}
+            className="h-[20rem] w-[15rem] rounded-xl flex flex-col justify-center items-center 
+             bg-light border-2 border-neutral-800 shadow-lg shadow-black/20 relative p-4 transform-gpu will-change-[transform,opacity]"
+        >
+            <div className="absolute top-2 right-3 text-sm text-dark-base tracking-wider">
+                {topTitle}
+            </div>
+
+            <div className="flex flex-col items-center gap-y-3 text-md text-dark-base">
+                <Icon className="text-4xl drop-shadow-xs" style={{ color }} />
+                <span className="tracking-wide">{centerTitle}</span>
+            </div>
+
+            <div className="absolute bottom-2 left-3 text-sm text-dark-base tracking-wider">
+                {bottomTitle}
+            </div>
+        </motion.div>
+    );
+});

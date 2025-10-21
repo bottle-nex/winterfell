@@ -8,18 +8,12 @@ export const doto = Doto({
 });
 
 interface FeatureOneProps {
-    className?: string;
     title: string;
     subTitle: string;
     description: string;
 }
 
-export default function FeatureOne({
-    className = '',
-    title,
-    subTitle,
-    description,
-}: FeatureOneProps) {
+export default function FeatureOne({ title, subTitle, description }: FeatureOneProps) {
     return (
         <div className="flex flex-col items-start justify-center h-[100vh] pl-16">
             <div className="max-w-[32rem]">

@@ -2,7 +2,8 @@
 import React, { useMemo } from 'react';
 import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
-import { useCodeEditor, FileNode } from '@/src/store/code/useCodeEditor';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { FileNode, NODE } from '@/src/types/prisma-types';
 import { AiFillFolder } from 'react-icons/ai';
 import { AiFillFolderOpen } from 'react-icons/ai';
 import FileIcon from '../tickers/FileIcon';
@@ -25,7 +26,7 @@ export default function Filetree() {
         const flattened: TreeData = {};
 
         function flattenNode(node: FileNode): void {
-            const isFolder = node.type === 'folder';
+            const isFolder = node.type === NODE.FOLDER;
 
             flattened[node.id] = {
                 index: node.id,
@@ -51,7 +52,7 @@ export default function Filetree() {
     }));
 
     return (
-        <div className="h-full bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[24rem]">
+        <div className="h-full overflow-y-auto bg-[#16171a] text-neutral-200 border-r border-neutral-800 max-w-[24rem] w-[20rem]">
             <div className="p-3 border-b border-neutral-800">
                 <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                     Project Files
@@ -68,6 +69,7 @@ export default function Filetree() {
                     canReorderItems={false}
                     onSelectItems={(items) => {
                         const itemId = items[0];
+
                         if (itemId && itemId !== 'root') {
                             const findNode = (nodes: FileNode[], id: string): FileNode | null => {
                                 for (const node of nodes) {
@@ -80,7 +82,8 @@ export default function Filetree() {
                                 return null;
                             };
                             const node = findNode(fileTree, itemId as string);
-                            if (node && node.type === 'file') {
+
+                            if (node && node.type === NODE.FILE) {
                                 selectFile(node);
                             }
                         }

@@ -1,3 +1,6 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
 import reactPlugin from 'eslint-plugin-react';
@@ -5,17 +8,29 @@ import hooksPlugin from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export default [
     {
-        ignores: ['node_modules', '.next', 'dist', 'build'],
+        ignores: [
+            'node_modules',
+            '.next',
+            'dist',
+            'build',
+            'postcss.config.mjs',
+            'eslint.config.mjs',
+            'next-env.d.ts',
+        ],
     },
+
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {
         languageOptions: {
             parserOptions: {
-                projectService: true,
-                tsconfigRootDir: import.meta.dirname,
+                project: path.join(__dirname, 'tsconfig.json'), // ✅ key fix
+                tsconfigRootDir: __dirname,
             },
         },
         plugins: {
