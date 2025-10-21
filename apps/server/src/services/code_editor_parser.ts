@@ -21,14 +21,14 @@ export interface CloudfrontFileProps {
 }
 
 export class CloudfrontFileParser {
-    private root: FileNode; // root node
-    private file_list: string[]; // list of paths
-    private get_file_content: (file_key: string) => Promise<string>; // this will store the file content from cloudfront
+    private root: FileNode;
+    private file_list: string[];
+    private get_file_content: (file_key: string) => Promise<string>;
 
     constructor(options: CloudfrontFileProps) {
         this.file_list = options.fileList;
         this.get_file_content = options.getFileContent;
-        this.root = this.create_folder_node(options.rootName!);
+        this.root = this.create_folder_node(options.rootName || 'root');
     }
 
     private create_file_node(name: string, content?: string, language?: string): FileNode {

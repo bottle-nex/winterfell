@@ -20,20 +20,17 @@ export default async function signInController(req: Request, res: Response) {
 
         let myUser;
         if (existingUser) {
-            const updateData: any = {
+            const updateData = {
                 name: user.name,
                 email: user.email,
                 image: user.image,
                 provider,
+                ...(githubAccessToken && { githubAccessToken }),
             };
-            
-            if (githubAccessToken) {
-                updateData.githubAccessToken = githubAccessToken;
-            }
 
             myUser = await prisma.user.update({
                 where: {
-                    email: user.email!,
+                    email: user.email,
                 },
                 data: updateData,
             });

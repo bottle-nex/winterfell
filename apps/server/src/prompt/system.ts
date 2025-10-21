@@ -244,6 +244,3 @@ Completed the Anchor project successfully.
 </context>
 
 Now generate the complete Anchor project based on the user's request.`;
-
-
-

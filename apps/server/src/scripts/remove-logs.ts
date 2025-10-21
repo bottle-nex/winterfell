@@ -64,7 +64,7 @@ function removeConsoleLogs(content: string): string {
 
             if (parenCount === 0) {
                 let endIndex = currentIndex;
-                while (endIndex < result.length && /\s/.test(result[endIndex]!)) {
+                while (endIndex < result.length && /\s/.test(result[endIndex])) {
                     endIndex++;
                 }
                 if (endIndex < result.length && result[endIndex] === ';') {
