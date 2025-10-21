@@ -49,10 +49,10 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                <div className=" flex items-center gap-x-4">
+                <div className="flex items-center gap-x-4">
                     <IoIosCreate
                         onClick={handleSubmit}
-                        className="hover:bg-neutral-700/70 rounded-sm p-[4px] h-7 w-7 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
+                        className="hover:bg-neutral-700/70 hidden md:block rounded-sm p-[4px] h-7 w-7 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
                     />
                     <NavbarSigninAction />
                 </div>

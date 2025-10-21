@@ -1,26 +1,38 @@
-# Lightweight Anchor development image - minimal overhead
-FROM --platform=linux/amd64 debian:bookworm-slim
+FROM rust:1.78-slim-bookworm
 
-# Install only essential dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     ca-certificates \
-    libssl3 \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libudev-dev \
+    git \
+    jq \
+    tree \
+    bzip2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Rust (minimal, no docs)
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.78.0 --profile minimal
-ENV PATH="/root/.cargo/bin:$PATH"
+# Install Solana from pre-built binary
+RUN curl -sSfL https://github.com/solana-labs/solana/releases/download/v1.18.22/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
+    tar jxf /tmp/solana.tar.bz2 -C /tmp && \
+    mkdir -p /usr/local/solana && \
+    mv /tmp/solana-release/bin /usr/local/solana/ && \
+    rm -rf /tmp/solana* && \
+    ln -s /usr/local/solana/bin/* /usr/local/bin/
 
-# Install Solana CLI
-RUN bash -c 'curl -sSfL https://release.solana.com/v1.18.22/install | sh' || \
-    bash -c 'curl -sSfL https://release.solana.com/stable/install | sh'
-ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
+# Verify Solana
+RUN solana --version
 
-# Install Anchor CLI (just the binary, no extra tools)
+# Install Anchor CLI
 RUN cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 anchor-cli --locked
 
-# Minimal config
+# Copy mount-code script
+COPY scripts/mount-code.sh /usr/local/bin/mount-code
+RUN chmod +x /usr/local/bin/mount-code
+
+# Setup Solana config
 WORKDIR /workspace
 RUN mkdir -p /root/.config/solana && \
     solana-keygen new --no-bip39-passphrase -o /root/.config/solana/id.json -s && \
@@ -28,7 +40,7 @@ RUN mkdir -p /root/.config/solana && \
 
 ENV ANCHOR_WALLET="/root/.config/solana/id.json"
 
-# Verify
+# Final verification
 RUN solana --version && anchor --version
 
 CMD ["/bin/bash"]
