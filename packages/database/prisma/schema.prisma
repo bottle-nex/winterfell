@@ -9,16 +9,19 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  image     String?
-  password  String? // if using credentials login
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String?
+  image             String?
+  password          String? // if using credentials login
+  provider          String?
+  githubAccessToken String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  contracts Contract[]
-  chats     Chat[]
+  subscription Subscription?
+  contracts    Contract[]
+  chats        Chat[]
 }
 
 model Contract {
@@ -82,9 +85,40 @@ model Message {
   role    ChatRole
   content String   @db.Text
 
+  planning       Boolean @default(false)
+  generatingCode Boolean @default(false)
+  building       Boolean @default(false)
+  creatingFiles  Boolean @default(false)
+  finalzing      Boolean @default(false)
+  error          Boolean @default(false)
+
+  // isCodeBuilt Boolean? @default(false)
+  // buildStatus
+
   createdAt DateTime @default(now())
 
   @@index([chatId])
+}
+
+model Subscription {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  plan   PlanType           @default(FREE)
+  status SubscriptionStatus @default(ACTIVE)
+
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+
+  start     DateTime  @default(now())
+  end       DateTime?
+  autoRenew Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ContractType {
@@ -113,4 +147,24 @@ enum ChatRole {
   USER
   AI
   SYSTEM
+}
+
+enum PlanType {
+  FREE
+  PREMIUM
+  PREMIUM_PLUS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum SystemMessageType {
+  BUILD_START
+  BUILD_PROGRESS
+  BUILD_COMPLETE
+  BUILD_ERROR
 }

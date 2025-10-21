@@ -4,11 +4,12 @@ import {
     SiTypescript,
     SiJavascript,
     SiToml,
-    SiJson,
     SiMarkdown,
     SiSolidity,
     SiYaml,
 } from 'react-icons/si';
+import { VscJson } from 'react-icons/vsc';
+
 import { VscLock, VscFile } from 'react-icons/vsc';
 
 interface FileIconProps {
@@ -57,7 +58,11 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
 
             case 'json':
                 return (
-                    <SiJson size={size} color="#F7DF1E" className={`text-[#F7DF1E] ${className}`} />
+                    <VscJson
+                        size={size}
+                        color="#42a63e"
+                        className={`text-[#399551] ${className}`}
+                    />
                 );
 
             case 'md':

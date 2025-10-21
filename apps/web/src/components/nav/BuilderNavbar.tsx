@@ -1,6 +1,4 @@
-import { cn } from '@/src/lib/utils';
 import Image from 'next/image';
-import { FaCode, FaPlay } from 'react-icons/fa';
 import { IoIosPaperPlane, IoMdOptions } from 'react-icons/io';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
@@ -14,27 +12,12 @@ export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
     const [openSettingsPanel, setOpenSettingsPanel] = useState<boolean>(false);
     return (
-        <div className="h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
+        <div className="min-h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
             <div className=" text-[#C3C3C3] text-[17px] tracking-[0.5rem] flex justify-start items-center gap-x-3 cursor-pointer group">
                 <LiaServicestack size={28} className="text-primary" />
-                SHARK FIN
+                WINTERFELL
             </div>
-            <div className="flex items-center justify-between">
-                <div className="flex items-center justify-start bg-dark rounded-[4px] p-[3px] border border-neutral-800">
-                    <ToolTipComponent side="bottom" content="Preview your project in real-time">
-                        <FaPlay
-                            size={24}
-                            className={cn('py-2 rounded-[4px] cursor-pointer transition w-8')}
-                        />
-                    </ToolTipComponent>
-                    <ToolTipComponent side="bottom" content="View and edit the source code">
-                        <FaCode
-                            size={24}
-                            className={cn('py-2 rounded-[4px] cursor-pointer transition w-8')}
-                        />
-                    </ToolTipComponent>
-                </div>
-
+            <div className="flex items-center justify-end">
                 <div className="flex items-center justify-between gap-x-5">
                     <NetworkTicker />
                     <div className="relative">
@@ -59,6 +42,18 @@ export default function BuilderNavbar() {
                         >
                             <IoIosPaperPlane />
                             <span className="text-xs">Deploy</span>
+                        </Button>
+                    </ToolTipComponent>
+
+                    <ToolTipComponent
+                        content="Publish the code snippet to GitHub"
+                        side="bottom"
+                    >
+                        <Button
+                            size={'sm'}
+                            className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                        >
+                            <span className="text-xs">Publish</span>
                         </Button>
                     </ToolTipComponent>
                     {session?.user.image && (

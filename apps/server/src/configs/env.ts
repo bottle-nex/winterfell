@@ -19,6 +19,9 @@ const envScehma = z.object({
     SERVER_AWS_SECRET_ACCESS_KEY: z.string().transform((val) => val.trim()),
     SERVER_AWS_REGION: z.string().transform((val) => val.trim()),
     SERVER_AWS_BUCKET_NAME: z.string().transform((val) => val.trim()),
+    SERVER_CLOUDFRONT_DOMAIN: z.string().transform((val) => val.trim()),
+    SERVER_RAZORPAY_KEY_ID: z.string().transform((val) => val.trim()),
+    SERVER_RAZORPAY_KEY_SECRET: z.string().transform((val) => val.trim()),
 });
 
 function parseScehma() {

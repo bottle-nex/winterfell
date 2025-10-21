@@ -1,3 +1,6 @@
+'use client';
+
+import React from 'react';
 import ArchitectureTitleComponent from './ArchitectureTitleComponent';
 import FeatureOne from './FeatureOne';
 
@@ -23,13 +26,15 @@ const productMetaOptions = [
 ];
 
 export default function WhoWeAre() {
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
     return (
         <>
             <ArchitectureTitleComponent />
-            <div className="bg-[#0a0c0d] w-screen">
+            <div ref={containerRef} className="bg-[#0a0c0d] w-screen">
                 <div className="grid grid-cols-2 gap-0">
                     <div className="h-screen sticky top-0 flex items-center justify-center bg-[#0a0c0d]">
-                        <div className="text-white text-2xl">Left Content (Sticky)</div>
+                        left content (sticky)
                     </div>
 
                     <div className="min-h-[300vh] flex flex-col justify-between z-10 bg-[#0a0c0d]">
