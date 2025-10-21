@@ -12,7 +12,6 @@ export interface UserType {
     image?: string | null;
     provider?: string | null;
     token?: string | null;
-    githubAccessToken?: string | null;
 }
 
 export interface CustomSession {
@@ -30,17 +29,13 @@ export const authOption: AuthOptions = {
                 if (account?.provider === 'google' || account?.provider === 'github') {
                     const response = await axios.post(`${SIGNIN_URL}`, {
                         user,
-                        account: {
-                            ...account,
-                            access_token: account.access_token,
-                        },
+                        account,
                     });
 
                     const result = response.data;
                     if (result?.success) {
                         user.id = result.user.id.toString();
                         user.token = result.token;
-                        user.githubAccessToken = result.user.githubAccessToken;
                         return true;
                     }
                 }
@@ -76,11 +71,6 @@ export const authOption: AuthOptions = {
         GitHubProvider({
             clientId: process.env.GITHUB_CLIENT_ID || '',
             clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
-            authorization: {
-                params: {
-                    scope: 'read:user user:email repo'
-                }
-            }
         }),
     ],
 };

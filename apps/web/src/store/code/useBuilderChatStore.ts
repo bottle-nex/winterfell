@@ -1,4 +1,4 @@
-import { Message } from '@repo/database';
+import { Message } from '@/src/types/prisma-types';
 import { create } from 'zustand';
 
 interface BuilderChatState {

@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import env from '../configs/env';
 import jwt from 'jsonwebtoken';
+import { AuthUser } from '../types/express';
 
 export default function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
-
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         res.status(401).json({
             success: false,
@@ -31,6 +31,7 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
         });
         return;
     }
+
     try {
         jwt.verify(token, secret, (err, decoded) => {
             if (err) {
