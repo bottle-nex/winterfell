@@ -15,8 +15,8 @@ import {
 } from '@/src/types/stream_event_types';
 import BuilderChatSystemMessage from './BuilderChatSystemMessage';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import { Message } from '@repo/database';
 import AnimtaedLoader from '../ui/animated-loader';
+import { Message } from '@/src/types/prisma-types';
 
 export default function BuilderChats() {
     const { messages, loading, upsertMessage, setPhase, setLoading, setCurrentFileEditing } =
