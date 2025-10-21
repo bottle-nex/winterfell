@@ -12,7 +12,7 @@ export default async function startChatController(req: Request, res: Response) {
 
     const data = startChatSchema.safeParse(req.body);
     if (!data.success) {
-        res.status(400).json({ error: "Invalid request" + data.error });
+        res.status(400).json({ error: 'Invalid request' + data.error });
         return;
     }
 

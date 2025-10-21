@@ -9,7 +9,7 @@ export default function ActionTickers() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.6 }}
-            className="flex items-center justify-center gap-4 mt-8"
+            className="flex items-center justify-center md:gap-4 gap-2 mt-4 md:mt-8"
         >
             {[
                 {

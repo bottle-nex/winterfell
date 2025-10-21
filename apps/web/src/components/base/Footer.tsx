@@ -43,26 +43,25 @@ const footerLinks = [
 
 export default function Footer() {
     return (
-        <motion.div className="w-screen h-screen bg-dark-base relative">
-            <div className="h-[65%] w-full border-b border-neutral-700 pt-20 px-4 flex">
-                <div className="w-[50%] h-full border-r border-neutral-700 text-neutral-100 px-4 text-left">
-                    <div className="max-w-lg text-5xl font-semibold tracking-wide leading-tight">
+        <motion.div className="min-w-screen min-h-screen md:h-screen bg-dark-base relative">
+            <div className="md:h-[65%] w-full border-b border-neutral-700 md:pt-20 pt-12 px-4 flex flex-col md:flex-row">
+                <div className="md:w-[50%] w-full h-full md:border-r border-neutral-700 text-neutral-100 px-4 text-left mb-8 md:mb-0">
+                    <div className="max-w-lg md:text-5xl text-3xl font-semibold tracking-wide leading-tight">
                         Build Solana Smart Contracts in Minutes, Not Days.
                     </div>
-                    <p className="text-neutral-400 text-lg mt-6 max-w-md">
+                    <p className="text-neutral-400 md:text-lg text-base mt-6 max-w-md">
                         AI-powered Anchor contract generation, deployment, and client SDK
                         creation—all in one platform.
                     </p>
                 </div>
-                <div className="w-[50%] h-full flex">
+                <div className="md:w-[50%] w-full h-full flex flex-col md:flex-row">
                     {footerLinks.map((section, index) => (
                         <div
                             key={section.title}
-                            className={`w-full h-full px-4 flex flex-col items-start text-neutral-200 gap-y-3 ${
-                                index < footerLinks.length - 1 ? 'border-r border-neutral-700' : ''
-                            }`}
+                            className={`w-full h-full px-4 flex flex-col items-start text-neutral-200 gap-y-3 mb-8 md:mb-0 pb-6 md:pb-0 ${index < footerLinks.length - 1 ? 'md:border-r border-b md:border-b-0 border-neutral-700' : ''
+                                }`}
                         >
-                            <div className="text-3xl font-semibold">{section.title}</div>
+                            <div className="md:text-3xl text-2xl font-semibold">{section.title}</div>
                             <div className="flex flex-col items-start gap-y-2 text-neutral-400">
                                 {section.links.map((link) => {
                                     if (typeof link === 'object' && 'icon' in link) {
@@ -92,13 +91,13 @@ export default function Footer() {
                 </div>
             </div>
             <div
-                className={`h-[35%] text-neutral-200 w-full flex flex-col justify-center items-center ${bruno.className}`}
+                className={`md:h-[35%] py-12 md:py-0 text-neutral-200 w-full flex flex-col justify-center items-center ${bruno.className}`}
             >
-                <div className="text-9xl font-extrabold tracking-wider flex items-center">
-                    WINTERFELL
-                    <LiaServicestack className="text-primary h-52 w-52 transition-all duration-500" />
+                <div className="md:text-9xl text-5xl font-extrabold tracking-wider flex items-center flex-col md:flex-row">
+                    <span>WINTERFELL</span>
+                    <LiaServicestack className="text-primary md:h-52 md:w-52 h-24 w-24 transition-all duration-500" />
                 </div>
-                <p className="text-neutral-500 text-sm tracking-wider mt-4">
+                <p className="text-neutral-500 md:text-sm text-xs tracking-wider mt-4 text-center px-4">
                     © 2024 Lovable for Anchor. Powered by AI + Solana.
                 </p>
             </div>

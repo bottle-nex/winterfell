@@ -1,40 +1,84 @@
-// apps/server/eslint.config.mjs
-import path from 'path';
 import js from '@eslint/js';
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import prettierPlugin from 'eslint-plugin-prettier';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 export default [
+  // Base JS recommended rules
   js.configs.recommended,
-  ...tsPlugin.configs?.recommended ?? [],
+  
+  // Ignore patterns
   {
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '*.config.js',
+      'coverage/**',
+    ],
   },
+  
+  // TypeScript files configuration
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts', '**/*.js'],
     languageOptions: {
-      parser: tsParser,
+      parser: tsparser,
       parserOptions: {
-        project: path.join(__dirname, "tsconfig.json"), // ✅ key fix
-        tsconfigRootDir: __dirname,
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        exports: 'readonly',
+        Buffer: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        fetch: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        Headers: 'readonly',
+        FormData: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
       },
     },
     plugins: {
-      prettier: prettierPlugin,
-      '@typescript-eslint': tsPlugin,
+      '@typescript-eslint': tseslint,
+      prettier: prettier,
     },
     rules: {
-      semi: ['error', 'always'],
-      quotes: ['error', 'single'],
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      // TypeScript specific rules
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      
+      // General rules
+      'no-console': 'off', // You're using winston for logging
+      'no-unused-vars': 'off', // Using TS version instead
+      'prefer-const': 'error',
+      'no-var': 'error',
+      
+      // Prettier integration
       'prettier/prettier': 'error',
     },
   },
+  
+  // Prettier config (must be last to override other configs)
   prettierConfig,
 ];

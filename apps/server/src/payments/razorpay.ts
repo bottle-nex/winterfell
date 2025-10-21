@@ -132,7 +132,7 @@ export default class RazorpayGateway {
                 plan: subscription.plan,
                 status: subscription.status,
                 start: subscription.start,
-                end: subscription.end!,
+                end: subscription.end as Date,
                 auto_renew: subscription.autoRenew,
             };
         } catch (err) {

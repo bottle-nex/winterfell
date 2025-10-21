@@ -31,7 +31,7 @@ export default async function updateSubscriptionController(req: Request, res: Re
         }
 
         const { success, message } = await razorpay.verify_and_update(
-            userSubscription.razorpayOrderId!,
+            userSubscription.razorpayOrderId as string,
             paymentId,
             signature,
             userSubscription.id,
