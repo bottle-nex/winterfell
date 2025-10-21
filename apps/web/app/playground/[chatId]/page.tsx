@@ -5,13 +5,9 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import React, { useEffect } from 'react';
 
-interface PageProps {
-    params: { chatId: string };
-}
-
 export default function Page({ params }: { params: Promise<{ chatId: string }> }) {
     const { cleanStore } = useBuilderChatStore();
-    const { reset} = useCodeEditor();
+    const { reset } = useCodeEditor();
     const unwrappedParams = React.use(params);
     const { chatId } = unwrappedParams;
 

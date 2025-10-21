@@ -1,4 +1,7 @@
-export default function debounce<F extends (...args: any[]) => void>(fn: F, delay: number = 1500) {
+export default function debounce<F extends (...args: Parameters<F>[]) => void>(
+    fn: F,
+    delay: number = 1500,
+) {
     let timer: NodeJS.Timeout;
 
     const debounced = (...args: Parameters<F>) => {

@@ -130,25 +130,6 @@ export default class ContentGenerator {
                 parts: [{ text: this.systemPrompt }],
             });
 
-            // const llm_message = await prisma.message.create({
-            //     data: {
-            //         content:
-            //             'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
-            //         chatId: chat.id,
-            //         role: ChatRole.AI,
-            //     },
-            // });
-
-            // const startingData: StartingData = {
-            //     phase: 'starting',
-            //     messageId: llm_message.id,
-            //     chatId: chat.id,
-            //     contractId: contractId,
-            //     timestamp: Date.now(),
-            // };
-
-            // this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
-
             const startingData: StartingData = {
                 stage: 'starting',
                 chatId: chat.id,
@@ -182,7 +163,6 @@ export default class ContentGenerator {
                     chatId: chat.id,
                     role: ChatRole.SYSTEM,
                     content: 'starting to generate in a few seconds',
-                    buildStart: true,
                 },
             });
 
@@ -252,7 +232,6 @@ export default class ContentGenerator {
                     chatId: chat.id,
                     role: ChatRole.SYSTEM,
                     content: 'starting to generate in a few seconds',
-                    buildStart: true,
                 },
             });
 
@@ -333,11 +312,11 @@ export default class ContentGenerator {
                 this.sendSSE(res, PHASE_TYPES.ERROR, data, systemMessage),
             );
 
-            parser.on(STAGE.CONTEXT, ({ data, systemMessage }) => 
+            parser.on(STAGE.CONTEXT, ({ data, systemMessage }) =>
                 this.sendSSE(res, STAGE.CONTEXT, data, systemMessage),
             );
 
-            parser.on(STAGE.PLANNING, ({ data, systemMessage }) => 
+            parser.on(STAGE.PLANNING, ({ data, systemMessage }) =>
                 this.sendSSE(res, STAGE.PLANNING, data, systemMessage),
             );
 
@@ -345,15 +324,15 @@ export default class ContentGenerator {
                 this.sendSSE(res, STAGE.GENERATING_CODE, data, systemMessage),
             );
 
-            parser.on(STAGE.BUILDING, ({ data, systemMessage }) => 
+            parser.on(STAGE.BUILDING, ({ data, systemMessage }) =>
                 this.sendSSE(res, STAGE.BUILDING, data, systemMessage),
             );
 
-            parser.on(STAGE.CREATING_FILES, ({ data, systemMessage }) => 
+            parser.on(STAGE.CREATING_FILES, ({ data, systemMessage }) =>
                 this.sendSSE(res, STAGE.CREATING_FILES, data, systemMessage),
             );
 
-            parser.on(STAGE.FINALIZING, ({ data, systemMessage }) => 
+            parser.on(STAGE.FINALIZING, ({ data, systemMessage }) =>
                 this.sendSSE(res, STAGE.FINALIZING, data, systemMessage),
             );
 

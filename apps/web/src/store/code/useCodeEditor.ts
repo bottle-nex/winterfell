@@ -1,8 +1,6 @@
-import { anchor_toml, cargo_toml, lib_rs, my_program_ts } from '@/src/lib/code/default_codes';
 import CodeEditorServer from '@/src/lib/server/code-editor-server';
 import { FileNode, NODE } from '@/src/types/prisma-types';
 import { FileContent } from '@/src/types/stream_event_types';
-import { AiOutlineConsoleSql } from 'react-icons/ai';
 import { create } from 'zustand';
 
 interface CodeEditorState {
@@ -23,74 +21,7 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
     return {
         currentCode: '',
         currentFile: null,
-        fileTree: [
-            {
-                id: 'root',
-                name: 'root',
-                type: NODE.FOLDER,
-                children: [
-                    {
-                        id: 'my-anchor-project',
-                        name: 'my-anchor-project',
-                        type: NODE.FOLDER,
-                        children: [
-                            {
-                                id: 'programs',
-                                name: 'programs',
-                                type: NODE.FOLDER,
-                                children: [
-                                    {
-                                        id: 'my_program',
-                                        name: 'my_program',
-                                        type: NODE.FOLDER,
-                                        children: [
-                                            {
-                                                id: 'src',
-                                                name: 'src',
-                                                type: NODE.FOLDER,
-                                                children: [
-                                                    {
-                                                        id: 'lib_rs',
-                                                        name: 'lib.rs',
-                                                        type: NODE.FILE,
-                                                        content: lib_rs,
-                                                    },
-                                                ],
-                                            },
-                                            {
-                                                id: 'cargo_toml',
-                                                name: 'Cargo.toml',
-                                                type: NODE.FILE,
-                                                content: cargo_toml,
-                                            },
-                                        ],
-                                    },
-                                ],
-                            },
-                            {
-                                id: 'tests',
-                                name: 'tests',
-                                type: NODE.FOLDER,
-                                children: [
-                                    {
-                                        id: 'my_program_test',
-                                        name: 'my_program.ts',
-                                        type: NODE.FILE,
-                                        content: my_program_ts,
-                                    },
-                                ],
-                            },
-                            {
-                                id: 'anchor_toml',
-                                name: 'Anchor.toml',
-                                type: NODE.FILE,
-                                content: anchor_toml,
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],
+        fileTree: [],
         editedFiles: {},
 
         setCurrentCode: (code: string) => {
@@ -105,8 +36,8 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                            ? { ...n, children: updateNode(n.children) }
-                            : n,
+                          ? { ...n, children: updateNode(n.children) }
+                          : n,
                 );
 
             const newTree = updateNode(state.fileTree);
@@ -137,18 +68,18 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
 
         parseFileStructure: (files: FileContent[]) => {
             const root: FileNode = {
-                id: "root",
-                name: "root",
+                id: 'root',
+                name: 'root',
                 type: NODE.FOLDER,
                 children: [],
             };
 
             // Build full paths as IDs to ensure uniqueness
             for (const { path, content } of files) {
-                const parts = path.split("/").filter(Boolean);
+                const parts = path.split('/').filter(Boolean);
                 let current = root;
 
-                let currentPath = "";
+                let currentPath = '';
 
                 for (let i = 0; i < parts.length; i++) {
                     const part = parts[i];
@@ -156,7 +87,6 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
 
                     // Build unique path-based ID
                     currentPath = currentPath ? `${currentPath}/${part}` : part;
-                    
 
                     let existing = current.children?.find((child) => child.name === part);
 
@@ -176,7 +106,6 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     current = existing;
                 }
             }
-
 
             set({
                 fileTree: [root],
@@ -209,9 +138,9 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                 fileTree: [],
                 currentFile: null,
                 currentCode: '',
-                editedFiles: {},    
-            })
-        }
+                editedFiles: {},
+            });
+        },
     };
 });
 

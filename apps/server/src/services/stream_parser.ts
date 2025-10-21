@@ -1,4 +1,4 @@
-import { Message, prisma, SystemMessageType } from '@repo/database';
+import { ChatRole, Message, Prisma, prisma, SystemMessageType } from '@repo/database';
 import { FileContent, STAGE } from '../types/content_types';
 import {
     BuildingData,
@@ -151,21 +151,21 @@ export default class StreamParser {
         }
     }
 
-    private handleContext(systemMessage: Message): boolean {
-        // If already accumulating context from previous chunk
+    private async handleContext(systemMessage: Message): Promise<boolean> {
+        let llm_message;
         if (this.pendingContext !== null) {
             this.pendingContext += '\n' + this.buffer;
             const endMatch = this.pendingContext.match(/<\/\s*context\s*>/i);
             if (endMatch) {
-
-                // Full context block found
                 const content = this.pendingContext.replace(/<\s*context\s*>/i, '').replace(/<\/\s*context\s*>/i, '').trim();
-
-                console.log('the context:', chalk.red(content));
-                // store content in the backend, call the database-queue
-
-                this.emit(STAGE.CONTEXT, { context: content }, systemMessage);
-
+                llm_message = await prisma.message.create({
+                    data: {
+                        content: content,
+                        chatId: systemMessage.chatId,
+                        role: ChatRole.AI,
+                    }
+                })
+                this.emit(STAGE.CONTEXT, { context: content, llmMessage: llm_message }, systemMessage);
                 this.pendingContext = null;
                 this.buffer = '';
                 return true;
@@ -175,7 +175,6 @@ export default class StreamParser {
             }
         }
 
-        // Look for start tag
         const startMatch = this.buffer.match(/<\s*context\s*>/i);
         if (startMatch) {
 
@@ -183,14 +182,19 @@ export default class StreamParser {
             const endMatch = rest.match(/<\/\s*context\s*>/i);
 
             if (endMatch) {
-                // Full context in one buffer
                 const content = rest.split(endMatch[0])[0].trim();
-                this.emit(STAGE.CONTEXT, { context: content }, systemMessage);
+                llm_message = await prisma.message.create({
+                    data: {
+                        content: content,
+                        chatId: systemMessage.chatId,
+                        role: ChatRole.AI,
+                    }
+                })
+                this.emit(STAGE.CONTEXT, { context: content, llmMessage: llm_message }, systemMessage);
 
                 this.buffer = rest.split(endMatch[0]).slice(1).join(endMatch[0]);
                 return true;
             } else {
-                // Start tag found, but no end yet — begin accumulation
                 this.pendingContext = rest;
                 this.buffer = this.buffer.split(startMatch[0])[0]; // keep content before <context>
                 return false;
@@ -204,23 +208,63 @@ export default class StreamParser {
 
         switch (stage) {
             case 'Planning':
-                // this.currentStage = stage;
+
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        planning: true,
+                    }
+                })
                 this.emit(STAGE.PLANNING, { stage }, systemMessage);
                 break;
 
             case 'Generating Code':
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        generatingCode: true,
+                    }
+                })
                 this.emit(STAGE.GENERATING_CODE, { stage }, systemMessage);
                 break;
 
             case 'Building':
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        building: true,
+                    }
+                })
                 this.emit(STAGE.BUILDING, { stage }, systemMessage);
                 break;
 
             case 'Creating Files':
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        creatingFiles: true,
+                    }
+                })
                 this.emit(STAGE.CREATING_FILES, { stage }, systemMessage);
                 break;
 
             case 'Finalizing':
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        finalzing: true,
+                    }
+                })
                 this.emit(STAGE.FINALIZING, { stage }, systemMessage);
                 break;
 
@@ -229,6 +273,14 @@ export default class StreamParser {
                     message: 'Invalid stage',
                     error: `Unknown stage ${stage}`,
                 };
+                systemMessage = await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        error: true,
+                    }
+                })
                 this.handleError(new Error('Invalid stage'), errorData);
                 break;
         }
@@ -252,14 +304,6 @@ export default class StreamParser {
             }
             case 'building': {
                 this.currentPhase = phase;
-                systemMessage = await prisma.message.update({
-                    where: {
-                        id: systemMessage.id,
-                    },
-                    data: {
-                        buildProgress: true,
-                    },
-                });
                 const data: BuildingData = { phase: 'building' };
                 this.emit(PHASE_TYPES.BUILDING, data, systemMessage);
                 break;
@@ -272,14 +316,6 @@ export default class StreamParser {
             }
             case 'complete': {
                 this.currentPhase = phase;
-                systemMessage = await prisma.message.update({
-                    where: {
-                        id: systemMessage.id,
-                    },
-                    data: {
-                        buildComplete: true,
-                    },
-                });
                 const data: CompleteData = { phase: 'complete' };
                 this.emit(PHASE_TYPES.COMPLETE, data, systemMessage);
                 break;

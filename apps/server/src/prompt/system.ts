@@ -3,7 +3,7 @@ export const SYSTEM_PROMPT = `You are an expert Solana Anchor framework develope
 ## CRITICAL RULES - READ CAREFULLY
 
 ### BEFORE GENERATION
-Before starting any code generation, you MUST first output a <context> section introducing the contract, e.g.:
+Before starting any code generation, you MUST first output a <context> section introducing the contract should be , e.g.:
 
 - Each new <phase> or <stage> should only contain one to two words of data (its label, like "thinking" or "generating").
 - When a phase or stage ends, you MUST NOT explicitly write </phase> or </stage>.

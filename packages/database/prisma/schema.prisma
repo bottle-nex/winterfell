@@ -85,10 +85,12 @@ model Message {
   role    ChatRole
   content String   @db.Text
 
-  buildProgress Boolean? @default(false)
-  buildError    Boolean? @default(false)
-  buildStart    Boolean? @default(false)
-  buildComplete Boolean? @default(false)
+  planning       Boolean @default(false)
+  generatingCode Boolean @default(false)
+  building       Boolean @default(false)
+  creatingFiles  Boolean @default(false)
+  finalzing      Boolean @default(false)
+  error          Boolean @default(false)
 
   // isCodeBuilt Boolean? @default(false)
   // buildStatus

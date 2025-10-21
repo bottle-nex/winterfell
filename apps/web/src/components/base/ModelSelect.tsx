@@ -1,10 +1,4 @@
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from '@/src/components/ui/select';
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@/src/components/ui/select';
 import Image from 'next/image';
 
 type ModelType = 'gemini' | 'claude';

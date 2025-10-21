@@ -38,6 +38,7 @@ export interface StartingData {
 
 export interface ContextData {
     context: string;
+    llmMessage: Message;
 }
 
 export interface StageData {

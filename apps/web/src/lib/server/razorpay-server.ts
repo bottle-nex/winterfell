@@ -46,6 +46,7 @@ export default class RazorpayServer {
                 name: 'Winter Fell subscription',
                 description: `Subscribing to ${plan}`,
                 order_id: order.orderId,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 handler: async (response: any) => {
                     try {
                         const verified = await razorpayServer.updateSubscription(
@@ -73,7 +74,7 @@ export default class RazorpayServer {
                     color: '#FF4D67',
                 },
             };
-
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const rzp = new (window as any).Razorpay(options);
             rzp.open();
         } catch (error) {

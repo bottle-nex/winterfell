@@ -1,8 +1,8 @@
 'use client';
 
-import React from "react";
-import ArchitectureTitleComponent from "./ArchitectureTitleComponent";
-import FeatureOne from "./FeatureOne";
+import React from 'react';
+import ArchitectureTitleComponent from './ArchitectureTitleComponent';
+import FeatureOne from './FeatureOne';
 
 const productMetaOptions = [
     {

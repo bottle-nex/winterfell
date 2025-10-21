@@ -33,10 +33,12 @@ export default function DashboardTextAreaComponent() {
             chatId: newChatId,
             role: 'USER',
             content: inputValue,
-            buildProgress: false,
-            buildError: false,
-            buildStart: false,
-            buildComplete: false,
+            planning: false,
+            generatingCode: false,
+            building: false,
+            creatingFiles: false,
+            finalzing: false,
+            error: false,
             createdAt: new Date(),
         });
 
@@ -142,7 +144,7 @@ export default function DashboardTextAreaComponent() {
                                 className={cn(
                                     'w-3 h-3 transition-transform',
                                     inputValue.trim() &&
-                                        'group-hover/submit:translate-x-0.5 duration-200',
+                                    'group-hover/submit:translate-x-0.5 duration-200',
                                 )}
                             />
                         </Button>

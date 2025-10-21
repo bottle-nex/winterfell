@@ -4,6 +4,11 @@ import { create } from 'zustand';
 interface BuilderChatState {
     messages: Message[];
     phase: string;
+    loading: boolean;
+    currentFileEditing: string | null;
+
+    setCurrentFileEditing: (file: string | null) => void;
+    setLoading: (loading: boolean) => void;
     setPhase: (phase: string) => void;
     setMessage: (message: Message) => void;
     upsertMessage: (message: Partial<Message> & { id: string }) => void;
@@ -13,6 +18,11 @@ interface BuilderChatState {
 export const useBuilderChatStore = create<BuilderChatState>((set, get) => ({
     messages: [],
     phase: '',
+    loading: false,
+    currentFileEditing: null,
+
+    setCurrentFileEditing: (file) => set({ currentFileEditing: file }),
+    setLoading: (loading) => set({ loading }),
     setPhase: (phase) => set({ phase }),
     setMessage: (message) => {
         const messages = get().messages;
