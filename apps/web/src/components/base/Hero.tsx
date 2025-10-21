@@ -23,7 +23,7 @@ export default function Hero() {
     const fadeOpacity = useTransform(scrollY, [0, 800], [0, 1]);
 
     return (
-        <motion.div className="flex-1 flex justify-center items-center px-4 sticky top-0 z-0">
+        <motion.div className="flex-1 flex justify-center items-center px-4 sticky top-0 md:top-0 z-0">
             <motion.div
                 className="absolute inset-0 bg-black pointer-events-none z-30"
                 style={{ opacity: fadeOpacity }}
@@ -49,7 +49,7 @@ export default function Hero() {
                         transition={{ delay: 0.5, duration: 0.6 }}
                         className="mb-3"
                     >
-                        <h1 className="text-[60px] font-bold leading-tight bg-gradient-to-t flex flex-col from-neutral-700 via-neutral-300 to-neutral-200 bg-clip-text text-transparent">
+                        <h1 className="text-[28px] md:text-[60px] font-bold leading-tight bg-gradient-to-t flex flex-col from-neutral-700 via-neutral-300 to-neutral-200 bg-clip-text text-transparent">
                             <span>Ship Solana Contracts</span>
                             <span>in Minutes not Months</span>
                         </h1>
@@ -60,16 +60,16 @@ export default function Hero() {
                     <ActionTickers />
                 </motion.div>
 
-                <div className="absolute bottom-12 left-10">
-                    <div className="max-w-2xl flex flex-col justify-start items-start text-light font-semibold">
+                <div className="absolute bottom-2 left-0 md:bottom-12 md:left-10 text-[10px] md:text-[18px]">
+                    <div className="md:max-w-2xl max-w-sm flex flex-col justify-start items-start text-light font-semibold">
                         <span>Powered by AI + Anchor</span>
                         <span className="">Build Solana Smart Contracts 10x Faster</span>
-                        <div className="flex items-end justify-center gap-x-3 mt-2">
-                            <Button className="font-semibold !px-6 rounded-[4px]">
+                        <div className="flex items-end justify-center gap-x-2 md:gap-x-3 mt-2">
+                            <Button className="font-semibold text-xs md:text-base !px-4 md:!px-6 rounded-[4px]">
                                 Explore Playground
                                 <RiCodeSSlashFill />
                             </Button>
-                            <span className="font-light text-primary tracking-wide text-xs border-b border-primary py-1">
+                            <span className="font-light text-primary tracking-wide md:text-xs border-b border-primary py-1">
                                 Read Our Docs
                             </span>
                         </div>

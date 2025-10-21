@@ -52,24 +52,23 @@ export default function Features() {
         offset: ['start start', 'end end'],
     });
 
-    // Memoize the subtitle opacity transform
     const subtitleOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
 
     return (
         <div ref={containerRef} className="relative bg-dark-base" style={{ height: '350vh' }}>
-            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
-                <div className="w-full max-w-[60%] text-5xl font-bold tracking-wider text-[#FDF9F0] leading-[1.2] relative">
+            <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-4 md:px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
+                <div className="w-full md:max-w-[60%] md:text-5xl text-lg sm:text-2xl font-bold tracking-wider text-[#FDF9F0] md:leading-[1.2] relative text-center md:text-left">
                     BECAUSE CODING SHOULDN&apos;T RUIN YOUR SLEEP SCHEDULE
-                    <div className="absolute text-[15px] -top-8 font-extralight w-full flex justify-center text-[#d6caae]">
+                    <div className="absolute text-[10px] sm:text-[12px] md:text-[15px] -top-6 font-extralight w-full flex justify-center text-[#d6caae]">
                         fin-tastic features. zero-hassle.
                     </div>
                 </div>
 
                 <motion.div
-                    className="mt-26 flex flex-col w-full space-y-3 pointer-events-none"
+                    className="mt-40 flex flex-col w-full space-y-3 pointer-events-none"
                     style={{ opacity: subtitleOpacity }}
                 >
-                    <div className="mt-10 w-full flex justify-center text-2xl tracking-widest text-dark-base font-semibold">
+                    <div className="mt-4 w-full flex justify-center text-[7px] sm:text-sm md:text-2xl tracking-widest text-dark-base font-semibold text-center px-4">
                         Transform your blockchain ideas into&nbsp;
                         <Highlighter action="underline" color="#6C44FC">
                             production-ready
@@ -78,7 +77,7 @@ export default function Features() {
                     </div>
                 </motion.div>
 
-                <div className="relative w-full flex justify-center items-center mt-20 space-x-2 h-[2rem] bg-primary">
+                <div className="absolute w-full flex justify-center items-center top-65 md:mt-20 gap-2 sm:gap-4 md:space-x-2">
                     {featureData.map((feature, index) => (
                         <AnimatedFeatureCard
                             key={index}
@@ -123,11 +122,9 @@ const AnimatedFeatureCard = React.memo(function AnimatedFeatureCard({
 
     const timeline = [startAnimation, holdStart, holdEnd, vanishStart, Math.min(vanishEnd, 1)];
 
-    // Memoize random values so they don't change on re-render
     const randomRotate = React.useMemo(() => Math.random() * 20 - 10, []);
     const randomX = React.useMemo(() => Math.random() * 50 - 25, []);
 
-    // Call useTransform directly - they're already optimized by Framer Motion
     const y = useTransform(scrollProgress, timeline, [200, 0, 0, -30, -180]);
     const opacity = useTransform(scrollProgress, timeline, [0, 1, 1, 1, 0]);
     const rotate = useTransform(scrollProgress, [timeline[0], timeline[1]], [0, randomRotate]);
@@ -136,19 +133,27 @@ const AnimatedFeatureCard = React.memo(function AnimatedFeatureCard({
     return (
         <motion.div
             style={{ y, opacity, rotate, x }}
-            className="h-[20rem] w-[15rem] rounded-xl flex flex-col justify-center items-center 
-             bg-light border-2 border-neutral-800 shadow-lg shadow-black/20 relative p-4 transform-gpu will-change-[transform,opacity]"
+            className="
+                h-[8rem] w-[6rem] sm:h-[10rem] sm:w-[8rem]
+                md:h-[20rem] md:w-[15rem]
+                rounded-xl flex flex-col justify-center items-center 
+                bg-light border-2 border-neutral-800 shadow-lg shadow-black/20 
+                relative p-2 sm:p-3 md:p-4 transform-gpu will-change-[transform,opacity]
+            "
         >
-            <div className="absolute top-2 right-3 text-sm text-dark-base tracking-wider">
+            <div className="absolute top-1 sm:top-2 right-2 text-[8px] sm:text-[10px] md:text-sm text-dark-base tracking-wider">
                 {topTitle}
             </div>
 
-            <div className="flex flex-col items-center gap-y-3 text-md text-dark-base">
-                <Icon className="text-4xl drop-shadow-xs" style={{ color }} />
-                <span className="tracking-wide">{centerTitle}</span>
+            <div className="flex flex-col items-center gap-y-2 sm:gap-y-3 md:gap-y-3 text-[10px] sm:text-sm md:text-md text-dark-base">
+                <Icon
+                    className="text-xl sm:text-2xl md:text-4xl drop-shadow-xs"
+                    style={{ color }}
+                />
+                <span className="tracking-wide text-center">{centerTitle}</span>
             </div>
 
-            <div className="absolute bottom-2 left-3 text-sm text-dark-base tracking-wider">
+            <div className="absolute bottom-1 sm:bottom-2 left-2 text-[8px] sm:text-[10px] md:text-sm text-dark-base tracking-wider">
                 {bottomTitle}
             </div>
         </motion.div>
