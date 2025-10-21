@@ -52,7 +52,7 @@ export default function Filetree() {
     }));
 
     return (
-        <div className="h-full overflow-y-auto bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[24rem]">
+        <div className="h-full overflow-y-auto bg-[#16171a] text-neutral-200 border-r border-neutral-800 max-w-[24rem] w-[20rem]">
             <div className="p-3 border-b border-neutral-800">
                 <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                     Project Files
@@ -68,10 +68,7 @@ export default function Filetree() {
                     canDropOnFolder={false}
                     canReorderItems={false}
                     onSelectItems={(items) => {
-                        console.log('Selected items:', items);
                         const itemId = items[0];
-                        console.log('Selected item ID:', itemId);
-                        console.log('Current fileTree:', fileTree);
 
                         if (itemId && itemId !== 'root') {
                             const findNode = (nodes: FileNode[], id: string): FileNode | null => {
@@ -85,7 +82,6 @@ export default function Filetree() {
                                 return null;
                             };
                             const node = findNode(fileTree, itemId as string);
-                            console.log('Found node:', node);
 
                             if (node && node.type === NODE.FILE) {
                                 selectFile(node);

@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import { LiaServicestack } from 'react-icons/lia';
 import { FaBolt, FaShieldAlt } from 'react-icons/fa';
 import { FaRust } from 'react-icons/fa6';
-import { Highlighter } from '@/components/ui/highlighter';
+import { Highlighter } from '@/src/components/ui/highlighter';
 import { TbAnchor } from 'react-icons/tb';
 
 const featureData = [

@@ -6,23 +6,27 @@ import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { CHAT_URL } from '@/routes/api_routes';
-import { FILE_STRUCTURE_TYPES, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
+import {
+    FILE_STRUCTURE_TYPES,
+    FileContent,
+    PHASE_TYPES,
+    STAGE,
+    StreamEvent,
+} from '@/src/types/stream_event_types';
 import BuilderChatSystemMessage from './BuilderChatSystemMessage';
-import { IoIosOptions } from 'react-icons/io';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import SystemMessage from './SystemMessage';
+import { Message } from '@repo/database';
+import AnimtaedLoader from '../ui/animated-loader';
 
 export default function BuilderChats() {
-    const { messages, upsertMessage, setPhase } = useBuilderChatStore();
-    const { parseFileStructure } = useCodeEditor()
+    const { messages, loading, upsertMessage, setPhase, setLoading, setCurrentFileEditing } =
+        useBuilderChatStore();
+    const { parseFileStructure } = useCodeEditor();
     const { session } = useUserSessionStore();
     const params = useParams();
     const chatId = params.chatId as string;
     const hasInitialized = useRef(false);
-    const [appearSystemMessage, setAppearSystemMessage] = useState<number>(0);
-    const [currentStage, setCurrentStage] = useState<STAGE>(STAGE.START);
-    const [currentPhase, setCurrentPhase] = useState<PHASE_TYPES | FILE_STRUCTURE_TYPES>(PHASE_TYPES.THINKING);
-    const [currentFile, setCurrentFile] = useState<string>('');
+    const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
         if (hasInitialized.current) return;
@@ -36,7 +40,11 @@ export default function BuilderChats() {
     }, [chatId]);
 
     async function startChat(message: string) {
+        if (isProcessing) return;
+        setIsProcessing(true);
+
         try {
+            setLoading(true);
             const response = await fetch(CHAT_URL, {
                 method: 'POST',
                 headers: {
@@ -71,89 +79,73 @@ export default function BuilderChats() {
                 for (const line of lines) {
                     try {
                         const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
+                        const event: StreamEvent = JSON.parse(jsonString);
 
-                        const data: StreamEvent = JSON.parse(jsonString);
-                        console.log(data);
-
-                        switch (data.type) {
-                            case STAGE.START:
-                                // giving you a priority and starting to think
-                                console.log(data.data);
-                                break;
-
-                            case STAGE.CONTEXT:
-                                // show the message data.data
-                                if ('content' in data.data) {
-                                    upsertMessage({
-                                        id: 'fasdf2',
-                                        content: data.data.content as string,
-                                        role: 'AI',
-                                    })
-                                }
-                                setAppearSystemMessage(1);
-                                break;
-
-                            case STAGE.PLANNING:
-                                setCurrentStage(data.type);
-                                break;
-
-                            case STAGE.GENERATING_CODE:
-                                setCurrentStage(data.type);
-                                break;
-
-                            case PHASE_TYPES.THINKING:
-                                // thinking
-                                setCurrentPhase(data.type);
-                                console.log(data.data);
-                                break;
-
-                            case PHASE_TYPES.GENERATING:
-                                // generating
-                                setCurrentPhase(data.type);
-
-                                console.log(data.data);
-                                break;
-
-                            case FILE_STRUCTURE_TYPES.EDITING_FILE:
-                                // show what file is getting edited
-                                console.log(data.type);
-                                setCurrentPhase(data.type);
-                                if ('file' in data.data) {
-                                    setCurrentFile(data.data.file);
-                                    console.log(data.data.file);
-                                }
-                                break;
-
-                            case PHASE_TYPES.COMPLETE:
-                                // all phase completed
-                                setCurrentPhase(data.type);
-                                console.log(data.data);
-                                break;
-
-                            case STAGE.BUILDING:
-                                setCurrentStage(data.type);
-                                break;
-
-                            case STAGE.CREATING_FILES:
-                                setCurrentStage(data.type);
-                                break;
-
-                            case STAGE.FINALIZING:
-                                setCurrentStage(data.type);
-                                break;
-
-                            case STAGE.END:
-                                setCurrentStage(data.type);
-                                const parsedFileData = parseFileStructure(data.data.data);
-                                break;
-                        }
+                        handleStreamEvent(event);
                     } catch {
-                        console.error('Failed to parse stream chunk:', line);
+                        console.error('Failed to parse stream event');
                     }
                 }
             }
-        } catch (err) {
-            console.error('Error starting chat:', err);
+        } catch (error) {
+            console.error('Chat stream error:', error);
+        } finally {
+            setIsProcessing(false);
+            setLoading(false);
+        }
+    }
+
+    function handleStreamEvent(event: StreamEvent) {
+        switch (event.type) {
+            case PHASE_TYPES.STARTING:
+                if (event.systemMessage) {
+                    upsertMessage(event.systemMessage);
+                }
+                break;
+
+            case STAGE.CONTEXT:
+                if ('llmMessage' in event.data) {
+                    upsertMessage(event.data.llmMessage as Message);
+                }
+                break;
+
+            case STAGE.PLANNING:
+            case STAGE.GENERATING_CODE:
+            case STAGE.BUILDING:
+            case STAGE.CREATING_FILES:
+            case STAGE.FINALIZING:
+                if (event.systemMessage) {
+                    upsertMessage(event.systemMessage);
+                }
+                break;
+
+            case PHASE_TYPES.THINKING:
+            case PHASE_TYPES.GENERATING:
+            case PHASE_TYPES.BUILDING:
+            case PHASE_TYPES.CREATING_FILES:
+            case PHASE_TYPES.COMPLETE:
+                setPhase(event.type);
+                break;
+
+            case FILE_STRUCTURE_TYPES.EDITING_FILE:
+                setPhase(event.type);
+                if ('file' in event.data) {
+                    setCurrentFileEditing(event.data.file as string);
+                }
+                break;
+
+            case PHASE_TYPES.ERROR:
+                console.error('LLM Error:', event.data);
+                break;
+
+            case STAGE.END:
+                if ('data' in event.data) {
+                    parseFileStructure(event.data.data as FileContent[]);
+                }
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -200,25 +192,20 @@ export default function BuilderChats() {
                             <div className="flex justify-start items-start w-full mt-4">
                                 <div className="flex items-start gap-x-2 w-full">
                                     <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-[#0c0d0e] w-full text-light text-left tracking-wider text-[13px]">
-                                        <div className="flex items-center gap-x-2">
-                                            <IoIosOptions />
-                                            working on your idea
+                                        <div className="flex items-center gap-x-2 mb-2">
+                                            <AnimtaedLoader
+                                                shouldAnimate={loading}
+                                                className="h-4 w-4"
+                                            />
+                                            <span>Processing your request...</span>
                                         </div>
                                         <BuilderChatSystemMessage message={message} />
                                     </div>
                                 </div>
                             </div>
                         )}
-
                     </div>
                 ))}
-                {appearSystemMessage && (
-                    <SystemMessage
-                        currentStage={currentStage}
-                        currentPhase={currentPhase}
-                        currentFile={currentFile}
-                    />
-                )}
             </div>
             <div className="flex items-center justify-center w-full py-4 px-6 flex-shrink-0">
                 <BuilderChatInput />

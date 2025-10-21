@@ -1,6 +1,6 @@
-import { FILE_STRUCTURE_TYPES, PHASE_TYPES, STAGE } from "@/src/types/stream_event_types";
-import { Check } from "lucide-react";
-import { cn } from "@/src/lib/utils";
+import { FILE_STRUCTURE_TYPES, PHASE_TYPES, STAGE } from '@/src/types/stream_event_types';
+import { Check } from 'lucide-react';
+import { cn } from '@/src/lib/utils';
 
 interface StageItem {
     stage: STAGE;
@@ -8,11 +8,11 @@ interface StageItem {
 }
 
 const stages: StageItem[] = [
-    { stage: STAGE.PLANNING, show: "Planning" },
-    { stage: STAGE.GENERATING_CODE, show: "Generating Code" },
-    { stage: STAGE.BUILDING, show: "Building" },
-    { stage: STAGE.CREATING_FILES, show: "Sturcturing Files" },
-    { stage: STAGE.FINALIZING, show: "Finalizing" },
+    { stage: STAGE.PLANNING, show: 'Planning' },
+    { stage: STAGE.GENERATING_CODE, show: 'Generating Code' },
+    { stage: STAGE.BUILDING, show: 'Building' },
+    { stage: STAGE.CREATING_FILES, show: 'Sturcturing Files' },
+    { stage: STAGE.FINALIZING, show: 'Finalizing' },
 ];
 
 interface PhaseItem {
@@ -33,14 +33,20 @@ interface SystemMessageProps {
     currentFile?: string;
 }
 
-export default function SystemMessage({ currentStage, currentPhase, currentFile }: SystemMessageProps) {
-
-    const currentIndex = currentStage === STAGE.END ? stages.length : stages.findIndex(s => s.stage === currentStage);
+export default function SystemMessage({
+    currentStage,
+    currentPhase,
+    currentFile,
+}: SystemMessageProps) {
+    const currentIndex =
+        currentStage === STAGE.END
+            ? stages.length
+            : stages.findIndex((s) => s.stage === currentStage);
 
     function truncate(str: string): string {
-        if (!str) return "";
+        if (!str) return '';
         if (str.length <= 10) return str;
-        const parts = str.split("/");
+        const parts = str.split('/');
         const lastPart = parts[parts.length - 1];
         return `.../${lastPart}`;
     }
@@ -59,47 +65,46 @@ export default function SystemMessage({ currentStage, currentPhase, currentFile 
                 {stages.map(({ stage, show }, index) => {
                     const status =
                         index < currentIndex
-                            ? "complete"
+                            ? 'complete'
                             : index === currentIndex
-                                ? "buffering"
-                                : "hung";
+                              ? 'buffering'
+                              : 'hung';
 
                     return (
                         <div key={stage} className="flex items-center gap-x-3">
                             <div
                                 className={cn(
-                                    "flex items-center justify-center w-5 h-5 rounded-full border transition-all",
-                                    status === "hung" && "border-neutral-700",
-                                    status === "buffering" &&
-                                    "border-primary bg-primary/20 animate-pulse",
-                                    status === "complete" &&
-                                    "bg-primary border-primary text-white"
+                                    'flex items-center justify-center w-5 h-5 rounded-full border transition-all',
+                                    status === 'hung' && 'border-neutral-700',
+                                    status === 'buffering' &&
+                                        'border-primary bg-primary/20 animate-pulse',
+                                    status === 'complete' && 'bg-primary border-primary text-white',
                                 )}
                             >
-                                {status === "complete" && (
-                                    <Check className="w-3.5 h-3.5" />
-                                )}
+                                {status === 'complete' && <Check className="w-3.5 h-3.5" />}
                             </div>
                             <div className="flex flex-col items-start justify-center gap-y-1.5 ">
                                 <div
                                     className={cn(
-                                        "text-base font-semibold transition-all",
-                                        status === "hung" && "opacity-50",
-                                        status === "buffering" && "",
-                                        status === "complete" &&
-                                        "text-primary/90"
+                                        'text-base font-semibold transition-all',
+                                        status === 'hung' && 'opacity-50',
+                                        status === 'buffering' && '',
+                                        status === 'complete' && 'text-primary/90',
                                     )}
                                 >
                                     {show}
                                 </div>
-                                {stage === STAGE.GENERATING_CODE && currentStage === STAGE.GENERATING_CODE && (
-                                    <div className="pl-5 opacity-50 text-sm ">
-                                        {phases.find(p => p.phase === currentPhase)?.show + " "}
-                                        {currentFile && currentPhase === FILE_STRUCTURE_TYPES.EDITING_FILE && (
-                                            truncate(currentFile)
-                                        )}
-                                    </div>
-                                )}
+                                {stage === STAGE.GENERATING_CODE &&
+                                    currentStage === STAGE.GENERATING_CODE && (
+                                        <div className="pl-5 opacity-50 text-sm ">
+                                            {phases.find((p) => p.phase === currentPhase)?.show +
+                                                ' '}
+                                            {currentFile &&
+                                                currentPhase ===
+                                                    FILE_STRUCTURE_TYPES.EDITING_FILE &&
+                                                truncate(currentFile)}
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     );

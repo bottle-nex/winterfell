@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Highlighter } from '@/components/ui/highlighter';
+import { Highlighter } from '@/src/components/ui/highlighter';
 
 export default function HighlighterTicker() {
     return (

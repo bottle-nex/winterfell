@@ -1,6 +1,4 @@
-import { cn } from '@/src/lib/utils';
 import Image from 'next/image';
-import { FaCode, FaPlay } from 'react-icons/fa';
 import { IoIosPaperPlane, IoMdOptions } from 'react-icons/io';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
@@ -20,7 +18,6 @@ export default function BuilderNavbar() {
                 WINTERFELL
             </div>
             <div className="flex items-center justify-end">
-
                 <div className="flex items-center justify-between gap-x-5">
                     <NetworkTicker />
                     <div className="relative">

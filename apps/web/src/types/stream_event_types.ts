@@ -7,7 +7,7 @@ export enum FILE_STRUCTURE_TYPES {
 export interface FileContent {
     path: string;
     content: string;
-} 
+}
 
 export enum STAGE {
     START = 'START',

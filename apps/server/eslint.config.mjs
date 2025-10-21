@@ -19,9 +19,8 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        project: path.join(__dirname, "tsconfig.json"), // ✅ key fix
         tsconfigRootDir: __dirname,
-        project: ['./tsconfig.json'],
-        sourceType: 'module',
       },
     },
     plugins: {
