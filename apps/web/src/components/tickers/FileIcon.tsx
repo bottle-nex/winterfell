@@ -1,4 +1,6 @@
+import Image from 'next/image';
 import React from 'react';
+import { FaGitAlt } from 'react-icons/fa';
 import {
     SiRust,
     SiTypescript,
@@ -55,6 +57,17 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
                 return (
                     <SiToml size={size} color="#9C4221" className={`text-[#9C4221] ${className}`} />
                 );
+
+            case 'gitignore':
+                return (
+                    <FaGitAlt size={17} color="#f05133" className={`text-[#f05133] ${className}`} />
+                );
+            
+            case 'prettierignore':
+                return (
+                    <Image height={15} width={15} src="/icons/prettier.png" alt="Prettier" 
+ />
+                )
 
             case 'json':
                 return (

@@ -1,5 +1,4 @@
 import * as k8s from '@kubernetes/client-node';
-import { stderr } from 'process';
 import { Writable } from 'stream';
 
 export default class KubernetesConfig {

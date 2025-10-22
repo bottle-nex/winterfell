@@ -68,7 +68,7 @@ export default function DashboardTextAreaComponent() {
                             </div>
                             <div className="flex items-center gap-2 text-neutral-500 text-[10px] md:text-xs font-mono h-full">
                                 <Terminal className="w-2 h-2 md:w-3.5 md:h-3.5" />
-                                <div className='h-full items-center pt-0.5'>winterfell.dev</div>
+                                <div className="h-full items-center pt-0.5">winterfell.dev</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-x-1.5 justify-center">

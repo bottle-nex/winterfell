@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:bull --external:ioredis --external:ws --external:@google/genai --external:@anthropic-ai/sdk",
+    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --minify --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:bull --external:ioredis --external:ws --external:@google/genai --external:@anthropic-ai/sdk --external:razorpay --external:uuid --external:winston --external:zod",
     "start": "node dist/index.js",
     "dev": "yarn build && yarn start",
     "remove-logs": "npx ts-node src/scripts/remove-logs",
@@ -21,6 +21,7 @@
     "@aws-sdk/lib-storage": "^3.908.0",
     "@google/genai": "^1.23.0",
     "@repo/database": "*",
+    "bull": "^4.16.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",

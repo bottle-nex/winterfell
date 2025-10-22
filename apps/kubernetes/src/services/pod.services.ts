@@ -4,6 +4,9 @@ import { k8s_config } from '../configs/kubernetes.config';
 import { CreatePodRequest } from '../types/k8_types';
 import PodTemplate from '../utils/pod-templates';
 import { logger } from '../utils/logger';
+import { waitForPodRunning } from '../utils/pod_waiter';
+import { mapPodStatus } from '../utils/map_pod_status';
+import { FileContent } from '../types/file_type';
 
 export default class PodService {
    public namespace: string = env.KUBERNETES_NAMESPACE;
@@ -30,9 +33,7 @@ export default class PodService {
          });
 
          const podName = response.metadata?.name as string;
-
-         await this.wait_for_pod_running(podName, 60);
-
+         await waitForPodRunning(podName, this.namespace, 60);
          return podName;
       } catch (err) {
          logger.error('Failed to create pod', {
@@ -75,46 +76,6 @@ export default class PodService {
       }
    }
 
-   public async wait_for_pod_running(pod_name: string, timeout: number = 60) {
-      const start_time = Date.now();
-
-      while (Date.now() - start_time < timeout * 1000) {
-         try {
-            const response = await k8s_config.core_api.readNamespacedPodStatus({
-               name: pod_name,
-               namespace: this.namespace,
-            });
-            const phase = response.status?.phase;
-
-            switch (phase) {
-               case 'Running':
-                  logger.debug('Pod is running', { podName: pod_name });
-                  return;
-               case 'Failed':
-                  logger.error('Pod failed', { podName: pod_name, phase });
-                  return;
-               case 'Unknown':
-                  logger.warn('Pod is in unknown state', { podName: pod_name });
-                  return;
-               default:
-                  logger.debug('Pod state change', { podName: pod_name, phase });
-            }
-
-            await new Promise((res) => setTimeout(res, 2000));
-         } catch (err) {
-            logger.error('Error waiting for pod to run', {
-               error: err instanceof Error ? err.message : String(err),
-               podName: pod_name,
-            });
-         }
-      }
-
-      logger.warn('Pod startup timeout exceeded', {
-         podName: pod_name,
-         timeout,
-      });
-   }
-
    public async get_pod_status(userId: string, sessionId: string) {
       try {
          const pod_name = PodTemplate.get_pod_name(userId, sessionId);
@@ -125,14 +86,14 @@ export default class PodService {
 
          const is_terminating = response.metadata?.deletionTimestamp !== undefined;
          const phase = is_terminating ? 'Terminating' : response.status?.phase;
-         const status = this.map_pod_status(phase);
+         const status = mapPodStatus(phase);
 
          const pod_data = {
             podName: response.metadata?.name,
             podStatus: status,
             podIp: response.status?.podIP,
-            userId: userId,
-            sessionId: sessionId,
+            userId,
+            sessionId,
          };
 
          logger.info('Retrieved pod status', pod_data);
@@ -141,18 +102,13 @@ export default class PodService {
          const err = error as { code?: number; error: string };
 
          if (err?.code === 404) {
-            logger.warn('Pod not found', {
-               userId,
-               sessionId,
-               namespace: this.namespace,
-            });
-
+            logger.warn('Pod not found', { userId, sessionId, namespace: this.namespace });
             return {
                podName: PodTemplate.get_pod_name(userId, sessionId),
                podStatus: 'unknown',
                podIp: null,
-               userId: userId,
-               sessionId: sessionId,
+               userId,
+               sessionId,
                error: 'Pod not found',
             };
          }
@@ -163,25 +119,6 @@ export default class PodService {
             userId,
             sessionId,
          });
-      }
-   }
-
-   private map_pod_status(
-      phase: string | undefined,
-   ): 'pending' | 'running' | 'succeeded' | 'failed' | 'terminating' | 'unknown' {
-      switch (phase) {
-         case 'Pending':
-            return 'pending';
-         case 'Running':
-            return 'running';
-         case 'Succeeded':
-            return 'succeeded';
-         case 'Failed':
-            return 'failed';
-         case 'Terminating':
-            return 'terminating';
-         default:
-            return 'unknown';
       }
    }
 
@@ -204,5 +141,46 @@ export default class PodService {
          container_name: this.container_name,
          onData,
       });
+   }
+
+   public async copy_files_to_pod(
+      pod_name: string,
+      projectName: string,
+      files: FileContent[],
+   ): Promise<void> {
+      try {
+         const total_files = files.length;
+         logger.info(`Copying ${total_files} files to pod ${pod_name}`);
+
+         let copied = 0;
+
+         for (const file of files) {
+            const full_path = `/workspace/${projectName}/${file.path}`;
+            const dir = full_path.substring(0, full_path.lastIndexOf('/'));
+
+            if (dir !== `/workspace/${projectName}`) {
+               await this.execute_command(pod_name, ['mkdir', '-p', dir]);
+            }
+            const base_64_content = Buffer.from(file.content).toString('base64');
+            await this.execute_command(pod_name, [
+               'sh',
+               '-c',
+               `echo '${base_64_content}' | base64 -d > ${full_path}`,
+            ]);
+            copied++;
+            logger.debug(`[${copied}/${total_files}] Copied ${file.path}`);
+         }
+
+         logger.info(`all ${total_files} files copied to ${pod_name}`);
+         const verifyResult = await this.execute_command(pod_name, [
+            'sh',
+            '-c',
+            `find /workspace/${projectName} -type f | wc -l`,
+         ]);
+
+         logger.debug('Files created count', { count: verifyResult.stdout.trim() });
+      } catch (err) {
+         logger.error('Failed to copy files to pod', { err, pod_name });
+      }
    }
 }
