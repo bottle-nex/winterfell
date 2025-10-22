@@ -8,9 +8,10 @@ export default function getPodStatusController(req: Request, res: Response) {
 
       podService.get_pod_status(userId, sessionId);
 
-      return res.status(200).json({
+      res.status(200).json({
          message: 'Status fetched successfully',
       });
+      return;
    } catch (error) {
       logger.error('Error while fetching pod status', error);
       throw error;
