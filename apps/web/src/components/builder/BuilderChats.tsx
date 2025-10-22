@@ -4,29 +4,28 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import Image from 'next/image';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { CHAT_URL } from '@/routes/api_routes';
-import {
-    FILE_STRUCTURE_TYPES,
-    FileContent,
-    PHASE_TYPES,
-    STAGE,
-    StreamEvent,
-} from '@/src/types/stream_event_types';
+import { StreamEvent } from '@/src/types/stream_event_types';
 import BuilderChatSystemMessage from './BuilderChatSystemMessage';
-import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import AnimtaedLoader from '../ui/animated-loader';
-import { Message } from '@/src/types/prisma-types';
+
+import StreamEventProcessor from '@/src/class/handle_stream_event';
 
 export default function BuilderChats() {
-    const { messages, loading, upsertMessage, setPhase, setLoading, setCurrentFileEditing } =
+    const { messages, loading, setLoading } =
         useBuilderChatStore();
-    const { parseFileStructure } = useCodeEditor();
     const { session } = useUserSessionStore();
     const params = useParams();
     const chatId = params.chatId as string;
     const hasInitialized = useRef(false);
-    const [isProcessing, setIsProcessing] = useState(false);
+    const messageEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (messageEndRef.current) {
+            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages])
 
     useEffect(() => {
         if (hasInitialized.current) return;
@@ -40,9 +39,6 @@ export default function BuilderChats() {
     }, [chatId]);
 
     async function startChat(message: string) {
-        if (isProcessing) return;
-        setIsProcessing(true);
-
         try {
             setLoading(true);
             const response = await fetch(CHAT_URL, {
@@ -81,7 +77,7 @@ export default function BuilderChats() {
                         const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
                         const event: StreamEvent = JSON.parse(jsonString);
 
-                        handleStreamEvent(event);
+                        StreamEventProcessor.process(event);
                     } catch {
                         console.error('Failed to parse stream event');
                     }
@@ -90,62 +86,7 @@ export default function BuilderChats() {
         } catch (error) {
             console.error('Chat stream error:', error);
         } finally {
-            setIsProcessing(false);
             setLoading(false);
-        }
-    }
-
-    function handleStreamEvent(event: StreamEvent) {
-        switch (event.type) {
-            case PHASE_TYPES.STARTING:
-                if (event.systemMessage) {
-                    upsertMessage(event.systemMessage);
-                }
-                break;
-
-            case STAGE.CONTEXT:
-                if ('llmMessage' in event.data) {
-                    upsertMessage(event.data.llmMessage as Message);
-                }
-                break;
-
-            case STAGE.PLANNING:
-            case STAGE.GENERATING_CODE:
-            case STAGE.BUILDING:
-            case STAGE.CREATING_FILES:
-            case STAGE.FINALIZING:
-                if (event.systemMessage) {
-                    upsertMessage(event.systemMessage);
-                }
-                break;
-
-            case PHASE_TYPES.THINKING:
-            case PHASE_TYPES.GENERATING:
-            case PHASE_TYPES.BUILDING:
-            case PHASE_TYPES.CREATING_FILES:
-            case PHASE_TYPES.COMPLETE:
-                setPhase(event.type);
-                break;
-
-            case FILE_STRUCTURE_TYPES.EDITING_FILE:
-                setPhase(event.type);
-                if ('file' in event.data) {
-                    setCurrentFileEditing(event.data.file as string);
-                }
-                break;
-
-            case PHASE_TYPES.ERROR:
-                console.error('LLM Error:', event.data);
-                break;
-
-            case STAGE.END:
-                if ('data' in event.data) {
-                    parseFileStructure(event.data.data as FileContent[]);
-                }
-                break;
-
-            default:
-                break;
         }
     }
 
@@ -206,6 +147,7 @@ export default function BuilderChats() {
                         )}
                     </div>
                 ))}
+                <div ref={messageEndRef} />
             </div>
             <div className="flex items-center justify-center w-full py-4 px-6 flex-shrink-0">
                 <BuilderChatInput />

@@ -7,6 +7,7 @@ import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import StatusBar from './StatusBar';
 
 export default function CodeEditor(): JSX.Element {
+    const { collapseFileTree } = useCodeEditor();
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
             base: 'vs-dark',
@@ -100,7 +101,11 @@ export default function CodeEditor(): JSX.Element {
     const { currentCode } = useCodeEditor();
     return (
         <div className="flex min-h-0 h-full">
-            <Filetree />
+            {collapseFileTree && (
+                <div className='w-[18rem]'>
+                    <Filetree />
+                </div>
+            )}
             <Editor
                 height="100%"
                 language={'rust'}

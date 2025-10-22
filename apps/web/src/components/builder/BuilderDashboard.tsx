@@ -1,8 +1,8 @@
-import { JSX } from 'react';
 import BuilderChats from './BuilderChats';
 import CodeEditor from '../code/CodeEditor';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import BuilderLoder from './BuilderLoader';
+import { JSX } from 'react';
 
 export default function BuilderDashboard(): JSX.Element {
     const { loading } = useBuilderChatStore();
