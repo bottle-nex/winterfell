@@ -3,21 +3,57 @@ import { IoIosPaperPlane, IoMdOptions } from 'react-icons/io';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BuilderSettingsPanel from '../builder/BuilderSettingsPanel';
 import NetworkTicker from '../tickers/NetworkTicker';
 import { LiaServicestack } from 'react-icons/lia';
+import { TbLayoutSidebarRightCollapseFilled } from "react-icons/tb";
+import { TbLayoutSidebarLeftCollapseFilled } from "react-icons/tb";
+import { cn } from '@/src/lib/utils';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
 export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
+    const { collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const [openSettingsPanel, setOpenSettingsPanel] = useState<boolean>(false);
+    const [isMac, setIsMac] = useState<boolean>(false);
+
+    useEffect(() => {
+        // Detect if user is on macOS
+        setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+    }, []);
+
+    const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
+
     return (
         <div className="min-h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
             <div className=" text-[#C3C3C3] text-[17px] tracking-[0.5rem] flex justify-start items-center gap-x-3 cursor-pointer group">
                 <LiaServicestack size={28} className="text-primary" />
                 WINTERFELL
             </div>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+                <div className='flex items-center justify-center gap-x-2'>
+                    <ToolTipComponent duration={300} content={`collapse | ${shortcutKey} + E`}>
+                        <TbLayoutSidebarLeftCollapseFilled
+                            size={22}
+                            onClick={() => setCollapseFileTree(false)}
+                            className={cn(
+                                "text-light/70 cursor-pointer hover:-translate-y-[0.5px] transition-transform",
+                                !collapseFileTree && "text-primary"
+                            )}
+                        />
+                    </ToolTipComponent>
+                    <ToolTipComponent duration={300} content={`expand | ${shortcutKey} + E`}>
+                        <TbLayoutSidebarRightCollapseFilled
+                            size={22}
+                            onClick={() => setCollapseFileTree(true)}
+                            className={cn(
+                                "text-light/70 cursor-pointer hover:-translate-y-[0.5px] transition-transform",
+                                collapseFileTree && "text-primary"
+                            )}
+                        />
+                    </ToolTipComponent>
+                </div>
                 <div className="flex items-center justify-between gap-x-5">
                     <NetworkTicker />
                     <div className="relative">
@@ -64,6 +100,6 @@ export default function BuilderNavbar() {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

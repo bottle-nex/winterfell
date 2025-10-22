@@ -3,13 +3,26 @@ import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Page({ params }: { params: Promise<{ chatId: string }> }) {
     const { cleanStore } = useBuilderChatStore();
-    const { reset } = useCodeEditor();
+    const { reset, collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const unwrappedParams = React.use(params);
     const { chatId } = unwrappedParams;
+
+    useEffect(() => {
+        function handleKeyDown(event: KeyboardEvent) {
+            if ((event.metaKey || event.ctrlKey) && event.key === 'e') {
+                event.preventDefault();
+                setCollapseFileTree(!collapseFileTree)
+            }
+        }
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    })
 
     useEffect(() => {
         return () => {
