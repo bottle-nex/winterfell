@@ -8,7 +8,9 @@ interface CodeEditorState {
     currentFile: FileNode | null;
     fileTree: FileNode[];
     editedFiles: Record<string, FileNode>;
+    collapseFileTree: boolean;
 
+    setCollapseFileTree: (collapse: boolean) => void;
     setCurrentCode: (code: string) => void;
     updateFileContent: (fileId: string, content: string) => void;
     selectFile: (node: FileNode) => void;
@@ -23,7 +25,9 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
         currentFile: null,
         fileTree: [],
         editedFiles: {},
+        collapseFileTree: false,
 
+        setCollapseFileTree: (collapse: boolean) => set({ collapseFileTree: collapse }),
         setCurrentCode: (code: string) => {
             set({ currentCode: code });
         },
@@ -36,8 +40,8 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                          ? { ...n, children: updateNode(n.children) }
-                          : n,
+                            ? { ...n, children: updateNode(n.children) }
+                            : n,
                 );
 
             const newTree = updateNode(state.fileTree);
