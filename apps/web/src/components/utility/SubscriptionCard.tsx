@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { LiaServicestack } from "react-icons/lia";
-import { Check } from "lucide-react";
-import { Button } from "../ui/button";
-import NavItems, { NavItemsType } from "../nav/NavItems";
+import { useState } from 'react';
+import { LiaServicestack } from 'react-icons/lia';
+import { Check } from 'lucide-react';
+import { Button } from '../ui/button';
+import NavItems, { NavItemsType } from '../nav/NavItems';
 
 type PlanType = 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
 type BillingPeriod = 'MONTHLY' | 'YEARLY';
@@ -70,12 +70,13 @@ function SubscriptionCard({
                         </h2>
                     </div>
                     <div
-                        className={`p-2.5 rounded-xl backdrop-blur-sm ${plan === "FREE"
-                            ? "bg-neutral-800/50"
-                            : plan === "PREMIUM"
-                                ? "bg-white/20"
-                                : "bg-white/15"
-                            }`}
+                        className={`p-2.5 rounded-xl backdrop-blur-sm ${
+                            plan === 'FREE'
+                                ? 'bg-neutral-800/50'
+                                : plan === 'PREMIUM'
+                                  ? 'bg-white/20'
+                                  : 'bg-white/15'
+                        }`}
                     >
                         <LiaServicestack className="size-6 sm:size-7" />
                     </div>
@@ -86,12 +87,13 @@ function SubscriptionCard({
                         {features.slice(0, 4).map((feature, idx) => (
                             <div
                                 key={idx}
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${plan === "FREE"
-                                    ? "bg-neutral-800/60"
-                                    : plan === "PREMIUM"
-                                        ? "bg-white/25"
-                                        : "bg-white/15"
-                                    }`}
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+                                    plan === 'FREE'
+                                        ? 'bg-neutral-800/60'
+                                        : plan === 'PREMIUM'
+                                          ? 'bg-white/25'
+                                          : 'bg-white/15'
+                                }`}
                             >
                                 <Check className="size-3" />
                                 <span className="whitespace-nowrap">{feature}</span>
@@ -113,10 +115,11 @@ function SubscriptionCard({
                         </div>
                     </div>
                     <Button
-                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${plan === "FREE" || plan === "PREMIUM"
-                            ? "bg-[#7049FC] hover:bg-[#754fff] text-white"
-                            : "bg-neutral-900 hover:bg-neutral-800 text-white"
-                            }`}
+                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${
+                            plan === 'FREE' || plan === 'PREMIUM'
+                                ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
+                                : 'bg-neutral-900 hover:bg-neutral-800 text-white'
+                        }`}
                     >
                         {plan === 'FREE' ? 'Start Free' : 'Upgrade'}
                     </Button>
@@ -190,15 +193,14 @@ export default function SubscriptionPlans() {
             <NavItems
                 items={planItems.map((item, index) => {
                     if (index === 0) {
-                        return { ...item, onClick: () => setBilling('MONTHLY') }
+                        return { ...item, onClick: () => setBilling('MONTHLY') };
                     }
                     if (index === 1) {
-                        return { ...item, onClick: () => setBilling('YEARLY') }
+                        return { ...item, onClick: () => setBilling('YEARLY') };
                     }
-                    return item
+                    return item;
                 })}
             />
-
 
             <span className="mb-12 sm:mb-15 tracking-wider text-light/60 text-xs sm:text-sm">
                 {billing === 'YEARLY'

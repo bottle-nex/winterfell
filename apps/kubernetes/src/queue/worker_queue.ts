@@ -32,15 +32,13 @@ export default class ServerToOrchestratorQueue {
       command: string[],
       job: Job,
    ): Promise<{ success: boolean; stdout: string; stderr: string }> {
-      const { userId, sessionId, projectName } = job.data;
-
-      // copy codebase to pod
+      const { userId, sessionId, projectName, code } = job.data;
 
       const pod_name = await pod_service.create_pod({ userId, sessionId, projectName });
+      await pod_service.copy_files_to_pod(pod_name, projectName, code);
 
       try {
          pod_service.stream_logs(pod_name, (chunk) => logger.info(`[${pod_name}] ${chunk}`));
-
          const result = await pod_service.execute_command(pod_name, command);
 
          return {

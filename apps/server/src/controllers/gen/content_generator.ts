@@ -15,6 +15,7 @@ import {
     StreamEventData,
 } from '../../types/stream_event_types';
 import { STAGE } from '../../types/content_types';
+import { mergeWithLLMFiles, prepareBaseTemplate } from '../../class/test';
 
 type LLMProvider = 'gemini' | 'claude';
 
@@ -59,6 +60,7 @@ export default class ContentGenerator {
     ): Promise<void> {
         const parser = this.getParser(contractId, res);
         this.createStream(res);
+
         try {
             await this.generateStreamingResponse(
                 res,
@@ -70,8 +72,12 @@ export default class ContentGenerator {
             );
 
             const generatedFiles = parser.getGeneratedFiles();
-            this.sendSSE(res, STAGE.END, { data: generatedFiles });
-            objectStore.uploadContractFiles(contractId, generatedFiles);
+
+            const base_files = prepareBaseTemplate('dlmm_pool');
+            const final_code = mergeWithLLMFiles(base_files, generatedFiles);
+            this.sendSSE(res, STAGE.END, { data: final_code });
+            objectStore.uploadContractFiles(contractId, final_code);
+
             if (generatedFiles.length > 0) {
                 this.deleteParser(contractId);
                 res.end();

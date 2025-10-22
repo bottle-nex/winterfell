@@ -30,7 +30,7 @@ export default function NavItems({ items, className }: NavItemsProps) {
             onMouseLeave={() => setHovered(null)}
             className={cn(
                 'hidden items-center justify-center space-x-2 text-sm font-medium tracking-wide text-light transition duration-200 hover:text-[#FDF9F0] lg:flex lg:space-x-2 w-fit bg-[#151617] rounded-[8px] p-[4px] border border-neutral-800',
-                className
+                className,
             )}
         >
             {items.map((item, idx) => {

@@ -32,30 +32,37 @@ export default async function startChatController(req: Request, res: Response) {
         let contract;
 
         if (!chat) {
-            contract = await prisma.contract.create({
-                data: {
-                    title: message.slice(0, 100),
-                    description: message,
-                    contractType: 'CUSTOM',
-                    code: '',
-                    userId: String(userId),
-                    version: 1,
-                },
+            const tx_result = await prisma.$transaction(async (tx) => {
+                const newContract = await tx.contract.create({
+                    data: {
+                        title: message.slice(0, 100),
+                        description: message,
+                        contractType: 'CUSTOM',
+                        code: '',
+                        userId: String(userId),
+                        version: 1,
+                    },
+                });
+
+                const newchat = await tx.chat.create({
+                    data: {
+                        id: chatId,
+                        userId: String(userId),
+                        contractId: newContract.id,
+                    },
+                    include: {
+                        contract: true,
+                        messages: {
+                            orderBy: { createdAt: 'asc' },
+                        },
+                    },
+                });
+
+                return { newContract, newchat };
             });
 
-            chat = await prisma.chat.create({
-                data: {
-                    id: chatId,
-                    userId: String(userId),
-                    contractId: contract.id,
-                },
-                include: {
-                    contract: true,
-                    messages: {
-                        orderBy: { createdAt: 'asc' },
-                    },
-                },
-            });
+            chat = tx_result.newchat;
+            contract = tx_result.newContract;
         } else {
             if (chat.userId !== String(userId)) {
                 res.status(403).json({ error: 'Unauthorized' });

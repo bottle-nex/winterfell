@@ -23,6 +23,7 @@ const envScehma = z.object({
     SERVER_CLOUDFRONT_DOMAIN: z.string().transform((val) => val.trim()),
     SERVER_RAZORPAY_KEY_ID: z.string().transform((val) => val.trim()),
     SERVER_RAZORPAY_KEY_SECRET: z.string().transform((val) => val.trim()),
+    SERVER_REDIS_URL: z.url().transform((val) => val.trim()),
 });
 
 function parseScehma() {
