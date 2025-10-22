@@ -9,39 +9,49 @@ import { TbAnchor } from 'react-icons/tb';
 
 const featureData = [
     {
-        topTitle: 'WINTERFELL POWER',
+        topTitle: 'AI-POWERED',
         centerTitle: 'Smart Contracts',
-        bottomTitle: 'Build with ease',
+        bottomTitle: 'Rust & Anchor',
+        description: 'Generate production-ready contracts from natural language',
         icon: FaRust,
         color: '#CE422B',
+        gradient: 'from-red-500/20 to-orange-500/20',
     },
     {
-        topTitle: 'LIGHTNING FAST',
-        centerTitle: 'Deploy Instantly',
-        bottomTitle: 'No delays, just code',
+        topTitle: 'INSTANT',
+        centerTitle: 'Deploy',
+        bottomTitle: 'One-Click',
+        description: 'Deploy to Devnet, Testnet, or Mainnet instantly',
         icon: FaBolt,
         color: '#FFC400',
+        gradient: 'from-yellow-500/20 to-amber-500/20',
     },
     {
-        topTitle: 'ENHANCED EXPERIENCE',
+        topTitle: 'COMPLETE',
         centerTitle: 'WINTERFELL',
-        bottomTitle: 'Fins dont wait',
+        bottomTitle: 'Full Stack',
+        description: 'From contract to client SDK to frontend boilerplate',
         icon: LiaServicestack,
         color: '#6C44FC',
+        gradient: 'from-purple-500/20 to-violet-500/20',
     },
     {
-        topTitle: 'FUN CODING',
-        centerTitle: 'Anchor',
-        bottomTitle: 'Enjoy creating',
+        topTitle: 'ANCHOR',
+        centerTitle: 'Framework',
+        bottomTitle: 'Best Practices',
+        description: 'Built-in security checks and Anchor conventions',
         icon: TbAnchor,
         color: '#106DE1',
+        gradient: 'from-blue-500/20 to-cyan-500/20',
     },
     {
-        topTitle: 'ROCK-SOLID',
+        topTitle: 'SECURE',
         centerTitle: 'Security',
-        bottomTitle: 'Safe & reliable',
+        bottomTitle: 'AI Audits',
+        description: 'Automated vulnerability detection and fixes',
         icon: FaShieldAlt,
         color: '#00C6A7',
+        gradient: 'from-teal-500/20 to-emerald-500/20',
     },
 ];
 
@@ -96,8 +106,10 @@ interface FeatureCardProps {
     topTitle: string;
     centerTitle: string;
     bottomTitle: string;
+    description: string;
     icon: React.ElementType;
     color: string;
+    gradient: string;
     index: number;
     scrollProgress: MotionValue<number>;
 }
@@ -106,56 +118,100 @@ const AnimatedFeatureCard = React.memo(function AnimatedFeatureCard({
     topTitle,
     centerTitle,
     bottomTitle,
+    description,
     icon: Icon,
     color,
     index,
     scrollProgress,
 }: FeatureCardProps) {
-    const totalCards = 4;
+    const totalCards = 5;
     const delayFactor = index / totalCards;
 
-    const startAnimation = 0.2 + delayFactor * 0.2;
-    const holdStart = 0.45 + delayFactor * 0.2;
-    const holdEnd = 0.7 + delayFactor * 0.2;
-    const vanishStart = 0.75 + delayFactor * 0.2;
-    const vanishEnd = 0.95 + delayFactor * 0.2;
+    const startAnimation = 0.2 + delayFactor * 0.15;
+    const holdStart = 0.4 + delayFactor * 0.15;
+    const holdEnd = 0.65 + delayFactor * 0.15;
+    const vanishStart = 0.75 + delayFactor * 0.15;
+    const vanishEnd = 0.95 + delayFactor * 0.1;
 
     const timeline = [startAnimation, holdStart, holdEnd, vanishStart, Math.min(vanishEnd, 1)];
 
-    const randomRotate = React.useMemo(() => Math.random() * 20 - 10, []);
-    const randomX = React.useMemo(() => Math.random() * 50 - 25, []);
+    const randomRotate = React.useMemo(() => Math.random() * 15 - 7.5, []);
+    const randomX = React.useMemo(() => Math.random() * 40 - 20, []);
 
-    const y = useTransform(scrollProgress, timeline, [200, 0, 0, -30, -180]);
-    const opacity = useTransform(scrollProgress, timeline, [0, 1, 1, 1, 0]);
-    const rotate = useTransform(scrollProgress, [timeline[0], timeline[1]], [0, randomRotate]);
-    const x = useTransform(scrollProgress, [timeline[0], timeline[1]], [0, randomX]);
+    const y = useTransform(scrollProgress, timeline, [250, 0, 0, -20, -200]);
+    const opacity = useTransform(scrollProgress, timeline, [0, 1, 1, 0.95, 0]);
+    const rotate = useTransform(scrollProgress, [timeline[0], timeline[1]], [randomRotate * 2, randomRotate]);
+    const x = useTransform(scrollProgress, [timeline[0], timeline[1]], [randomX * 1.5, randomX]);
+    const scale = useTransform(scrollProgress, [timeline[0], timeline[1], timeline[3], timeline[4]], [0.85, 1, 1, 0.92]);
 
     return (
         <motion.div
-            style={{ y, opacity, rotate, x }}
+            style={{
+                y,
+                opacity,
+                rotate,
+                x,
+                scale,
+            }}
             className="
-                h-[8rem] w-[6rem] sm:h-[10rem] sm:w-[8rem]
-                md:h-[20rem] md:w-[15rem]
-                rounded-xl flex flex-col justify-center items-center 
-                bg-light border-2 border-neutral-800 shadow-lg shadow-black/20 
-                relative p-2 sm:p-3 md:p-4 transform-gpu will-change-[transform,opacity]
+                h-[10rem] w-[7rem] sm:h-[12rem] sm:w-[9rem]
+                md:h-[22rem] md:w-[16rem]
+                rounded-2xl flex flex-col justify-between
+                bg-gradient-to-br from-light to-neutral-50
+                border border-neutral-200/50
+                shadow-2xl shadow-black/30
+                relative p-3 sm:p-4 md:p-6
+                will-change-transform
+                overflow-hidden
             "
         >
-            <div className="absolute top-1 sm:top-2 right-2 text-[8px] sm:text-[10px] md:text-sm text-dark-base tracking-wider">
-                {topTitle}
-            </div>
 
-            <div className="flex flex-col items-center gap-y-2 sm:gap-y-3 md:gap-y-3 text-[10px] sm:text-sm md:text-md text-dark-base">
-                <Icon
-                    className="text-xl sm:text-2xl md:text-4xl drop-shadow-xs"
-                    style={{ color }}
+            <div className="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-white/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-16 h-16 md:w-24 md:h-24 bg-white/15 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" />
+
+            <div className="relative z-10 flex justify-between items-start">
+                <div className="text-[7px] sm:text-[9px] md:text-xs font-bold text-neutral-600 tracking-[0.15em] bg-white/70 backdrop-blur-sm px-2 py-1 rounded-md shadow-sm">
+                    {topTitle}
+                </div>
+                <div
+                    className="w-2 h-2 md:w-3 md:h-3 rounded-full"
+                    style={{
+                        backgroundColor: color,
+                        boxShadow: `0 0 8px ${color}80`
+                    }}
                 />
-                <span className="tracking-wide text-center">{centerTitle}</span>
             </div>
 
-            <div className="absolute bottom-1 sm:bottom-2 left-2 text-[8px] sm:text-[10px] md:text-sm text-dark-base tracking-wider">
-                {bottomTitle}
+            <div className="relative z-10 flex flex-col items-center justify-center flex-1 gap-y-2 md:gap-y-3">
+                <div
+                    className="p-3 md:p-5 rounded-2xl bg-white/90 backdrop-blur-sm shadow-xl"
+                    style={{ boxShadow: `0 8px 24px ${color}25` }}
+                >
+                    <Icon
+                        className="text-2xl sm:text-3xl md:text-5xl"
+                        style={{ color }}
+                    />
+                </div>
+                <div className="text-center space-y-0.5 md:space-y-1">
+                    <h3 className="text-xs sm:text-sm md:text-xl font-bold text-dark-base tracking-wide">
+                        {centerTitle}
+                    </h3>
+                    <p className="text-[8px] sm:text-[10px] md:text-xs text-neutral-600 font-medium hidden md:block px-2 leading-tight">
+                        {description}
+                    </p>
+                </div>
+            </div>
+
+            <div className="relative z-10 flex items-center justify-center">
+                <div className="text-[7px] sm:text-[9px] md:text-xs font-semibold text-dark-base bg-white/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-neutral-200/70 shadow-sm">
+                    {bottomTitle}
+                </div>
             </div>
         </motion.div>
+    );
+}, (prevProps, nextProps) => {
+    return (
+        prevProps.index === nextProps.index &&
+        prevProps.scrollProgress === nextProps.scrollProgress
     );
 });
