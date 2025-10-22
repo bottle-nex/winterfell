@@ -19,7 +19,6 @@ export default function BuilderNavbar() {
     const [isMac, setIsMac] = useState<boolean>(false);
 
     useEffect(() => {
-        // Detect if user is on macOS
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
     }, []);
 
