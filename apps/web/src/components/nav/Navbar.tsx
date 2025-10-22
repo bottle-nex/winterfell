@@ -2,7 +2,7 @@
 import { LiaServicestack } from 'react-icons/lia';
 import { IoIosCreate } from 'react-icons/io';
 import { useRouter } from 'next/navigation';
-import NavItems from './NavItems';
+import NavItems, { NavItemsType } from './NavItems';
 import NavbarSigninAction from './NavSigninAction';
 import { cn } from '@/src/lib/utils';
 import { v4 as uuid } from 'uuid';
@@ -10,7 +10,7 @@ import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useState } from 'react';
 import LoginModal from '../utility/LoginModal';
 
-const navItems = [
+const navItems: NavItemsType[] = [
     { name: 'Features', link: '#features' },
     { name: 'Pricing', link: '#pricing' },
     { name: 'Contact', link: '#contact' },
