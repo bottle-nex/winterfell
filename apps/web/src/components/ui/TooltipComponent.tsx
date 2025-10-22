@@ -6,6 +6,7 @@ interface ToolTipComponentProps {
     content: React.ReactNode;
     className?: string;
     side?: 'top' | 'bottom' | 'left' | 'right';
+    duration?: number;
 }
 
 export default function ToolTipComponent({
@@ -13,9 +14,10 @@ export default function ToolTipComponent({
     className,
     content,
     side = 'bottom',
+    duration = 300,
 }: ToolTipComponentProps) {
     return (
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider skipDelayDuration={0} delayDuration={duration}>
             <Tooltip>
                 <TooltipTrigger asChild>{children}</TooltipTrigger>
                 <TooltipContent className={className} side={side} sideOffset={5}>
