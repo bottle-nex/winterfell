@@ -11,12 +11,14 @@ import { TbLayoutSidebarRightCollapseFilled } from 'react-icons/tb';
 import { TbLayoutSidebarLeftCollapseFilled } from 'react-icons/tb';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { WalletPanel } from '../base/WalletPanel';
 
 export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
     const { collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const [openSettingsPanel, setOpenSettingsPanel] = useState<boolean>(false);
     const [isMac, setIsMac] = useState<boolean>(false);
+    const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
 
     useEffect(() => {
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
@@ -67,11 +69,13 @@ export default function BuilderNavbar() {
                             setOpenSettingsPanel={setOpenSettingsPanel}
                         />
                     </div>
+                    
                     <ToolTipComponent
                         content="deploy your contract to the solana blockchain"
                         side="bottom"
                     >
                         <Button
+                            onClick={() => setOpenWalletPanel(true)}
                             size={'sm'}
                             className="bg-light text-dark-base hover:bg-light hover:text-dark-base tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
                         >
@@ -99,6 +103,7 @@ export default function BuilderNavbar() {
                     )}
                 </div>
             </div>
+            {openWalletPanel && <WalletPanel close={() => setOpenWalletPanel(false)} />}
         </div>
     );
 }
