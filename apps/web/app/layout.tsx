@@ -3,6 +3,7 @@ import './globals.css';
 import { getServerSession } from 'next-auth';
 import { authOption } from './api/auth/[...nextauth]/options';
 import SessionSetter from '@/src/lib/SessionSeter';
+import WalletProviders from '@/src/providers/WalletProviders';
 
 export const metadata: Metadata = {
     title: 'Winterfell',
@@ -19,7 +20,7 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body className={`antialiased bg-black`} suppressHydrationWarning>
-                {children}
+                <WalletProviders>{children}</WalletProviders>
                 <SessionSetter session={session} />
             </body>
         </html>
