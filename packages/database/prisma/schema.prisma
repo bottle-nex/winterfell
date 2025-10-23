@@ -21,7 +21,6 @@ model User {
 
   subscription Subscription?
   contracts    Contract[]
-  chats        Chat[]
 }
 
 model Contract {
@@ -29,8 +28,7 @@ model Contract {
   title        String
   description  String?
   contractType ContractType
-
-  code String
+  code String?
 
   idl       Json? // auto-generated IDL
   clientSdk Json? // auto-generated client (TS/JS)
@@ -46,7 +44,7 @@ model Contract {
   updatedAt DateTime @updatedAt
 
   deployments Deployment[]
-  chats       Chat[]
+  messages    Message[]
 }
 
 model Deployment {
@@ -61,26 +59,10 @@ model Deployment {
   @@index([contractId])
 }
 
-model Chat {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  contract   Contract @relation(fields: [contractId], references: [id])
-  contractId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  messages Message[]
-
-  @@index([userId])
-  @@index([contractId])
-}
-
 model Message {
-  id     String @id @default(cuid())
-  chat   Chat   @relation(fields: [chatId], references: [id])
-  chatId String
+  id         String   @id @default(cuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id])
 
   role    ChatRole
   content String   @db.Text
@@ -97,7 +79,7 @@ model Message {
 
   createdAt DateTime @default(now())
 
-  @@index([chatId])
+  @@index([contractId])
 }
 
 model Subscription {

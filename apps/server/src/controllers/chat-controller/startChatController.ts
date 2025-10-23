@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '@repo/database';
+import { ChatRole, prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
 import { startChatSchema } from '../../schemas/start_chat_schema';
 
@@ -16,70 +16,47 @@ export default async function startChatController(req: Request, res: Response) {
         return;
     }
 
-    const { chatId, message } = data.data;
-
+    const { contractId, message } = data.data;
     try {
-        let chat = await prisma.chat.findUnique({
-            where: { id: chatId },
+        let contract;
+        contract = await prisma.contract.findUnique({
+            where: { id: contractId, userId: userId },
             include: {
                 messages: {
                     orderBy: { createdAt: 'asc' },
                 },
-                contract: true,
             },
         });
 
-        let contract;
-
-        if (!chat) {
-            const tx_result = await prisma.$transaction(async (tx) => {
-                const newContract = await tx.contract.create({
-                    data: {
-                        title: message.slice(0, 100),
-                        description: message,
-                        contractType: 'CUSTOM',
-                        code: '',
-                        userId: String(userId),
-                        version: 1,
+        if (!contract) {
+            contract = await prisma.contract.create({
+                data: {
+                    title: '',
+                    contractType: 'CUSTOM',
+                    userId: userId,
+                },
+                include: {
+                    messages: {
+                        orderBy: { createdAt: 'asc' },
                     },
-                });
-
-                const newchat = await tx.chat.create({
-                    data: {
-                        id: chatId,
-                        userId: String(userId),
-                        contractId: newContract.id,
-                    },
-                    include: {
-                        contract: true,
-                        messages: {
-                            orderBy: { createdAt: 'asc' },
-                        },
-                    },
-                });
-
-                return { newContract, newchat };
+                },
             });
-
-            chat = tx_result.newchat;
-            contract = tx_result.newContract;
-        } else {
-            if (chat.userId !== String(userId)) {
-                res.status(403).json({ error: 'Unauthorized' });
-                return;
-            }
-            contract = chat.contract;
         }
 
         const currentUserMessage = await prisma.message.create({
             data: {
-                chatId: chat.id,
-                role: 'USER',
+                role: ChatRole.USER,
                 content: message,
+                contractId: contract.id,
             },
         });
 
-        await contentGenerator.generateInitialResponse(res, currentUserMessage, chat, contract.id);
+        await contentGenerator.generateInitialResponse(
+            res,
+            currentUserMessage,
+            contract.messages,
+            contract.id,
+        );
     } catch (err) {
         console.error('Controller Error:', err);
         if (!res.headersSent) {

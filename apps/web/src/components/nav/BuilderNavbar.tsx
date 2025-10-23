@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 import BuilderSettingsPanel from '../builder/BuilderSettingsPanel';
 import NetworkTicker from '../tickers/NetworkTicker';
 import { LiaServicestack } from 'react-icons/lia';
-import { TbLayoutSidebarRightCollapseFilled } from "react-icons/tb";
-import { TbLayoutSidebarLeftCollapseFilled } from "react-icons/tb";
+import { TbLayoutSidebarRightCollapseFilled } from 'react-icons/tb';
+import { TbLayoutSidebarLeftCollapseFilled } from 'react-icons/tb';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
@@ -31,14 +31,14 @@ export default function BuilderNavbar() {
                 WINTERFELL
             </div>
             <div className="flex items-center justify-between">
-                <div className='flex items-center justify-center gap-x-2'>
+                <div className="flex items-center justify-center gap-x-2">
                     <ToolTipComponent duration={300} content={`collapse | ${shortcutKey} + E`}>
                         <TbLayoutSidebarLeftCollapseFilled
                             size={22}
                             onClick={() => setCollapseFileTree(false)}
                             className={cn(
-                                "text-light/70 cursor-pointer hover:-translate-y-[0.5px] transition-transform",
-                                !collapseFileTree && "text-primary"
+                                'text-light/70 cursor-pointer hover:-translate-y-[0.5px] transition-transform',
+                                !collapseFileTree && 'text-primary',
                             )}
                         />
                     </ToolTipComponent>
@@ -47,8 +47,8 @@ export default function BuilderNavbar() {
                             size={22}
                             onClick={() => setCollapseFileTree(true)}
                             className={cn(
-                                "text-light/70 cursor-pointer hover:-translate-y-[0.5px] transition-transform",
-                                collapseFileTree && "text-primary"
+                                'text-light/70 cursor-pointer hover:-translate-y-[0.5px] transition-transform',
+                                collapseFileTree && 'text-primary',
                             )}
                         />
                     </ToolTipComponent>
@@ -99,6 +99,6 @@ export default function BuilderNavbar() {
                     )}
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
