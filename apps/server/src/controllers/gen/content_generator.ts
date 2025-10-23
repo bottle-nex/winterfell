@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import Anthropic from '@anthropic-ai/sdk';
 import env from '../../configs/env';
 import { Response } from 'express';
-import { Chat, ChatRole, Message, prisma } from '@repo/database';
+import { ChatRole, Message, prisma } from '@repo/database';
 import StreamParser from '../../services/stream_parser';
 import { SYSTEM_PROMPT } from '../../prompt/system';
 import { objectStore } from '../../services/init';
@@ -54,7 +54,7 @@ export default class ContentGenerator {
     public async generateInitialResponse(
         res: Response,
         currentUserMessage: Message,
-        chat: Chat & { messages: Message[] },
+        messages: Message[],
         contractId: string,
         llmProvider: LLMProvider = 'gemini',
     ): Promise<void> {
@@ -65,16 +65,16 @@ export default class ContentGenerator {
             await this.generateStreamingResponse(
                 res,
                 currentUserMessage,
-                chat,
+                messages,
                 contractId,
                 parser,
                 llmProvider,
             );
 
             const generatedFiles = parser.getGeneratedFiles();
-
             const base_files = prepareBaseTemplate('dlmm_pool');
             const final_code = mergeWithLLMFiles(base_files, generatedFiles);
+
             this.sendSSE(res, STAGE.END, { data: final_code });
             objectStore.uploadContractFiles(contractId, final_code);
 
@@ -95,24 +95,24 @@ export default class ContentGenerator {
     public async generateStreamingResponse(
         res: Response,
         currentUserMessage: Message,
-        chat: Chat & { messages: Message[] },
+        messages: Message[],
         contractId: string,
         parser: StreamParser,
         llmProvider: LLMProvider = 'gemini',
-    ): Promise<string> {
+    ): Promise<void> {
         if (llmProvider === 'claude') {
-            return this.generateClaudeStreamingResponse(
+            await this.generateClaudeStreamingResponse(
                 res,
                 currentUserMessage,
-                chat,
+                messages,
                 contractId,
                 parser,
             );
         } else {
-            return this.generateGeminiStreamingResponse(
+            await this.generateGeminiStreamingResponse(
                 res,
                 currentUserMessage,
-                chat,
+                messages,
                 contractId,
                 parser,
             );
@@ -122,10 +122,10 @@ export default class ContentGenerator {
     private async generateGeminiStreamingResponse(
         res: Response,
         currentUserMessage: Message,
-        chat: Chat & { messages: Message[] },
+        messages: Message[],
         contractId: string,
         parser: StreamParser,
-    ): Promise<string> {
+    ): Promise<void> {
         logger.info('gemini llm used');
         const contents: GeminiMessage[] = [];
         let fullResponse = '';
@@ -138,14 +138,13 @@ export default class ContentGenerator {
 
             const startingData: StartingData = {
                 stage: 'starting',
-                chatId: chat.id,
                 contractId: contractId,
                 timestamp: Date.now(),
             };
 
             this.sendSSE(res, STAGE.START, startingData);
 
-            for (const msg of chat.messages) {
+            for (const msg of messages) {
                 if (msg.role === ChatRole.AI || msg.role === ChatRole.USER) {
                     contents.push({
                         role: msg.role === 'USER' ? 'user' : 'model',
@@ -166,7 +165,7 @@ export default class ContentGenerator {
 
             const systemMessage = await prisma.message.create({
                 data: {
-                    chatId: chat.id,
+                    contractId: contractId,
                     role: ChatRole.SYSTEM,
                     content: 'starting to generate in a few seconds',
                 },
@@ -180,8 +179,7 @@ export default class ContentGenerator {
                 }
             }
 
-            await this.saveLLMResponseToDb(fullResponse, chat.id);
-            return fullResponse;
+            await this.saveLLMResponseToDb(fullResponse, contractId);
         } catch (llmError) {
             console.error('Gemini LLM Error:', llmError);
             throw llmError;
@@ -191,12 +189,12 @@ export default class ContentGenerator {
     private async generateClaudeStreamingResponse(
         res: Response,
         currentUserMessage: Message,
-        chat: Chat & { messages: Message[] },
+        messages: Message[],
         contractId: string,
         parser: StreamParser,
     ): Promise<string> {
         logger.info('claude llm used');
-        const messages: ClaudeMessage[] = [];
+        const llm_messages: ClaudeMessage[] = [];
         let fullResponse = '';
 
         try {
@@ -204,7 +202,7 @@ export default class ContentGenerator {
                 data: {
                     content:
                         'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
-                    chatId: chat.id,
+                    contractId,
                     role: ChatRole.AI,
                 },
             });
@@ -212,30 +210,29 @@ export default class ContentGenerator {
             const startingData: StartingData = {
                 stage: 'starting',
                 messageId: llm_message.id,
-                chatId: chat.id,
                 contractId: contractId,
                 timestamp: Date.now(),
             };
 
             this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
 
-            for (const msg of chat.messages) {
+            for (const msg of messages) {
                 if (msg.role === ChatRole.AI || msg.role === ChatRole.USER) {
-                    messages.push({
-                        role: msg.role === 'USER' ? 'user' : 'assistant',
+                    llm_messages.push({
+                        role: msg.role === ChatRole.USER ? 'user' : 'assistant',
                         content: msg.content,
                     });
                 }
             }
 
-            messages.push({
+            llm_messages.push({
                 role: 'user',
                 content: currentUserMessage.content,
             });
 
             const systemMessage = await prisma.message.create({
                 data: {
-                    chatId: chat.id,
+                    contractId,
                     role: ChatRole.SYSTEM,
                     content: 'starting to generate in a few seconds',
                 },
@@ -245,7 +242,7 @@ export default class ContentGenerator {
                 model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 8096,
                 system: this.systemPrompt,
-                messages: messages,
+                messages: llm_messages,
             });
 
             for await (const event of stream) {
@@ -256,7 +253,7 @@ export default class ContentGenerator {
                 }
             }
 
-            await this.saveLLMResponseToDb(fullResponse, chat.id);
+            await this.saveLLMResponseToDb(fullResponse, contractId);
             return fullResponse;
         } catch (llmError) {
             console.error('Claude LLM Error:', llmError);
@@ -264,11 +261,11 @@ export default class ContentGenerator {
         }
     }
 
-    private async saveLLMResponseToDb(fullResponse: string, chatId: string): Promise<void> {
+    private async saveLLMResponseToDb(fullResponse: string, contractId: string): Promise<void> {
         try {
             await prisma.message.create({
                 data: {
-                    chatId: chatId,
+                    contractId,
                     role: ChatRole.AI,
                     content: fullResponse,
                 },

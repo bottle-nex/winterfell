@@ -1,4 +1,4 @@
-import { k8s_config } from '../configs/kubernetes.config';
+import { k8s_config } from '../services/init_services';
 import { logger } from './logger';
 
 export async function waitForPodRunning(pod_name: string, namespace: string, timeout: number = 60) {

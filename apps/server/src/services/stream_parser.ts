@@ -164,7 +164,7 @@ export default class StreamParser {
                 llm_message = await prisma.message.create({
                     data: {
                         content: content,
-                        chatId: systemMessage.chatId,
+                        contractId: systemMessage.contractId,
                         role: ChatRole.AI,
                     },
                 });
@@ -192,7 +192,7 @@ export default class StreamParser {
                 llm_message = await prisma.message.create({
                     data: {
                         content: content,
-                        chatId: systemMessage.chatId,
+                        contractId: systemMessage.contractId,
                         role: ChatRole.AI,
                     },
                 });
