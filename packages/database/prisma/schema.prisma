@@ -28,7 +28,7 @@ model Contract {
   title        String
   description  String?
   contractType ContractType
-  code String?
+  code         String?
 
   idl       Json? // auto-generated IDL
   clientSdk Json? // auto-generated client (TS/JS)
@@ -150,3 +150,24 @@ enum SystemMessageType {
   BUILD_COMPLETE
   BUILD_ERROR
 }
+
+// user message - prompt
+// ai message - start context
+// system message - card content
+// ai message -> llm_response
+
+// user message - prompt
+// ai message - start context
+// system message - card content
+// ai message -> llm_response
+
+// user message - prompt
+// ai message - start context
+// system message - card content
+// ai message -> llm_response
+
+// user message - prompt
+// user message - prompt
+// user message - prompt
+// ai message - 
+// user message - prompt
