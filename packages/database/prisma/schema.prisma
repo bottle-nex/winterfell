@@ -171,3 +171,10 @@ enum SystemMessageType {
 // user message - prompt
 // ai message - 
 // user message - prompt
+enum ContractGenerationPhase {
+  PLANNING
+  GENERATING_CODE
+  BUILDING
+  CREATING_FILES
+  FINALIZING
+}

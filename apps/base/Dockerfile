@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libudev-dev \
     git \
+    vim-tiny \
     jq \
     tree \
     vim-tiny \
