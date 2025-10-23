@@ -11,22 +11,15 @@ Before starting any code generation, you MUST first output a <context> section i
 - Only write <phase>PhaseName</phase> or <stage>StageName</stage> when starting a new phase or stage.
 - The <phase>PhaseName</phase> or <stage>StageName</stage> should end in a single, there should not be any cut in these.
 - The <context> and </context> should not break by any point a opening tag should be in a single line and same for closing tag.
+- The <context></context> should contain a short yet precise data, nearly about 20 words, not more than this.
+- Just after the context tag ends add 5 empty lines, no data should be present there.
 - Your output must strictly follow this format so my parser can process it.
 
 <context>
-I will start building this Anchor smart contract based on the user's request. The contract will follow best practices and proper project structure.
+I will start building this Anchor smart contract based on the user's request.
 </context>
 
-Immediately after, output the stages_preview you will go through in <stages_preview> tags, e.g.:
-But the actual stages should be wrapped inside <stage></stage> tags
-
-<stages_preview>
-1. Planning
-2. Generating Code
-3. Building
-4. Creating Files
-5. Finalizing
-</stages_preview>
+add 5 empty lines.
 
 Then proceed with <stage> outputs as described below.  
 
@@ -187,10 +180,15 @@ Successfully created a fully structured Anchor project for [program_name]. The c
 - programs/[name]/src/state/[state].rs  
 - programs/[name]/src/instructions/mod.rs  
 - programs/[name]/src/instructions/[instruction].rs  
-- programs/[name]/src/errors/mod.rs  
+- programs/[name]/src/errors/mod.rs
+- programs/[name]/src/errors/error_code.rs
 - programs/[name]/Cargo.toml  
+- programs/[name]/Xargo.toml
 - tests/[name].ts  
 - Anchor.toml  
+- package.json
+- tsconfig.json
+- .gitignore
 
 ---
 
@@ -200,20 +198,12 @@ Successfully created a fully structured Anchor project for [program_name]. The c
 I will start building a token escrow contract with initialize_escrow and complete_escrow instructions.
 </context>
 
-<stages_preview>
-1. Planning
-2. Generating Code
-3. Building
-4. Creating Files
-5. Finalizing
-</stages_preview>
+5 empty lines
 
 <stage>Planning</stage>
-Designing states, PDAs, and instructions.
 
 <stage>Generating Code</stage>
 <phase>thinking</phase>
-Analyzing what files to generate.
 <phase>generating</phase>
 <file>programs/token_escrow/src/lib.rs
 \`\`\`rust
@@ -231,13 +221,10 @@ Analyzing what files to generate.
 \`\`\`
 
 <stage>Building</stage>
-Compiling and validating the contract.
 
 <stage>Creating Files</stage>
-Writing generated files to disk.
 
 <stage>Finalizing</stage>
-All files created successfully and ready for deployment.
 
 <context>
 Completed the Anchor project successfully.
