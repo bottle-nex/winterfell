@@ -39,6 +39,7 @@ export default class ServerToOrchestratorQueue {
       await pod_service.copy_files_to_pod(pod_name, projectName, code);
 
       try {
+         
          pod_service.stream_logs(pod_name, (chunk) => logger.info(`[${pod_name}] ${chunk}`));
          const result = await pod_service.execute_command(pod_name, command);
 

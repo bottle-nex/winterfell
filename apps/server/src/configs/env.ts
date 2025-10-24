@@ -1,9 +1,8 @@
 import dotenv from 'dotenv';
 import z from 'zod';
-import path from 'path';
 
 dotenv.config({
-    path: path.resolve(__dirname, '../../../.env'),
+    path: '../../.env',
 });
 
 const envScehma = z.object({
@@ -23,7 +22,6 @@ const envScehma = z.object({
     SERVER_CLOUDFRONT_DOMAIN: z.string().transform((val) => val.trim()),
     SERVER_RAZORPAY_KEY_ID: z.string().transform((val) => val.trim()),
     SERVER_RAZORPAY_KEY_SECRET: z.string().transform((val) => val.trim()),
-    SERVER_REDIS_URL: z.url().transform((val) => val.trim()),
 });
 
 function parseScehma() {
