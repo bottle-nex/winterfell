@@ -28,10 +28,10 @@ export default function DashboardTextAreaComponent() {
             return;
         }
 
-        const newChatId = uuid();
+        const contractId = uuid();
         setMessage({
             id: uuid(),
-            chatId: newChatId,
+            contractId: contractId,
             role: ChatRole.USER,
             content: inputValue,
             planning: false,
@@ -43,7 +43,7 @@ export default function DashboardTextAreaComponent() {
             createdAt: new Date(),
         });
 
-        router.push(`/playground/${newChatId}`);
+        router.push(`/playground/${contractId}`);
     }
 
     function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {

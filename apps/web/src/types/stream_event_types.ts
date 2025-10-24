@@ -18,6 +18,7 @@ export enum STAGE {
     CREATING_FILES = 'CREATING_FILES',
     FINALIZING = 'FINALIZING',
     END = 'END',
+    ERROR = 'ERROR',
 }
 
 export enum PHASE_TYPES {
@@ -37,7 +38,6 @@ export interface ThinkingData {
 export interface StartingData {
     phase: 'starting';
     messageId?: string;
-    chatId?: string;
     contractId?: string;
     timestamp?: number;
 }
