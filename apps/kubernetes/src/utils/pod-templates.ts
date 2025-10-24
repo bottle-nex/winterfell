@@ -24,11 +24,11 @@ export default class PodTemplate {
             containers: [
                {
                   name: 'anchor-dev',
-                  image: 'kantdocker1/winterfell-base-image:latest',
+                  image: 'winterfellhub/winterfell-base:latest',
                   command: ['/bin/sh'],
                   args: ['-c', 'tail -f /dev/null'],
                   stdin: true,
-                  tty: true,
+                  tty: false,
                   workingDir: '/workspace',
                   env: [
                      {
