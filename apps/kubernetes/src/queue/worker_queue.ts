@@ -2,6 +2,8 @@ import Bull, { Job } from 'bull';
 import { WORKER_QUEUE_TYPES } from '../types/worker_queue_types';
 import { pod_service } from '../services/init_services';
 import { logger } from '../utils/logger';
+import { get_files } from '../services/client_services';
+import { FileContent } from '../types/file_type';
 
 export default class ServerToOrchestratorQueue {
    private client: Bull.Queue;
@@ -33,10 +35,13 @@ export default class ServerToOrchestratorQueue {
       command: string[],
       job: Job,
    ): Promise<{ success: boolean; stdout: string; stderr: string }> {
-      const { userId, contractId, projectName, code } = job.data;
+      const { userId, contractId, projectName } = job.data;
+
+      const codebase: FileContent[] = await get_files(contractId);
 
       const pod_name = await pod_service.create_pod({ userId, contractId, projectName });
-      await pod_service.copy_files_to_pod(pod_name, projectName, code);
+
+      await pod_service.copy_files_to_pod(pod_name, projectName, codebase);
 
       try {
          pod_service.stream_logs(pod_name, (chunk) => logger.info(`[${pod_name}] ${chunk}`));
