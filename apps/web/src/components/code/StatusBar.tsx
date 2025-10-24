@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MdTerminal } from 'react-icons/md';
 import { Button } from '../ui/button';
 import { COMMAND, CommandResponse } from './TerminalCommands';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
 enum TerminalTabOptions {
     SHELL = 'shell',
@@ -23,6 +24,7 @@ export default function StatusBar() {
     const [logs, setLogs] = useState<Line[]>([]);
     const [helpLogs, setHelpLogs] = useState<Line[]>([]);
     const [input, setInput] = useState<string>('');
+    const { currentFile } = useCodeEditor();
     const outputRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -136,6 +138,33 @@ export default function StatusBar() {
         ]);
     };
 
+    const handleCurrentFileExtension = () => {
+        if(!currentFile) return 'no selected file.';
+
+        const extension = currentFile.name.split('.')[1];
+
+        switch(extension) {
+            case 'rs':
+                return 'Rust';
+
+            case 'ts':
+                return 'TypeScript';
+
+            case 'gitignore':
+            case 'prettierignore':
+                return 'Ignore';
+
+            case 'json':
+                return 'JSON';
+
+            case 'toml':
+                return 'TOML';
+
+            default:
+                return 'File';
+        }
+    }
+
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -238,7 +267,7 @@ export default function StatusBar() {
                         Ln 128, Col 14
                     </div>
                     <div className="hover:text-light/80 cursor-pointer tracking-wider">
-                        TypeScript
+                        {handleCurrentFileExtension()}
                     </div>
                 </div>
             </div>
