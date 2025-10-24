@@ -2,7 +2,6 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@/src/componen
 import { MODEL } from '@/src/types/extra_types';
 import Image from 'next/image';
 
-
 interface ModelSelectProps {
     value: MODEL;
     onChange: (value: MODEL) => void;

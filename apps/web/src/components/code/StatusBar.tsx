@@ -110,17 +110,17 @@ export default function StatusBar() {
                 else setHelpLogs([]);
                 return;
             case COMMAND.HELP:
-                output = CommandResponse.find(c => c.command === trimmed)?.response!;
+                output = CommandResponse[trimmed];
                 break;
             case COMMAND.HOT_KEYS:
-                output = CommandResponse.find(c => c.command === trimmed)?.response!;
+                output = CommandResponse[trimmed];
                 break;
             case COMMAND.PLATFORM:
-                output = CommandResponse.find(c => c.command === trimmed)?.response!;
+                output = CommandResponse[trimmed];
                 break;
 
             case COMMAND.COMMANDS:
-                output = CommandResponse.find(c => c.command === trimmed)?.response!;
+                output = CommandResponse[trimmed];
                 break;
 
             default:
@@ -139,11 +139,11 @@ export default function StatusBar() {
     };
 
     const handleCurrentFileExtension = () => {
-        if(!currentFile) return 'no selected file.';
+        if (!currentFile) return 'no selected file.';
 
         const extension = currentFile.name.split('.')[1];
 
-        switch(extension) {
+        switch (extension) {
             case 'rs':
                 return 'Rust';
 
@@ -163,7 +163,7 @@ export default function StatusBar() {
             default:
                 return 'File';
         }
-    }
+    };
 
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {

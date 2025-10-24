@@ -7,7 +7,6 @@ import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { CHAT_URL } from '@/routes/api_routes';
 import { StreamEvent } from '@/src/types/stream_event_types';
-import BuilderChatSystemMessage from './BuilderChatSystemMessage';
 import AnimtaedLoader from '../ui/animated-loader';
 
 import StreamEventProcessor from '@/src/class/handle_stream_event';
@@ -123,7 +122,11 @@ export default function BuilderChats() {
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
                                     <Image
                                         className="rounded-full flex-shrink-0"
-                                        src={selectedModel === MODEL.GEMINI ? '/icons/gemini.png' : '/icons/claude.png'}
+                                        src={
+                                            selectedModel === MODEL.GEMINI
+                                                ? '/icons/gemini.png'
+                                                : '/icons/claude.png'
+                                        }
                                         alt="ai"
                                         width={24}
                                         height={24}

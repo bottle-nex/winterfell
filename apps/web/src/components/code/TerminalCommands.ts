@@ -1,4 +1,3 @@
-
 const helpResponse = `
 AVAILABLE COMMANDS:
 clear              Clear the terminal
@@ -40,10 +39,10 @@ export enum COMMAND {
     COMMANDS = '--commands',
 }
 
-export const CommandResponse = [
-    // { command: COMMAND.CLEAR, response:  } no reponse for clear
-    { command: COMMAND.HELP, response: helpResponse },
-    { command: COMMAND.HOT_KEYS, response: hotKeysResponse },
-    { command: COMMAND.PLATFORM, response: platformResponse },
-    { command: COMMAND.COMMANDS, response: commandsResponse },
-];
+export const CommandResponse: Record<COMMAND, string> = {
+    [COMMAND.CLEAR]: 'no clear action',
+    [COMMAND.HELP]: helpResponse,
+    [COMMAND.HOT_KEYS]: hotKeysResponse,
+    [COMMAND.PLATFORM]: platformResponse,
+    [COMMAND.COMMANDS]: commandsResponse,
+};
