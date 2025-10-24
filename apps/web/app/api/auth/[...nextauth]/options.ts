@@ -23,6 +23,9 @@ export const authOption: AuthOptions = {
     pages: {
         signIn: '/',
     },
+    session: {
+        strategy: 'jwt',
+    },
     callbacks: {
         async signIn({ user, account }: { user: UserType; account: Account | null }) {
             try {
