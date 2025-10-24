@@ -6,6 +6,6 @@ export enum WORKER_QUEUE_TYPES {
 
 export interface AnchorBuildQueueData {
     userId: string;
-    sessionId: string;
+    contractId: string;
     projectName: string;
 }

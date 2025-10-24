@@ -6,8 +6,8 @@ import { logger } from '../utils/logger';
 export default class ServerToOrchestratorQueue {
     private static instance: ServerToOrchestratorQueue;
     private queue: Bull.Queue;
-    constructor() {
-        this.queue = new Bull('server-to-orchestrator', {
+    constructor(queue_name: string) {
+        this.queue = new Bull(queue_name, {
             redis: env.SERVER_REDIS_URL,
             defaultJobOptions: {
                 removeOnComplete: 100,
@@ -25,17 +25,17 @@ export default class ServerToOrchestratorQueue {
 
     public async run_anchor_build_command(
         userId: string,
-        sessionId: string,
+        contractId: string,
         projectName: string,
         options?: Partial<JobOptions>,
     ): Promise<void> {
         try {
             const data: AnchorBuildQueueData = {
                 userId,
-                sessionId,
+                contractId,
                 projectName,
             };
-            const job_id: string = this.get_job_id(userId, sessionId, projectName);
+            const job_id: string = this.get_job_id(userId, contractId, projectName);
             const job_options: JobOptions = {
                 ...options,
                 jobId: job_id,
@@ -49,17 +49,17 @@ export default class ServerToOrchestratorQueue {
 
     public async run_anchor_deploy_command(
         userId: string,
-        sessionId: string,
+        contractId: string,
         projectName: string,
         options?: Partial<JobOptions>,
     ): Promise<void> {
         try {
             const data: AnchorBuildQueueData = {
                 userId,
-                sessionId,
+                contractId,
                 projectName,
             };
-            const job_id: string = this.get_job_id(userId, sessionId, projectName);
+            const job_id: string = this.get_job_id(userId, contractId, projectName);
             const job_options: JobOptions = {
                 ...options,
                 jobId: job_id,
@@ -73,17 +73,17 @@ export default class ServerToOrchestratorQueue {
 
     public async run_anchor_test_command(
         userId: string,
-        sessionId: string,
+        contractId: string,
         projectName: string,
         options?: Partial<JobOptions>,
     ): Promise<void> {
         try {
             const data: AnchorBuildQueueData = {
                 userId,
-                sessionId,
+                contractId,
                 projectName,
             };
-            const job_id: string = this.get_job_id(userId, sessionId, projectName);
+            const job_id: string = this.get_job_id(userId, contractId, projectName);
             const job_options: JobOptions = {
                 ...options,
                 jobId: job_id,
@@ -93,13 +93,6 @@ export default class ServerToOrchestratorQueue {
         } catch (err) {
             logger.error('failed to run anchor test command', err);
         }
-    }
-
-    public static get_instance() {
-        if (!ServerToOrchestratorQueue.instance) {
-            ServerToOrchestratorQueue.instance = new ServerToOrchestratorQueue();
-        }
-        return ServerToOrchestratorQueue.instance;
     }
 
     private get_job_id(userId: string, sessionId: string, projectName: string) {

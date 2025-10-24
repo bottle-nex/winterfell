@@ -8,6 +8,7 @@ import updateSubscriptionController from '../controllers/payment-controller/upda
 import subscriptionMiddleware from '../middlewares/subscriptionMiddleware';
 import getUserPlanController from '../controllers/payment-controller/getUserPlanController';
 import syncFilesController from '../controllers/files/syncFilesController';
+import runCommandController from '../controllers/contract-controller/runCommandController';
 
 const router: Router = Router();
 
@@ -19,6 +20,7 @@ router.get('/health', (_req: Request, res: Response) => {
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);
+router.post('/contract/run-command', authMiddleware, runCommandController);
 
 // file-routes
 router.get('/files/:contractId', authMiddleware, getFilesController);
