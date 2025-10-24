@@ -13,7 +13,7 @@ import LoginModal from '../utility/LoginModal';
 const navItems: NavItemsType[] = [
     { name: 'Features', link: '#feature' },
     { name: 'Pricing', link: '#pricing' },
-    { name: 'Contact', link: '#contact' },
+    { name: 'Faq', link: '#faq' },
     { name: 'About', link: '#about' },
 ];
 
