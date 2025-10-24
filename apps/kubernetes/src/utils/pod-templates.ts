@@ -1,5 +1,4 @@
 import { V1Pod } from '@kubernetes/client-node';
-import { CreatePodRequest } from '../types/k8_types';
 
 export default class PodTemplate {
    public static get_anchor_pod_template(userId: string, sessionId: string, projectName?: string) {

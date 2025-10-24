@@ -18,11 +18,15 @@ export default class ObjectStore {
         this.bucket = env.SERVER_AWS_BUCKET_NAME;
     }
 
-    public async uploadContractFiles(contractId: string, files: FileContent[]) {
+    public async uploadContractFiles(
+        contractId: string,
+        files: FileContent[],
+        rawLlmResponse: string,
+    ) {
         const uploadedFiles: string[] = [];
 
         for (const file of files) {
-            const key = `${contractId}/${file.path}`;
+            const key = `${contractId}/resource/${file.path}`;
 
             const upload = new Upload({
                 client: this.s3,
@@ -37,7 +41,18 @@ export default class ObjectStore {
             uploadedFiles.push(key);
         }
 
-        return uploadedFiles;
+        const rawKey = `${contractId}/raw/llm-response.txt`;
+        const rawUpload = new Upload({
+            client: this.s3,
+            params: {
+                Bucket: this.bucket,
+                Key: rawKey,
+                Body: rawLlmResponse,
+                ContentType: 'text/plain',
+            },
+        });
+        await rawUpload.done();
+        uploadedFiles.push(rawKey);
     }
 
     public async uploadFile(contractId: string, path: string, content: string | Buffer) {
@@ -56,8 +71,11 @@ export default class ObjectStore {
         return key;
     }
 
-    public getFileUrl(contractId: string) {
-        // return `https://${this.bucket}.s3.${env.SERVER_AWS_REGION}.amazonaws.com/${key}`;
-        return `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}`;
+    public get_raw_files(contractId: string) {
+        return `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/raw/llm-response.txt`;
+    }
+
+    public get_resource_files(contractId: string) {
+        return `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/resource`;
     }
 }
