@@ -5,6 +5,9 @@ import { MdTerminal } from 'react-icons/md';
 import { Button } from '../ui/button';
 import { COMMAND, CommandResponse } from './TerminalCommands';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { useParams } from 'next/navigation';
+import executeCommandServer from '@/src/lib/server/execute-command-server';
+import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 
 enum TerminalTabOptions {
     SHELL = 'shell',
@@ -27,6 +30,9 @@ export default function StatusBar() {
     const { currentFile } = useCodeEditor();
     const outputRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const params = useParams();
+    const contractId = params.contractId as string;
+    const { session } = useUserSessionStore();
 
     const Prompt = () => (
         <span className="text-green-500 select-none">
@@ -100,6 +106,8 @@ export default function StatusBar() {
 
     // Handle commands
     const handleCommand = (command: string) => {
+        if (!session || !session.user || !session.user.token) return null;
+
         const trimmed = command.trim() as COMMAND;
         if (!trimmed) return;
 
@@ -121,6 +129,21 @@ export default function StatusBar() {
 
             case COMMAND.COMMANDS:
                 output = CommandResponse[trimmed];
+                break;
+
+            case COMMAND.WINTERFELL_BUILD:
+                output = CommandResponse[trimmed];
+                executeCommandServer('ANCHOR_BUILD', contractId, session.user.token);
+                break;
+
+            case COMMAND.WINTERFELL_TEST:
+                output = CommandResponse[trimmed];
+                executeCommandServer('ANCHOR_TEST', contractId, session.user.token);
+                break;
+
+            case COMMAND.WINTERFELL_DEPLOY_DEVNET:
+                output = CommandResponse[trimmed];
+                executeCommandServer('ANCHOR_DEPLOY', contractId, session.user.token);
                 break;
 
             default:
@@ -205,21 +228,19 @@ export default function StatusBar() {
                     >
                         <Button
                             onClick={() => setActiveTab(TerminalTabOptions.SHELL)}
-                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] cursor-pointer ${
-                                activeTab === TerminalTabOptions.SHELL
+                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] cursor-pointer ${activeTab === TerminalTabOptions.SHELL
                                     ? 'text-light/70 border-b border-light/70'
                                     : 'text-light/50'
-                            }`}
+                                }`}
                         >
                             SHELL
                         </Button>
                         <Button
                             onClick={() => setActiveTab(TerminalTabOptions.HELP)}
-                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none cursor-pointer ${
-                                activeTab === TerminalTabOptions.HELP
+                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none cursor-pointer ${activeTab === TerminalTabOptions.HELP
                                     ? 'text-light/70 border-b border-light/70'
                                     : 'text-light/50'
-                            }`}
+                                }`}
                         >
                             ACTIONS
                         </Button>
