@@ -26,6 +26,7 @@ export default class ServerToOrchestratorQueue {
          WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND,
          this.run_command_on_pod.bind(this, ['anchor', 'deploy']),
       );
+      logger.info('server-orchestrator queue started');
    }
 
    private async run_command_on_pod(

@@ -1,12 +1,12 @@
 import { V1Pod } from '@kubernetes/client-node';
 import { env } from '../configs/env.config';
-import { k8s_config } from '../configs/kubernetes.config';
 import { CreatePodRequest } from '../types/k8_types';
 import PodTemplate from '../utils/pod-templates';
 import { logger } from '../utils/logger';
 import { waitForPodRunning } from '../utils/pod_waiter';
 import { mapPodStatus } from '../utils/map_pod_status';
 import { FileContent } from '../types/file_type';
+import { k8s_config } from './init_services';
 
 export default class PodService {
    public namespace: string = env.KUBERNETES_NAMESPACE;

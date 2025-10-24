@@ -102,7 +102,7 @@ export default function CodeEditor(): JSX.Element {
     return (
         <div className="flex min-h-0 h-full">
             {collapseFileTree && (
-                <div className='w-[18rem]'>
+                <div className="w-[18rem]">
                     <Filetree />
                 </div>
             )}

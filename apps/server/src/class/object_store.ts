@@ -56,18 +56,8 @@ export default class ObjectStore {
         return key;
     }
 
-    public getFileUrl(key: string) {
+    public getFileUrl(contractId: string) {
         // return `https://${this.bucket}.s3.${env.SERVER_AWS_REGION}.amazonaws.com/${key}`;
-        return `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${key}`;
+        return `${process.env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}`;
     }
 }
-
-/*
-
-the files this accept should look like
-files = [
-    { path: "programs/contract/lib.rs", content: "<file-content>" },
-    { path: "Anchor.toml", content: "<file-content>" },
-]
-
-*/

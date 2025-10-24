@@ -15,14 +15,14 @@ export default function Page({ params }: { params: Promise<{ chatId: string }> }
         function handleKeyDown(event: KeyboardEvent) {
             if ((event.metaKey || event.ctrlKey) && event.key === 'e') {
                 event.preventDefault();
-                setCollapseFileTree(!collapseFileTree)
+                setCollapseFileTree(!collapseFileTree);
             }
         }
-        document.addEventListener('keydown', handleKeyDown)
+        document.addEventListener('keydown', handleKeyDown);
         return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    })
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    });
 
     useEffect(() => {
         return () => {

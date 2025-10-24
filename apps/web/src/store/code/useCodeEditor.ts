@@ -40,8 +40,8 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                            ? { ...n, children: updateNode(n.children) }
-                            : n,
+                          ? { ...n, children: updateNode(n.children) }
+                          : n,
                 );
 
             const newTree = updateNode(state.fileTree);
