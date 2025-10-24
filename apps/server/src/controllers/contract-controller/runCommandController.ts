@@ -3,11 +3,12 @@ import { Request, Response } from 'express';
 import { server_orchestrator_queue } from '../../services/init';
 import { COMMAND } from '../../types/contract_types';
 import { command_schema } from '../../schemas/command_schema';
+import { logger } from '../../utils/logger';
 
 export default async function runCommandController(req: Request, res: Response) {
     try {
         const user = req.user;
-
+        logger.info('run command controller reached');
         if (!user) {
             res.status(401).json({
                 success: false,
@@ -17,8 +18,10 @@ export default async function runCommandController(req: Request, res: Response) 
         }
 
         const { command, contractId } = req.body;
+        console.log('contract is is : ', contractId);
 
         const data = command_schema.safeParse(command);
+        console.log('parsed data is : ', data.data);
 
         const contract = await prisma.contract.findUnique({
             where: {
@@ -26,6 +29,7 @@ export default async function runCommandController(req: Request, res: Response) 
                 userId: user.id,
             },
         });
+        console.log('contract is : ', contract);
 
         if (!contract) {
             res.status(404).json({
@@ -37,6 +41,7 @@ export default async function runCommandController(req: Request, res: Response) 
 
         switch (data.data as COMMAND) {
             case COMMAND.ANCHOR_BUILD:
+                logger.info('inside case');
                 server_orchestrator_queue.run_anchor_build_command(
                     user.id,
                     contractId,
