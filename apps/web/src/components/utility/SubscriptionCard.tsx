@@ -3,7 +3,6 @@ import { LiaServicestack } from 'react-icons/lia';
 import { Check } from 'lucide-react';
 import { Button } from '../ui/button';
 import NavItems, { NavItemsType } from '../nav/NavItems';
-import UnclickableTicker from '../tickers/UnclickableTicker';
 
 type PlanType = 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
 type BillingPeriod = 'MONTHLY' | 'YEARLY';
@@ -22,14 +21,14 @@ const planItems: NavItemsType[] = [
 ];
 
 const planStyles = {
-    FREE: 'bg-neutral-900 text-neutral-300 border-neutral-700/50',
-    PREMIUM: 'bg-neutral-200 text-neutral-900 border-neutral-400/30',
+    FREE: 'bg-neutral-200 text-neutral-900 border-neutral-400/30',
+    PREMIUM: 'bg-neutral-900 text-neutral-300 border-neutral-700/50',
     PREMIUM_PLUS: 'bg-primary text-light border-primary-light/20',
 };
 
 const planAccents = {
-    FREE: 'bg-gradient-to-br from-neutral-700/30 to-transparent',
-    PREMIUM: 'bg-gradient-to-br from-neutral-400/20 to-transparent',
+    FREE: 'bg-gradient-to-br from-neutral-400/20 to-transparent',
+    PREMIUM: 'bg-gradient-to-br from-neutral-700/30 to-transparent',
     PREMIUM_PLUS: 'bg-gradient-to-br from-white/10 to-transparent',
 };
 
@@ -71,13 +70,12 @@ function SubscriptionCard({
                         </h2>
                     </div>
                     <div
-                        className={`p-2.5 rounded-xl backdrop-blur-sm ${
-                            plan === 'FREE'
-                                ? 'bg-neutral-800/50'
-                                : plan === 'PREMIUM'
-                                  ? 'bg-white/20'
-                                  : 'bg-white/15'
-                        }`}
+                        className={`p-2.5 rounded-xl backdrop-blur-sm ${plan === 'PREMIUM'
+                            ? 'bg-white/5'
+                            : plan === 'FREE'
+                                ? 'bg-white/20'
+                                : 'bg-white/15'
+                            }`}
                     >
                         <LiaServicestack className="size-6 sm:size-7" />
                     </div>
@@ -88,13 +86,12 @@ function SubscriptionCard({
                         {features.slice(0, 4).map((feature, idx) => (
                             <div
                                 key={idx}
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-                                    plan === 'FREE'
-                                        ? 'bg-neutral-800/60'
-                                        : plan === 'PREMIUM'
-                                          ? 'bg-white/25'
-                                          : 'bg-white/15'
-                                }`}
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${plan === 'PREMIUM'
+                                    ? 'bg-neutral-800/60'
+                                    : plan === 'FREE'
+                                        ? 'bg-white/25'
+                                        : 'bg-white/15'
+                                    }`}
                             >
                                 <Check className="size-3" />
                                 <span className="whitespace-nowrap">{feature}</span>
@@ -116,11 +113,12 @@ function SubscriptionCard({
                         </div>
                     </div>
                     <Button
-                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${
-                            plan === 'FREE' || plan === 'PREMIUM'
-                                ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
-                                : 'bg-neutral-900 hover:bg-neutral-800 text-white'
-                        }`}
+                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${plan === 'PREMIUM'
+                                ? 'bg-neutral-800 hover:bg-neutral-700 text-white'
+                                : plan === 'FREE'
+                                    ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
+                                    : 'bg-neutral-900 hover:bg-neutral-800 text-white'
+                            }`}
                     >
                         {plan === 'FREE' ? 'Start Free' : 'Upgrade'}
                     </Button>
@@ -180,11 +178,8 @@ export default function SubscriptionPlans() {
     return (
         <section
             id="pricing"
-            className="relative w-full min-h-screen bg-gradient-to-b to-dark-base from-[#0a0c0d] text-center text-white flex flex-col items-center justify-center z-20 px-4 border-t border-neutral-800"
+            className="w-full min-h-screen bg-dark-base text-center text-white relative flex flex-col items-center justify-center z-20 px-4"
         >
-            <UnclickableTicker className="absolute -top-[14px] right-[35%]">
-                frequent asked questions
-            </UnclickableTicker>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
 
             <div className="relative z-10 mt-28 sm:mt-32 mb-12 sm:mb-15">

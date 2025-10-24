@@ -68,9 +68,9 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
     // in the div tags add a tag for error showing,
 
     return (
-        <div className="relative w-full rounded-[4px] overflow-hidden border border-neutral-800 bg-[#121214] text-neutral-300 select-none">
+        <div className="relative w-[80%] rounded-2xl overflow-hidden border border-neutral-800 bg-[#0c0d0e] text-neutral-300 backdrop-blur-sm select-none">
 
-            <div className="relative z-10 w-full flex flex-col items-start justify-center gap-y-4 px-5 py-4.5 text-neutral-300">        
+            <div className="relative z-10 w-full flex flex-col items-start justify-center gap-y-4 p-6 text-neutral-300">
                 {stages.map(({ stage, show }, index) => {
                     const status =
                         index < currentIndex

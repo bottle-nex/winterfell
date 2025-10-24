@@ -7,6 +7,7 @@ const envSchema = z.object({
    KUBERNETES_NODE_ENV: z.enum(['development', 'production']),
    KUBERNETES_PORT: z.string().transform((val) => parseInt(val, 10)),
    KUBERNETES_NAMESPACE: z.string().default('default'),
+   SERVER_CLOUDFRONT_DOMAIN: z.url(),
 });
 
 function parseEnv() {
