@@ -3,6 +3,7 @@ import { LiaServicestack } from 'react-icons/lia';
 import { Check } from 'lucide-react';
 import { Button } from '../ui/button';
 import NavItems, { NavItemsType } from '../nav/NavItems';
+import UnclickableTicker from '../tickers/UnclickableTicker';
 
 type PlanType = 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
 type BillingPeriod = 'MONTHLY' | 'YEARLY';
@@ -71,10 +72,10 @@ function SubscriptionCard({
                     </div>
                     <div
                         className={`p-2.5 rounded-xl backdrop-blur-sm ${plan === 'FREE'
-                                ? 'bg-neutral-800/50'
-                                : plan === 'PREMIUM'
-                                    ? 'bg-white/20'
-                                    : 'bg-white/15'
+                            ? 'bg-neutral-800/50'
+                            : plan === 'PREMIUM'
+                                ? 'bg-white/20'
+                                : 'bg-white/15'
                             }`}
                     >
                         <LiaServicestack className="size-6 sm:size-7" />
@@ -87,10 +88,10 @@ function SubscriptionCard({
                             <div
                                 key={idx}
                                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${plan === 'FREE'
-                                        ? 'bg-neutral-800/60'
-                                        : plan === 'PREMIUM'
-                                            ? 'bg-white/25'
-                                            : 'bg-white/15'
+                                    ? 'bg-neutral-800/60'
+                                    : plan === 'PREMIUM'
+                                        ? 'bg-white/25'
+                                        : 'bg-white/15'
                                     }`}
                             >
                                 <Check className="size-3" />
@@ -114,8 +115,8 @@ function SubscriptionCard({
                     </div>
                     <Button
                         className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${plan === 'FREE' || plan === 'PREMIUM'
-                                ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
-                                : 'bg-neutral-900 hover:bg-neutral-800 text-white'
+                            ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
+                            : 'bg-neutral-900 hover:bg-neutral-800 text-white'
                             }`}
                     >
                         {plan === 'FREE' ? 'Start Free' : 'Upgrade'}
@@ -176,8 +177,9 @@ export default function SubscriptionPlans() {
     return (
         <section
             id="pricing"
-            className="w-full min-h-screen bg-dark-base text-center text-white relative flex flex-col items-center justify-center z-20 px-4"
+            className="relative w-full min-h-screen bg-gradient-to-b to-dark-base from-[#0a0c0d] text-center text-white flex flex-col items-center justify-center z-20 px-4 border-t border-neutral-800"
         >
+            <UnclickableTicker className='absolute -top-[14px] right-[35%]'>frequent asked questions</UnclickableTicker>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
 
             <div className="relative z-10 mt-28 sm:mt-32 mb-12 sm:mb-15">
