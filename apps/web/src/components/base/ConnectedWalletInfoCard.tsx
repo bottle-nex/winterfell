@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import Image from 'next/image';
 import { LiaServicestack } from 'react-icons/lia';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import { cn } from '@/src/lib/utils';
 
 export function ConnectedWalletInfoCard() {
     const { publicKey, wallet, connected, disconnect } = useWallet();
@@ -102,30 +103,11 @@ export function ConnectedWalletInfoCard() {
         setShowAccountInfo(newShowAccountInfo);
     }, [publicKey, connected, balance, showAccountInfo]);
 
-    const buyCoffee = async () => {
+    const deployContract = async () => {
         if (!publicKey) return alert('Wallet not connected!');
-        // const recipient = new PublicKey("ENTER_SOL_ADDRESS_HERE");
-        // const lamports = 0.01 * 1e9; // example 0.01 SOL
 
         try {
-            //   const tx = await connection.sendRawTransaction(
-            //     {
-            //       feePayer: publicKey,
-            //       recentBlockhash: (await connection.getRecentBlockhash()).blockhash,
-            //       instructions: [
-            //         {
-            //           keys: [
-            //             { pubkey: publicKey, isSigner: true, isWritable: true },
-            //             { pubkey: recipient, isSigner: false, isWritable: true },
-            //           ],
-            //           programId: new PublicKey("11111111111111111111111111111111"), // System Program
-            //           data: Buffer.alloc(0),
-            //         },
-            //       ],
-            //     },
-            //     wallet ? [wallet.signTransaction] : []
-            //   );
-            //
+
         } catch (err) {
             console.error(err);
         }
@@ -150,7 +132,7 @@ export function ConnectedWalletInfoCard() {
                     </div>
                     <div
                         ref={ContainerRef}
-                        className="w-full rounded-2xl bg-[#1c1c1c] border border-[#3d3932] overflow-hidden"
+                        className="w-full rounded-2xl bg-dark border border-neutral-800 overflow-hidden"
                     >
                         <div
                             ref={TransitionWrapperRef}
@@ -158,7 +140,7 @@ export function ConnectedWalletInfoCard() {
                         >
                             {showAccountInfo ? (
                                 <AccountInfo
-                                    onClick={buyCoffee}
+                                    onClick={deployContract}
                                     ref={AccountInfoRef}
                                     address={publicKey!.toBase58()}
                                     balance={balance || 0}
@@ -181,6 +163,8 @@ export function ConnectedWalletInfoCard() {
         </div>
     );
 }
+
+const color = 'bg-dark-base border border-neutral-800 text-light';
 
 interface AccountInfoProps {
     onClick: () => void;
@@ -211,11 +195,14 @@ const AccountInfo = ({
                         alt={walletName}
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full border border-[#3d3932]"
+                        className="w-10 h-10 rounded-full border border-neutral-800"
                     />
                 )}
                 <div
-                    className="max-w-xs px-3 py-1 rounded-md bg-[#2c2c2c] border border-[#3d3932] text-[#D8CFBC] text-sm font-mono truncate"
+                    className={cn(
+                        'max-w-xs px-3 py-1 rounded-md text-sm font-mono truncate',
+                        color,
+                    )}
                     title={address}
                 >
                     {address}
@@ -223,19 +210,24 @@ const AccountInfo = ({
             </div>
 
             <div className="w-full flex justify-start items-center gap-x-3">
-                <div className="flex items-center justify-center px-3 py-1 rounded-md bg-[#2c2c2c] border border-[#3d3932] text-[#D8CFBC] text-sm font-mono">
+                <div
+                    className={cn(
+                        'flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono',
+                        color,
+                    )}
+                >
                     Chain:
                 </div>
-                <div className="w-full flex items-center justify-center px-3 py-1 rounded-md bg-[#2c2c2c] border border-[#3d3932] text-[#D8CFBC] text-sm font-mono">
+                <div className={cn("w-full flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono", color)}>
                     Mainnet
                 </div>
             </div>
 
             <div className="w-full flex justify-start items-center gap-x-3">
-                <div className="flex items-center justify-center px-3 py-1 rounded-md bg-[#2c2c2c] border border-[#3d3932] text-[#D8CFBC] text-sm font-mono">
+                <div className={cn("flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono", color)}>
                     Balance:
                 </div>
-                <div className="w-full flex items-center justify-center px-3 py-1 rounded-md bg-[#2c2c2c] border border-[#3d3932] text-[#D8CFBC] text-sm font-mono">
+                <div className={cn("w-full flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono", color)}>
                     {balance.toFixed(4)} SOL
                 </div>
             </div>
@@ -245,7 +237,7 @@ const AccountInfo = ({
                     className="flex items-center justify-center px-5 py-1.5 rounded-md bg-[#2c2c2c] hover:bg-[#3c3c3c] transition-colors duration-200 ease-in-out border border-[#D8CFBC] text-[#D8CFBC] text-sm font-mono cursor-pointer"
                     onClick={onClick}
                 >
-                    Buy me a coffee
+                    Deploy contract
                 </div> */}
                 <div
                     className="flex items-center justify-center px-5 py-1.5 rounded-md bg-[#fb2c3656] hover:bg-[#fb2c3675] transition-colors duration-200 ease-in-out border border-red-400 text-[#D8CFBC] text-sm font-mono cursor-pointer"
