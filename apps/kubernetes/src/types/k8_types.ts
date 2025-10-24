@@ -1,6 +1,6 @@
 export interface CreatePodRequest {
    userId: string;
-   sessionId: string;
+   contractId: string;
    projectName?: string;
 }
 
