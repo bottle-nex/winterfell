@@ -6,7 +6,9 @@
   "scripts": {
     "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:bull --external:ioredis --external:ws --external:@google/genai --external:@anthropic-ai/sdk",
     "start": "node dist/index.js",
-    "dev": "yarn build && yarn start"
+    "dev": "yarn build && yarn start",
+    "lint": "eslint './src/**/*.{ts,js}'",
+    "format": "prettier --write './src/**/*.{ts,tsx,js,jsx,json,md}'"
   },
   "keywords": [],
   "author": "",
