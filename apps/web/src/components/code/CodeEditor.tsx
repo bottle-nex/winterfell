@@ -2,12 +2,14 @@
 
 import { JSX, useCallback } from 'react';
 import { Editor, Monaco } from '@monaco-editor/react';
+import type { editor } from 'monaco-editor';
 import Filetree from './Filetree';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import StatusBar from './StatusBar';
 
 export default function CodeEditor(): JSX.Element {
-    const { collapseFileTree } = useCodeEditor();
+    const { collapseFileTree, currentCode } = useCodeEditor();
+
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
             base: 'vs-dark',
@@ -98,7 +100,16 @@ export default function CodeEditor(): JSX.Element {
         });
     }, []);
 
-    const { currentCode } = useCodeEditor();
+    const handleEditorDidMount = useCallback(
+        (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyP, () => {
+                const event = new CustomEvent('open-search-bar');
+                window.dispatchEvent(event);
+            });
+        },
+        [],
+    );
+
     return (
         <div className="flex min-h-0 h-full">
             {collapseFileTree && (
@@ -106,16 +117,19 @@ export default function CodeEditor(): JSX.Element {
                     <Filetree />
                 </div>
             )}
+
             <Editor
                 height="100%"
-                language={'rust'}
+                language="rust"
                 beforeMount={handleEditorWillMount}
+                onMount={handleEditorDidMount}
                 theme="clean-dark"
                 options={{
                     readOnly: true,
                 }}
                 value={currentCode}
             />
+
             <StatusBar />
         </div>
     );

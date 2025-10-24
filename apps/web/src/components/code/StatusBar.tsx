@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MdTerminal } from 'react-icons/md';
 import { Button } from '../ui/button';
+import { COMMAND, CommandResponse } from './TerminalCommands';
 
 enum TerminalTabOptions {
     SHELL = 'shell',
@@ -97,49 +98,27 @@ export default function StatusBar() {
 
     // Handle commands
     const handleCommand = (command: string) => {
-        const trimmed = command.trim();
+        const trimmed = command.trim() as COMMAND;
         if (!trimmed) return;
 
         let output = '';
         switch (trimmed) {
-            case 'clear':
+            case COMMAND.CLEAR:
                 if (activeTab === TerminalTabOptions.SHELL) setLogs([]);
                 else setHelpLogs([]);
                 return;
-            case '--help':
-                output = `
-AVAILABLE COMMANDS:
-clear              Clear the terminal
---help             Show available commands
---commands         Show winterfell commands
---platform         Show platform details
---hotkeys          Show hot keys/ shortcuts
-`;
+            case COMMAND.HELP:
+                output = CommandResponse.find(c => c.command === trimmed)?.response!;
                 break;
-            case '--hotkeys':
-                output = `
-HOT KEYS:
-Ctrl/ Cmd + S          Switch Terminal Tabs
-Ctrl/ Cmd + K          Toggle shell`;
+            case COMMAND.HOT_KEYS:
+                output = CommandResponse.find(c => c.command === trimmed)?.response!;
                 break;
-            case '--platform':
-                output = `
-PLATFORM DETAILS:
-portal              Winterfell
-version             1.0.0
-shell               winterfell`;
+            case COMMAND.PLATFORM:
+                output = CommandResponse.find(c => c.command === trimmed)?.response!;
                 break;
 
-            case '--commands':
-                output = `
-WINTERFELL SHELL COMMANDS:
-winterfell build                to build the contract
-winterfell test                 to run the test file
-
-
-PREMIUM FEATURES:
-winterfell deploy --devnet      to deploy the contract on devnet
-winterfell deploy --mainnet     to deploy the contract on mainnet`;
+            case COMMAND.COMMANDS:
+                output = CommandResponse.find(c => c.command === trimmed)?.response!;
                 break;
 
             default:

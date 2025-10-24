@@ -29,8 +29,9 @@ export default function Navbar() {
             setOpenLoginModal(true);
             return;
         }
-        const newChatId = uuid();
-        router.push(`/playground/${newChatId}`);
+
+        const newContractId = uuid();
+        router.push(`/playground/${newContractId}`);
     }
 
     useEffect(() => {

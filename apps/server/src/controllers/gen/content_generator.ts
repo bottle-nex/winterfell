@@ -102,7 +102,7 @@ export default class ContentGenerator {
         llmProvider: LLMProvider = 'gemini',
     ): Promise<string> {
         if (llmProvider === 'claude') {
-            // return this.generateClaudeStreamingResponse(
+            // await this.generateClaudeStreamingResponse(
             //     res,
             //     currentUserMessage,
             //     chat,

@@ -11,12 +11,16 @@ import BuilderChatSystemMessage from './BuilderChatSystemMessage';
 import AnimtaedLoader from '../ui/animated-loader';
 
 import StreamEventProcessor from '@/src/class/handle_stream_event';
+import SystemMessage from './SystemMessage';
+import { useModelStore } from '@/src/store/model/useModelStore';
+import { MODEL } from '@/src/types/extra_types';
 
 export default function BuilderChats() {
     const { messages, loading, setLoading } = useBuilderChatStore();
     const { session } = useUserSessionStore();
+    const { selectedModel } = useModelStore();
     const params = useParams();
-    const chatId = params.chatId as string;
+    const contractId = params.contractId as string;
     const hasInitialized = useRef(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
 
@@ -30,12 +34,14 @@ export default function BuilderChats() {
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
-        const initialMessage = messages.find((msg) => msg.chatId === chatId && msg.role === 'USER');
+        const initialMessage = messages.find(
+            (msg) => msg.contractId === contractId && msg.role === 'USER',
+        );
         if (initialMessage) {
             startChat(initialMessage.content);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chatId]);
+    }, [contractId]);
 
     async function startChat(message: string) {
         try {
@@ -47,7 +53,7 @@ export default function BuilderChats() {
                     Authorization: `Bearer ${session?.user.token}`,
                 },
                 body: JSON.stringify({
-                    chatId: chatId,
+                    contractId: contractId,
                     message: message,
                 }),
             });
@@ -117,7 +123,7 @@ export default function BuilderChats() {
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
                                     <Image
                                         className="rounded-full flex-shrink-0"
-                                        src={'/icons/claude.png'}
+                                        src={selectedModel === MODEL.GEMINI ? '/icons/gemini.png' : '/icons/claude.png'}
                                         alt="ai"
                                         width={24}
                                         height={24}
@@ -129,9 +135,9 @@ export default function BuilderChats() {
                             </div>
                         )}
                         {message.role === 'SYSTEM' && (
-                            <div className="flex justify-start items-start w-full mt-4">
+                            <div className="flex justify-start items-start w-full my-4 ">
                                 <div className="flex items-start gap-x-2 w-full">
-                                    <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-[#0c0d0e] w-full text-light text-left tracking-wider text-[13px]">
+                                    <div className="rounded-[4px] text-sm font-normal w-full text-light text-left tracking-wider text-[13px]">
                                         <div className="flex items-center gap-x-2 mb-2">
                                             <AnimtaedLoader
                                                 shouldAnimate={loading}
@@ -139,7 +145,15 @@ export default function BuilderChats() {
                                             />
                                             <span>Processing your request...</span>
                                         </div>
-                                        <BuilderChatSystemMessage message={message} />
+                                        {/* <BuilderChatSystemMessage message={message} /> */}
+                                        <SystemMessage
+                                            message={message}
+                                            data={{
+                                                currentStage: undefined as never,
+                                                currentPhase: undefined as never,
+                                                currentFile: undefined as never,
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             </div>
