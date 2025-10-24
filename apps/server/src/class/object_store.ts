@@ -23,23 +23,17 @@ export default class ObjectStore {
         files: FileContent[],
         rawLlmResponse: string,
     ) {
-        const uploadedFiles: string[] = [];
-
-        for (const file of files) {
-            const key = `${contractId}/resource/${file.path}`;
-
-            const upload = new Upload({
-                client: this.s3,
-                params: {
-                    Bucket: this.bucket,
-                    Key: key,
-                    Body: file.content,
-                },
-            });
-
-            await upload.done();
-            uploadedFiles.push(key);
-        }
+        const key = `${contractId}/resource`;
+        const upload = new Upload({
+            client: this.s3,
+            params: {
+                Bucket: this.bucket,
+                Key: key,
+                Body: JSON.stringify(files),
+                ContentType: 'application/json',
+            },
+        });
+        await upload.done();
 
         const rawKey = `${contractId}/raw/llm-response.txt`;
         const rawUpload = new Upload({
@@ -52,7 +46,6 @@ export default class ObjectStore {
             },
         });
         await rawUpload.done();
-        uploadedFiles.push(rawKey);
     }
 
     public async uploadFile(contractId: string, path: string, content: string | Buffer) {
