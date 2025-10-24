@@ -1,14 +1,18 @@
-import { useBuilderChatStore } from "../store/code/useBuilderChatStore";
-import { useCodeEditor } from "../store/code/useCodeEditor";
-import { Message } from "../types/prisma-types";
-import { FILE_STRUCTURE_TYPES, FileContent, PHASE_TYPES, STAGE, StreamEvent } from "../types/stream_event_types";
+import { useBuilderChatStore } from '../store/code/useBuilderChatStore';
+import { useCodeEditor } from '../store/code/useCodeEditor';
+import { Message } from '../types/prisma-types';
+import {
+    FILE_STRUCTURE_TYPES,
+    FileContent,
+    PHASE_TYPES,
+    STAGE,
+    StreamEvent,
+} from '../types/stream_event_types';
 
 export default class StreamEventProcessor {
     public static process(event: StreamEvent) {
-
         const { parseFileStructure } = useCodeEditor.getState();
-        const { upsertMessage, setPhase, setCurrentFileEditing } =
-            useBuilderChatStore.getState();
+        const { upsertMessage, setPhase, setCurrentFileEditing } = useBuilderChatStore.getState();
 
         switch (event.type) {
             case PHASE_TYPES.STARTING:

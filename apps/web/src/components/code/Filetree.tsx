@@ -21,7 +21,7 @@ interface TreeData {
 
 export default function Filetree() {
     const { fileTree, selectFile } = useCodeEditor();
-    const {collapseFileTree} = useCodeEditor()
+    const { collapseFileTree } = useCodeEditor();
     const treeData = useMemo(() => {
         const flattened: TreeData = {};
 
@@ -94,9 +94,9 @@ export default function Filetree() {
                         <div className="flex items-center gap-2">
                             {item.isFolder ? (
                                 context.isExpanded ? (
-                                    <AiFillFolderOpen size={16} className="text-blue-500" />
+                                    <AiFillFolderOpen size={16} className="text-primary" />
                                 ) : (
-                                    <AiFillFolder size={16} className="text-blue-500" />
+                                    <AiFillFolder size={16} className="text-primary" />
                                 )
                             ) : (
                                 <FileIcon

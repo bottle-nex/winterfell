@@ -13,8 +13,7 @@ import AnimtaedLoader from '../ui/animated-loader';
 import StreamEventProcessor from '@/src/class/handle_stream_event';
 
 export default function BuilderChats() {
-    const { messages, loading, setLoading } =
-        useBuilderChatStore();
+    const { messages, loading, setLoading } = useBuilderChatStore();
     const { session } = useUserSessionStore();
     const params = useParams();
     const chatId = params.chatId as string;
@@ -25,7 +24,7 @@ export default function BuilderChats() {
         if (messageEndRef.current) {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [messages])
+    }, [messages]);
 
     useEffect(() => {
         if (hasInitialized.current) return;

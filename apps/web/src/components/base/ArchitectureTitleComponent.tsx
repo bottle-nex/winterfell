@@ -34,7 +34,8 @@ export default function ArchitectureTitleComponent() {
     };
 
     return (
-        <div
+        <section
+            id="about"
             ref={ref}
             className="md:h-[60vh] w-screen flex flex-col justify-center text-light gap-y-5 bg-[#0a0c0d] z-20"
         >
@@ -63,6 +64,6 @@ export default function ArchitectureTitleComponent() {
                     </div>
                 </motion.div>
             </AnimatePresence>
-        </div>
+        </section>
     );
 }

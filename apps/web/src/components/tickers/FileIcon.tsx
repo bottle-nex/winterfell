@@ -62,12 +62,9 @@ export default function FileIcon({ filename, size = 16, className = '' }: FileIc
                 return (
                     <FaGitAlt size={17} color="#f05133" className={`text-[#f05133] ${className}`} />
                 );
-            
+
             case 'prettierignore':
-                return (
-                    <Image height={15} width={15} src="/icons/prettier.png" alt="Prettier" 
- />
-                )
+                return <Image height={15} width={15} src="/icons/prettier.png" alt="Prettier" />;
 
             case 'json':
                 return (

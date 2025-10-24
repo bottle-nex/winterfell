@@ -31,7 +31,6 @@ export interface ThinkingData {
 export interface StartingData {
     stage: 'starting';
     messageId?: string;
-    chatId?: string;
     contractId?: string;
     timestamp?: number;
 }
