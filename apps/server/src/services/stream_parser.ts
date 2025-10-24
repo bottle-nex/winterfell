@@ -75,7 +75,7 @@ export default class StreamParser {
 
     private async processBuffer(systemMessage: Message): Promise<void> {
         if (this.pendingContext !== null || this.buffer.includes('<')) {
-            this.handleContext(systemMessage);
+            await this.handleContext(systemMessage);
         }
 
         const lines = this.buffer.split('\n');
@@ -161,6 +161,9 @@ export default class StreamParser {
                     .replace(/<\s*context\s*>/i, '')
                     .replace(/<\/\s*context\s*>/i, '')
                     .trim();
+
+                console.log('the context: ', chalk.red(content));
+
                 llm_message = await prisma.message.create({
                     data: {
                         content: content,

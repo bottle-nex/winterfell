@@ -10,11 +10,12 @@ import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
 import ModelSelect from './ModelSelect';
 import { ChatRole } from '@/src/types/prisma-types';
+import { useModelStore } from '@/src/store/model/useModelStore';
 
 export default function DashboardTextAreaComponent() {
     const [inputValue, setInputValue] = useState<string>('');
     const [isTyping, setIsTyping] = useState<boolean>(false);
-    const [model, setModel] = useState<'gemini' | 'claude'>('gemini');
+    const { selectedModel, setSelectedModel } = useModelStore();
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
     const { setMessage } = useBuilderChatStore();
@@ -28,10 +29,10 @@ export default function DashboardTextAreaComponent() {
             return;
         }
 
-        const newChatId = uuid();
+        const contractId = uuid();
         setMessage({
             id: uuid(),
-            chatId: newChatId,
+            contractId: contractId,
             role: ChatRole.USER,
             content: inputValue,
             planning: false,
@@ -43,7 +44,7 @@ export default function DashboardTextAreaComponent() {
             createdAt: new Date(),
         });
 
-        router.push(`/playground/${newChatId}`);
+        router.push(`/playground/${contractId}`);
     }
 
     function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -111,7 +112,7 @@ export default function DashboardTextAreaComponent() {
 
                     <div className="flex items-center justify-between px-3 py-1.5 md:px-4 md:py-2.5 border-t border-neutral-800/50 bg-neutral-900/30">
                         <div className="flex items-center gap-1.5 md:gap-3">
-                            <ModelSelect value={model} onChange={setModel} />
+                            <ModelSelect value={selectedModel} onChange={setSelectedModel} />
                             <Button
                                 type="button"
                                 className="group/btn bg-transparent hover:bg-transparent flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-300 transition-colors"

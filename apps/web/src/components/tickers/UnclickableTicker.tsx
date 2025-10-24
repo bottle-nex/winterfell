@@ -1,4 +1,4 @@
-import { cn } from "@/src/lib/utils";
+import { cn } from '@/src/lib/utils';
 
 interface UnclickableTickerProps {
     children: React.ReactNode;

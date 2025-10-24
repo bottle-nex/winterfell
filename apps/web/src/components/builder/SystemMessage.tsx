@@ -1,6 +1,7 @@
 import { FILE_STRUCTURE_TYPES, PHASE_TYPES, STAGE } from '@/src/types/stream_event_types';
 import { Check } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { Message } from '@/src/types/prisma-types';
 
 interface StageItem {
     stage: STAGE;
@@ -27,17 +28,27 @@ const phases: PhaseItem[] = [
     { phase: FILE_STRUCTURE_TYPES.EDITING_FILE, show: 'editing file' },
 ];
 
-interface SystemMessageProps {
-    currentStage: STAGE;
-    currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
-    currentFile?: string;
-}
+type SystemMessageProps =
+    | {
+          message: Message;
+          data: {
+              currentStage: never;
+              currentPhase: never;
+              currentFile: never;
+          };
+      }
+    | {
+          message: never;
+          data: {
+              currentStage: STAGE;
+              currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
+              currentFile?: string;
+          };
+      };
 
-export default function SystemMessage({
-    currentStage,
-    currentPhase,
-    currentFile,
-}: SystemMessageProps) {
+export default function SystemMessage(systemMessage: SystemMessageProps) {
+    const { currentStage, currentPhase, currentFile } = dataFetcher(systemMessage);
+
     const currentIndex =
         currentStage === STAGE.END
             ? stages.length
@@ -48,8 +59,13 @@ export default function SystemMessage({
         if (str.length <= 10) return str;
         const parts = str.split('/');
         const lastPart = parts[parts.length - 1];
-        return `.../${lastPart}`;
+        const secLastPart = parts[parts.length - 2];
+
+        if (secLastPart) return `.../${secLastPart}/${lastPart}`;
+        else return `.../${lastPart}`;
     }
+
+    // in the div tags add a tag for error showing,
 
     return (
         <div className="relative w-[80%] rounded-2xl overflow-hidden border border-neutral-700/50 bg-neutral-900 text-neutral-300 backdrop-blur-sm select-none">
@@ -112,4 +128,35 @@ export default function SystemMessage({
             </div>
         </div>
     );
+}
+
+function dataFetcher({ message, data }: SystemMessageProps): {
+    currentStage: STAGE;
+    currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
+    currentFile?: string;
+} {
+    let currentStage;
+    let currentPhase;
+    let currentFile;
+
+    if (message) {
+        if (message.error) currentStage = STAGE.ERROR;
+
+        if (message.finalzing) currentStage = STAGE.END;
+        else if (message.creatingFiles) currentStage = STAGE.CREATING_FILES;
+        else if (message.building) currentStage = STAGE.BUILDING;
+        else if (message.generatingCode) currentStage = STAGE.GENERATING_CODE;
+        else if (message.planning) currentStage = STAGE.PLANNING;
+        else currentStage = STAGE.START;
+    } else {
+        currentStage = data.currentStage;
+        currentPhase = data.currentPhase;
+        currentFile = data.currentFile;
+    }
+
+    return {
+        currentStage,
+        currentPhase,
+        currentFile,
+    };
 }
