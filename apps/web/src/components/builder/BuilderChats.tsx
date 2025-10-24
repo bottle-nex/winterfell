@@ -11,17 +11,17 @@ import AnimtaedLoader from '../ui/animated-loader';
 
 import StreamEventProcessor from '@/src/class/handle_stream_event';
 import SystemMessage from './SystemMessage';
-import { useModelStore } from '@/src/store/model/useModelStore';
-import { MODEL } from '@/src/types/extra_types';
+import AppLogo from '../tickers/AppLogo';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
 export default function BuilderChats() {
     const { messages, loading, setLoading } = useBuilderChatStore();
     const { session } = useUserSessionStore();
-    const { selectedModel } = useModelStore();
     const params = useParams();
     const contractId = params.contractId as string;
     const hasInitialized = useRef(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
+    const { setCollapseFileTree } = useCodeEditor()
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -87,6 +87,7 @@ export default function BuilderChats() {
                     }
                 }
             }
+            setCollapseFileTree(true);
         } catch (error) {
             console.error('Chat stream error:', error);
         } finally {
@@ -120,17 +121,7 @@ export default function BuilderChats() {
                         {message.role === 'AI' && (
                             <div className="flex justify-start w-full">
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
-                                    <Image
-                                        className="rounded-full flex-shrink-0"
-                                        src={
-                                            selectedModel === MODEL.GEMINI
-                                                ? '/icons/gemini.png'
-                                                : '/icons/claude.png'
-                                        }
-                                        alt="ai"
-                                        width={24}
-                                        height={24}
-                                    />
+                                    <AppLogo showLogoText={false} />
                                     <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-dark text-light text-left tracking-wider text-[13px] italic">
                                         {message.content}
                                     </div>
@@ -141,14 +132,15 @@ export default function BuilderChats() {
                             <div className="flex justify-start items-start w-full my-4 ">
                                 <div className="flex items-start gap-x-2 w-full">
                                     <div className="rounded-[4px] text-sm font-normal w-full text-light text-left tracking-wider text-[13px]">
-                                        <div className="flex items-center gap-x-2 mb-2">
-                                            <AnimtaedLoader
-                                                shouldAnimate={loading}
-                                                className="h-4 w-4"
-                                            />
-                                            <span>Processing your request...</span>
-                                        </div>
-                                        {/* <BuilderChatSystemMessage message={message} /> */}
+                                        {loading && (
+                                            <div className="flex items-center gap-x-2 mb-2">
+                                                <AnimtaedLoader
+                                                    shouldAnimate={loading}
+                                                    className="h-4 w-4"
+                                                />
+                                                <span>Processing your request...</span>
+                                            </div>
+                                        )}
                                         <SystemMessage
                                             message={message}
                                             data={{
