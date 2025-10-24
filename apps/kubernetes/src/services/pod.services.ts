@@ -16,13 +16,13 @@ export default class PodService {
       try {
          const pod_template: V1Pod = PodTemplate.get_anchor_pod_template(
             req.userId,
-            req.sessionId,
+            req.contractId,
             req.projectName,
          );
 
          logger.info('Creating pod', {
             userId: req.userId,
-            sessionId: req.sessionId,
+            contractId: req.contractId,
             projectName: req.projectName,
             namespace: this.namespace,
          });
@@ -39,20 +39,20 @@ export default class PodService {
          logger.error('Failed to create pod', {
             error: err instanceof Error ? err.message : String(err),
             userId: req.userId,
-            sessionId: req.sessionId,
+            contractId: req.contractId,
          });
          throw err;
       }
    }
 
-   public async delete_pod(userId: string, sessionId: string) {
+   public async delete_pod(userId: string, contractId: string) {
       try {
-         const pod_name = PodTemplate.get_pod_name(userId, sessionId);
+         const pod_name = PodTemplate.get_pod_name(userId, contractId);
 
          logger.info('Deleting pod', {
             podName: pod_name,
             userId,
-            sessionId,
+            contractId,
             namespace: this.namespace,
          });
 
@@ -64,21 +64,21 @@ export default class PodService {
          logger.debug('Pod deleted successfully', {
             podName: pod_name,
             userId,
-            sessionId,
+            contractId,
          });
       } catch (error) {
          logger.error('Failed to delete pod', {
             error: error instanceof Error ? error.message : String(error),
             userId,
-            sessionId,
-            podName: PodTemplate.get_pod_name(userId, sessionId),
+            contractId,
+            podName: PodTemplate.get_pod_name(userId, contractId),
          });
       }
    }
 
-   public async get_pod_status(userId: string, sessionId: string) {
+   public async get_pod_status(userId: string, contractId: string) {
       try {
-         const pod_name = PodTemplate.get_pod_name(userId, sessionId);
+         const pod_name = PodTemplate.get_pod_name(userId, contractId);
          const response = await k8s_config.core_api.readNamespacedPod({
             name: pod_name,
             namespace: this.namespace,
@@ -93,7 +93,7 @@ export default class PodService {
             podStatus: status,
             podIp: response.status?.podIP,
             userId,
-            sessionId,
+            contractId,
          };
 
          logger.info('Retrieved pod status', pod_data);
@@ -102,22 +102,22 @@ export default class PodService {
          const err = error as { code?: number; error: string };
 
          if (err?.code === 404) {
-            logger.warn('Pod not found', { userId, sessionId, namespace: this.namespace });
+            logger.warn('Pod not found', { userId, contractId, namespace: this.namespace });
             return {
-               podName: PodTemplate.get_pod_name(userId, sessionId),
+               podName: PodTemplate.get_pod_name(userId, contractId),
                podStatus: 'unknown',
                podIp: null,
                userId,
-               sessionId,
+               contractId,
                error: 'Pod not found',
             };
          }
 
          logger.error('Failed to retrieve pod status', {
             error: err instanceof Error ? err.message : String(err),
-            podName: PodTemplate.get_pod_name(userId, sessionId),
+            podName: PodTemplate.get_pod_name(userId, contractId),
             userId,
-            sessionId,
+            contractId,
          });
       }
    }
