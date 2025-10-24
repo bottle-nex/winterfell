@@ -31,7 +31,8 @@ export default async function startChatController(req: Request, res: Response) {
         if (!contract) {
             contract = await prisma.contract.create({
                 data: {
-                    title: '',
+                    id: contractId,
+                    title: 'contractor',
                     contractType: 'CUSTOM',
                     userId: userId,
                 },
