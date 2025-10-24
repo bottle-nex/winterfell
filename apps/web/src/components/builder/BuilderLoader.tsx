@@ -52,7 +52,7 @@ export default function BuilderLoader() {
     const filePath = currentFileEditing ? currentFileEditing.split('/').slice(0, -1).join('/') : '';
 
     return (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center bg-[#16171a]">
             <div className="flex flex-col items-center justify-center text-center space-y-6 max-w-md">
                 <LiaServicestack className="text-neutral-600 h-20 w-20 animate-pulse" />
 
