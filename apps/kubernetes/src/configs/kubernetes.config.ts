@@ -20,11 +20,23 @@ export default class KubernetesConfig {
    public async exec_command_in_pod(params: {
       namespace: string; // it is the container for all resources that the pod needs (not commands)
       pod_name: string;
+      container_name: string;
       command: string[];
-      container_name?: string;
    }): Promise<{ stdout: string; stderr: string }> {
       const { namespace, pod_name, command, container_name } = params;
+      if (!pod_name) {
+         throw new Error('pod_name is required');
+      }
+      if (!namespace) {
+         throw new Error('namespace is required');
+      }
 
+      console.log('Exec command starting', {
+         namespace,
+         pod_name,
+         container_name: container_name || '(default)',
+         command,
+      });
       return new Promise((resolve, reject) => {
          let stdout_data = '';
          let stderr_data = '';
@@ -46,7 +58,7 @@ export default class KubernetesConfig {
          this.exec.exec(
             namespace,
             pod_name,
-            container_name!,
+            container_name,
             command,
             stdout_stream,
             stderr_stream,

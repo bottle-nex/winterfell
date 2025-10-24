@@ -160,7 +160,7 @@ export default class PodService {
 
       try {
          // Add a small delay to ensure container is ready for exec commands
-         await new Promise((resolve) => setTimeout(resolve, 2000));
+         await this.waitForContainerReady(pod_name);
 
          // Verify pod is ready to accept commands
          try {
@@ -250,7 +250,34 @@ export default class PodService {
             projectName,
             fileCount: files.length,
          });
-         throw err; // ✅ RE-THROW the error!
+         throw err;
+      }
+   }
+   private async waitForContainerReady(
+      pod_name: string,
+      maxRetries: number = 15,
+      initialDelayMs: number = 1000,
+   ): Promise<void> {
+      let retries = 0;
+      let delay = initialDelayMs;
+
+      while (retries < maxRetries) {
+         try {
+
+            await this.execute_command(pod_name, ['echo', 'ready']);
+            logger.info('Container ready to accept commands', { pod_name });
+            return;
+         } catch (error) {
+            retries++;
+            const errorMsg = error instanceof Error ? error.message : String(error);
+
+            if (retries >= maxRetries) {
+               throw new Error(`Container not ready after ${maxRetries} attempts: ${errorMsg}`);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            delay = Math.min(delay * 1.5, 8000);
+         }
       }
    }
 }

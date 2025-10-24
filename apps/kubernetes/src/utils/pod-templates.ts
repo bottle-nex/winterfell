@@ -28,7 +28,7 @@ export default class PodTemplate {
                   command: ['/bin/sh'],
                   args: ['-c', 'tail -f /dev/null'],
                   stdin: true,
-                  tty: true,
+                  tty: false,
                   workingDir: '/workspace',
                   env: [
                      {
