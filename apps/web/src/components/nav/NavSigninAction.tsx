@@ -5,7 +5,7 @@ import { cn } from '@/src/lib/utils';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import LoginModal from '../utility/LoginModal';
 import ProfileMenu from '../utility/LogoutMenu';
 
