@@ -22,7 +22,7 @@ interface FaqItemProps {
 // Separate FAQ Item Component
 const FaqItem = memo<FaqItemProps>(({ faq, index, isOpen, onToggle }) => {
     const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const isInView = useInView(ref, { once: true, margin: '-50px' });
 
     return (
         <motion.div
@@ -51,9 +51,7 @@ const FaqItem = memo<FaqItemProps>(({ faq, index, isOpen, onToggle }) => {
                 }`}
             >
                 <div className="pb-6 pt-1">
-                    <p className="text-dark-base/70 leading-relaxed text-left">
-                        {faq.answer}
-                    </p>
+                    <p className="text-dark-base/70 leading-relaxed text-left">{faq.answer}</p>
                 </div>
             </div>
         </motion.div>
@@ -67,33 +65,33 @@ export default function Faq() {
 
     const faqs: FaqData[] = [
         {
-            question: "What is Lovable for Anchor?",
-            answer: "Lovable for Anchor is an AI-powered platform for building, editing, deploying, and interacting with Rust-based smart contracts on Solana using Anchor. It simplifies the entire smart contract workflow from generation to frontend integration."
+            question: 'What is Lovable for Anchor?',
+            answer: 'Lovable for Anchor is an AI-powered platform for building, editing, deploying, and interacting with Rust-based smart contracts on Solana using Anchor. It simplifies the entire smart contract workflow from generation to frontend integration.',
         },
         {
-            question: "Do I need to know Rust to use this platform?",
-            answer: "No! Our AI can generate Anchor contracts from natural language descriptions. However, understanding Rust and Solana concepts will help you customize and optimize your contracts more effectively."
+            question: 'Do I need to know Rust to use this platform?',
+            answer: 'No! Our AI can generate Anchor contracts from natural language descriptions. However, understanding Rust and Solana concepts will help you customize and optimize your contracts more effectively.',
         },
         {
-            question: "What types of contracts can I build?",
-            answer: "You can build various Solana programs including token contracts, NFT contracts, DeFi programs, escrow systems, and payment programs. We provide templates for common use cases and support custom contract generation."
+            question: 'What types of contracts can I build?',
+            answer: 'You can build various Solana programs including token contracts, NFT contracts, DeFi programs, escrow systems, and payment programs. We provide templates for common use cases and support custom contract generation.',
         },
         {
-            question: "Can I deploy to mainnet?",
-            answer: "Yes! Lovable for Anchor supports one-click deployment to Solana Devnet, Testnet, and Mainnet. We also provide CLI commands and track deployed program IDs for easy management."
+            question: 'Can I deploy to mainnet?',
+            answer: 'Yes! Lovable for Anchor supports one-click deployment to Solana Devnet, Testnet, and Mainnet. We also provide CLI commands and track deployed program IDs for easy management.',
         },
         {
-            question: "Does it generate client code for my contract?",
-            answer: "Absolutely! The platform automatically generates TypeScript/JavaScript client SDKs with typed functions for each instruction, wallet integration, and helper functions for PDAs and transactions."
+            question: 'Does it generate client code for my contract?',
+            answer: 'Absolutely! The platform automatically generates TypeScript/JavaScript client SDKs with typed functions for each instruction, wallet integration, and helper functions for PDAs and transactions.',
         },
         {
-            question: "What about security?",
-            answer: "Our AI assistant warns about known vulnerabilities like unchecked seeds and missing payer checks. We also provide an AI-powered security checklist covering seeds, admin restrictions, and rent exemption checks."
+            question: 'What about security?',
+            answer: 'Our AI assistant warns about known vulnerabilities like unchecked seeds and missing payer checks. We also provide an AI-powered security checklist covering seeds, admin restrictions, and rent exemption checks.',
         },
         {
-            question: "How do I test my contracts?",
-            answer: "The platform auto-generates Anchor test scripts and allows you to simulate transactions in-browser or on devnet before deployment. You can also test frontend integrations with our interactive sandbox."
-        }
+            question: 'How do I test my contracts?',
+            answer: 'The platform auto-generates Anchor test scripts and allows you to simulate transactions in-browser or on devnet before deployment. You can also test frontend integrations with our interactive sandbox.',
+        },
     ];
 
     const toggleFaq = (index: number) => {
@@ -107,8 +105,8 @@ export default function Faq() {
                     <div className="flex flex-col items-start justify-center gap-8 lg:gap-12">
                         <h1
                             className={cn(
-                                "text-6xl lg:text-9xl font-black text-dark-base leading-tight text-left",
-                                doto.className
+                                'text-6xl lg:text-9xl font-black text-dark-base leading-tight text-left',
+                                doto.className,
                             )}
                         >
                             FAQs

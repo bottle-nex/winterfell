@@ -21,6 +21,7 @@ export enum STAGE {
     CREATING_FILES = 'CREATING_FILES',
     FINALIZING = 'FINALIZING',
     END = 'END', // this is just to mention that the work has beed completed
+    ERROR = 'ERROR',
 }
 
 export interface ContextEventData {

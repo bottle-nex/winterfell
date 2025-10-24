@@ -56,7 +56,7 @@ export default class ContentGenerator {
         currentUserMessage: Message,
         messages: Message[],
         contractId: string,
-        llmProvider: LLMProvider = 'gemini',
+        llmProvider: LLMProvider = 'claude',
     ): Promise<void> {
         const parser = this.getParser(contractId, res);
         this.createStream(res);
@@ -102,7 +102,14 @@ export default class ContentGenerator {
         llmProvider: LLMProvider = 'gemini',
     ): Promise<string> {
         if (llmProvider === 'claude') {
-            return await this.generateClaudeStreamingResponse(
+            // await this.generateClaudeStreamingResponse(
+            //     res,
+            //     currentUserMessage,
+            //     chat,
+            //     contractId,
+            //     parser,
+            // );
+            return this.generateGeminiStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
@@ -160,7 +167,7 @@ export default class ContentGenerator {
             });
 
             const response = await this.geminiAI.models.generateContentStream({
-                model: 'gemini-2.0-flash-exp',
+                model: 'gemini-2.5-pro',
                 contents,
             });
 
@@ -174,7 +181,6 @@ export default class ContentGenerator {
 
             for await (const chunk of response) {
                 if (chunk.text) {
-                    // console.log(chunk.text);
                     fullResponse += chunk.text;
                     parser.feed(chunk.text, systemMessage);
                 }
@@ -196,38 +202,28 @@ export default class ContentGenerator {
         parser: StreamParser,
     ): Promise<string> {
         logger.info('claude llm used');
-        const llm_messages: ClaudeMessage[] = [];
+        const contents: ClaudeMessage[] = [];
         let fullResponse = '';
 
         try {
-            const llm_message = await prisma.message.create({
-                data: {
-                    content:
-                        'Understood. I will generate well-structured Anchor smart contracts with proper file organization, following all the specified guidelines.',
-                    contractId,
-                    role: ChatRole.AI,
-                },
-            });
-
             const startingData: StartingData = {
                 stage: 'starting',
-                messageId: llm_message.id,
                 contractId: contractId,
                 timestamp: Date.now(),
             };
 
-            this.sendSSE(res, PHASE_TYPES.STARTING, startingData, llm_message);
+            this.sendSSE(res, STAGE.START, startingData);
 
             for (const msg of messages) {
                 if (msg.role === ChatRole.AI || msg.role === ChatRole.USER) {
-                    llm_messages.push({
+                    contents.push({
                         role: msg.role === ChatRole.USER ? 'user' : 'assistant',
                         content: msg.content,
                     });
                 }
             }
 
-            llm_messages.push({
+            contents.push({
                 role: 'user',
                 content: currentUserMessage.content,
             });
@@ -244,7 +240,7 @@ export default class ContentGenerator {
                 model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 8096,
                 system: this.systemPrompt,
-                messages: llm_messages,
+                messages: contents,
             });
 
             for await (const event of stream) {
