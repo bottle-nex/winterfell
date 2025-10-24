@@ -14,7 +14,7 @@ import {
     StreamEvent,
     StreamEventData,
 } from '../../types/stream_event_types';
-import { STAGE } from '../../types/content_types';
+import { FileContent, STAGE } from '../../types/content_types';
 import { mergeWithLLMFiles, prepareBaseTemplate } from '../../class/test';
 
 type LLMProvider = 'gemini' | 'claude';
@@ -62,7 +62,7 @@ export default class ContentGenerator {
         this.createStream(res);
 
         try {
-            await this.generateStreamingResponse(
+            const full_response = await this.generateStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
@@ -71,14 +71,15 @@ export default class ContentGenerator {
                 llmProvider,
             );
 
-            const generatedFiles = parser.getGeneratedFiles();
-            const base_files = prepareBaseTemplate('dlmm_pool');
-            const final_code = mergeWithLLMFiles(base_files, generatedFiles);
+            const llmGeneratedFiles: FileContent[] = parser.getGeneratedFiles();
+            // const contractName: string = parser.getContractName();
+            const base_files: FileContent[] = prepareBaseTemplate('dlmm_pool');
+            const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
 
             this.sendSSE(res, STAGE.END, { data: final_code });
-            objectStore.uploadContractFiles(contractId, final_code);
+            objectStore.uploadContractFiles(contractId, final_code, full_response);
 
-            if (generatedFiles.length > 0) {
+            if (llmGeneratedFiles.length > 0) {
                 this.deleteParser(contractId);
                 res.end();
             } else {
@@ -99,9 +100,9 @@ export default class ContentGenerator {
         contractId: string,
         parser: StreamParser,
         llmProvider: LLMProvider = 'gemini',
-    ): Promise<void> {
+    ): Promise<string> {
         if (llmProvider === 'claude') {
-            await this.generateClaudeStreamingResponse(
+            return await this.generateClaudeStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
@@ -109,7 +110,7 @@ export default class ContentGenerator {
                 parser,
             );
         } else {
-            await this.generateGeminiStreamingResponse(
+            return await this.generateGeminiStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
@@ -125,7 +126,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
-    ): Promise<void> {
+    ): Promise<string> {
         logger.info('gemini llm used');
         const contents: GeminiMessage[] = [];
         let fullResponse = '';
@@ -180,6 +181,7 @@ export default class ContentGenerator {
             }
 
             await this.saveLLMResponseToDb(fullResponse, contractId);
+            return fullResponse;
         } catch (llmError) {
             console.error('Gemini LLM Error:', llmError);
             throw llmError;

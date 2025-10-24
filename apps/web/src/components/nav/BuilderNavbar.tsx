@@ -69,7 +69,7 @@ export default function BuilderNavbar() {
                             setOpenSettingsPanel={setOpenSettingsPanel}
                         />
                     </div>
-                    
+
                     <ToolTipComponent
                         content="deploy your contract to the solana blockchain"
                         side="bottom"
