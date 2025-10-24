@@ -2,6 +2,7 @@ import { prisma } from '@repo/database';
 import { Request, Response } from 'express';
 import { server_orchestrator_queue } from '../../services/init';
 import { COMMAND } from '../../types/contract_types';
+import { command_schema } from '../../schemas/command_schema';
 
 export default async function runCommandController(req: Request, res: Response) {
     try {
@@ -16,6 +17,8 @@ export default async function runCommandController(req: Request, res: Response) 
         }
 
         const { command, contractId } = req.body;
+
+        const data = command_schema.safeParse(command);
 
         const contract = await prisma.contract.findUnique({
             where: {
@@ -32,7 +35,7 @@ export default async function runCommandController(req: Request, res: Response) 
             return;
         }
 
-        switch (command as COMMAND) {
+        switch (data.data as COMMAND) {
             case COMMAND.ANCHOR_BUILD:
                 server_orchestrator_queue.run_anchor_build_command(
                     user.id,

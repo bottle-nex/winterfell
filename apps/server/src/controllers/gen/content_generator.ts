@@ -102,7 +102,14 @@ export default class ContentGenerator {
         llmProvider: LLMProvider = 'gemini',
     ): Promise<string> {
         if (llmProvider === 'claude') {
-            return await this.generateClaudeStreamingResponse(
+            // return await this.generateClaudeStreamingResponse(
+            //     res,
+            //     currentUserMessage,
+            //     messages,
+            //     contractId,
+            //     parser,
+            // );
+            return await this.generateGeminiStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
@@ -171,9 +178,9 @@ export default class ContentGenerator {
                     content: 'starting to generate in a few seconds',
                 },
             });
-
             for await (const chunk of response) {
                 if (chunk.text) {
+                    console.log(chunk.text);
                     fullResponse += chunk.text;
                     parser.feed(chunk.text, systemMessage);
                 }
@@ -243,7 +250,6 @@ export default class ContentGenerator {
                     parser.feed(text, systemMessage);
                 }
             }
-
             await this.saveLLMResponseToDb(fullResponse, contractId);
             return fullResponse;
         } catch (llmError) {
