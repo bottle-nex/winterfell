@@ -21,7 +21,7 @@ export default function BuilderChats() {
     const contractId = params.contractId as string;
     const hasInitialized = useRef(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
-    const { setCollapseFileTree } = useCodeEditor()
+    const { setCollapseFileTree } = useCodeEditor();
 
     useEffect(() => {
         if (messageEndRef.current) {
