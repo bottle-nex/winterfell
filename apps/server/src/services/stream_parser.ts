@@ -162,7 +162,7 @@ export default class StreamParser {
                     .replace(/<\/\s*context\s*>/i, '')
                     .trim();
 
-                console.log('the context: ', chalk.red(content))
+                console.log('the context: ', chalk.red(content));
 
                 llm_message = await prisma.message.create({
                     data: {

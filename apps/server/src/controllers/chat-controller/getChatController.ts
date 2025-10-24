@@ -1,12 +1,11 @@
-import { prisma } from "@repo/database";
-import { Request, Response } from "express";
+import { prisma } from '@repo/database';
+import { Request, Response } from 'express';
 
-export default async function(req: Request, res: Response) {
+export default async function (req: Request, res: Response) {
     try {
-
         const user = req.user;
 
-        if(!user) {
+        if (!user) {
             res.status(401).json({
                 success: false,
                 message: 'Unauthorized',
@@ -14,9 +13,9 @@ export default async function(req: Request, res: Response) {
             return;
         }
 
-        const { chatId } = req.body;
+        const { contractId } = req.body;
 
-        if(!chatId) {
+        if (!contractId) {
             res.status(400).json({
                 success: false,
                 message: 'chat-id not found!',
@@ -24,25 +23,21 @@ export default async function(req: Request, res: Response) {
             return;
         }
 
-        const chat = await prisma.chat.findUnique({
+        const contract = await prisma.contract.findUnique({
             where: {
-                id: chatId,
+                id: contractId,
                 userId: user.id,
             },
             select: {
-                contract: {
-                    select: {
-                        id: true,
-                        title: true,
-                        description: true,
-                        code: true,
-                        summary: true,
-                        deployed: true,
-                        programId: true,
-                        version: true,
-                        createdAt: true,
-                    }
-                },
+                id: true,
+                title: true,
+                description: true,
+                code: true,
+                summary: true,
+                deployed: true,
+                programId: true,
+                version: true,
+                createdAt: true,
                 messages: {
                     select: {
                         id: true,
@@ -63,40 +58,31 @@ export default async function(req: Request, res: Response) {
             },
         });
 
-        if(!chat) {
+        if (!contract) {
             res.status(404).json({
                 success: false,
-                message: `chat with id: ${chatId} was not found!`,
+                messsage: `contract with id: ${contractId} was not found!`,
             });
             return;
         }
 
-        if(!chat.contract) {
-            res.status(200).json({
-                success: true,
-                message: 'contract not created yet',
-                messages: chat.messages,
-            });
-            return;
-        }
-        
-        const latestMessage = chat.messages[0];
-
-        const code = chat.contract.code;
+        const latestMessage = contract.messages[0];
+        const code = contract.code;
+        console.error({ latestMessage });
+        console.error({ code });
         // call s3 client to get the code base and return that code to the user
         // update the code to the fetched code base, and don't send the s3 url
 
         // const codeBase = s3client.getCode(contractId);
         // chat.contract.code = codeBase;
-        
+
         res.status(200).json({
             success: true,
             message: 'chat fetched successfully',
-            messages: chat.messages,
-            contract: chat.contract
+            messages: contract.messages,
+            contract: contract,
         });
         return;
-        
     } catch (error) {
         console.error('Error while fetching chat data: ', error);
         res.status(500).json({

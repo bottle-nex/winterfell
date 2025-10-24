@@ -30,24 +30,23 @@ const phases: PhaseItem[] = [
 
 type SystemMessageProps =
     | {
-        message: Message;
-        data: {
-            currentStage: never;
-            currentPhase: never;
-            currentFile: never;
-        };
-    }
+          message: Message;
+          data: {
+              currentStage: never;
+              currentPhase: never;
+              currentFile: never;
+          };
+      }
     | {
-        message: never;
-        data: {
-            currentStage: STAGE;
-            currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
-            currentFile?: string;
-        };
-    };
+          message: never;
+          data: {
+              currentStage: STAGE;
+              currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
+              currentFile?: string;
+          };
+      };
 
 export default function SystemMessage(systemMessage: SystemMessageProps) {
-
     const { currentStage, currentPhase, currentFile } = dataFetcher(systemMessage);
 
     const currentIndex =
@@ -66,7 +65,7 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
         else return `.../${lastPart}`;
     }
 
-    // in the div tags add a tag for error showing, 
+    // in the div tags add a tag for error showing,
 
     return (
         <div className="relative w-[80%] rounded-2xl overflow-hidden border border-neutral-700/50 bg-neutral-900 text-neutral-300 backdrop-blur-sm select-none">
@@ -84,8 +83,8 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                         index < currentIndex
                             ? 'complete'
                             : index === currentIndex
-                                ? 'buffering'
-                                : 'hung';
+                              ? 'buffering'
+                              : 'hung';
 
                     return (
                         <div key={stage} className="flex items-center gap-x-3">
@@ -94,7 +93,7 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                                     'flex items-center justify-center w-5 h-5 rounded-full border transition-all',
                                     status === 'hung' && 'border-neutral-700',
                                     status === 'buffering' &&
-                                    'border-primary bg-primary/20 animate-pulse',
+                                        'border-primary bg-primary/20 animate-pulse',
                                     status === 'complete' && 'bg-primary border-primary text-white',
                                 )}
                             >
@@ -118,7 +117,7 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                                                 ' '}
                                             {currentFile &&
                                                 currentPhase ===
-                                                FILE_STRUCTURE_TYPES.EDITING_FILE &&
+                                                    FILE_STRUCTURE_TYPES.EDITING_FILE &&
                                                 truncate(currentFile)}
                                         </div>
                                     )}
@@ -149,7 +148,6 @@ function dataFetcher({ message, data }: SystemMessageProps): {
         else if (message.generatingCode) currentStage = STAGE.GENERATING_CODE;
         else if (message.planning) currentStage = STAGE.PLANNING;
         else currentStage = STAGE.START;
-
     } else {
         currentStage = data.currentStage;
         currentPhase = data.currentPhase;

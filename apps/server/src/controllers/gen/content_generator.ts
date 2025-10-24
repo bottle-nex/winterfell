@@ -206,7 +206,6 @@ export default class ContentGenerator {
         let fullResponse = '';
 
         try {
-
             const startingData: StartingData = {
                 stage: 'starting',
                 contractId: contractId,
