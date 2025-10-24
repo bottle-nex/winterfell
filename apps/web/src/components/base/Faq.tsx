@@ -19,7 +19,6 @@ interface FaqItemProps {
     onToggle: () => void;
 }
 
-// Separate FAQ Item Component
 const FaqItem = memo<FaqItemProps>(({ faq, index, isOpen, onToggle }) => {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
