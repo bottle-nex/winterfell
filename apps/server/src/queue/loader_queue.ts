@@ -12,7 +12,7 @@ export default class ServerToOrchestratorQueue {
             defaultJobOptions: {
                 removeOnComplete: 100,
                 removeOnFail: false,
-                attempts: 3,
+                attempts: 1,
                 timeout: 300000,
                 backoff: {
                     type: 'exponential',
@@ -35,10 +35,9 @@ export default class ServerToOrchestratorQueue {
                 contractId,
                 projectName,
             };
-            const job_id: string = this.get_job_id(userId, contractId, projectName);
+            console.log('data is : ', data);
             const job_options: JobOptions = {
                 ...options,
-                jobId: job_id,
                 priority: 2,
             };
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND, data, job_options);
@@ -59,13 +58,14 @@ export default class ServerToOrchestratorQueue {
                 contractId,
                 projectName,
             };
-            const job_id: string = this.get_job_id(userId, contractId, projectName);
+
             const job_options: JobOptions = {
                 ...options,
-                jobId: job_id,
                 priority: 2,
             };
+
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND, data, job_options);
+            console.log("after stallling data");
         } catch (err) {
             logger.error('failed to run anchor deploy command', err);
         }
@@ -83,20 +83,14 @@ export default class ServerToOrchestratorQueue {
                 contractId,
                 projectName,
             };
-            const job_id: string = this.get_job_id(userId, contractId, projectName);
             const job_options: JobOptions = {
                 ...options,
-                jobId: job_id,
                 priority: 2,
             };
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_TEST_COMMAND, data, job_options);
         } catch (err) {
             logger.error('failed to run anchor test command', err);
         }
-    }
-
-    private get_job_id(userId: string, sessionId: string, projectName: string) {
-        return `${userId}-${sessionId}-${projectName}`;
     }
 
     private setup_listeners() {
