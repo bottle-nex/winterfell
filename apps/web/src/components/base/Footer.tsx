@@ -43,7 +43,7 @@ const footerLinks = [
 
 export default function Footer() {
     return (
-        <motion.div className="min-w-screen min-h-screen md:h-screen bg-dark-base relative">
+        <motion.div className="min-w-screen min-h-screen md:h-screen bg-[#0a0b0d] relative">
             <div className="md:h-[65%] w-full border-b border-neutral-700 md:pt-20 pt-12 px-4 flex flex-col md:flex-row">
                 <div className="md:w-[50%] w-full h-full md:border-r border-neutral-700 text-neutral-100 px-4 text-left mb-8 md:mb-0">
                     <div className="max-w-lg md:text-5xl text-3xl font-semibold tracking-wide leading-tight">
