@@ -33,9 +33,9 @@ export default class ServerToOrchestratorQueue {
       command: string[],
       job: Job,
    ): Promise<{ success: boolean; stdout: string; stderr: string }> {
-      const { userId, sessionId, projectName, code } = job.data;
+      const { userId, contractId, projectName, code } = job.data;
 
-      const pod_name = await pod_service.create_pod({ userId, sessionId, projectName });
+      const pod_name = await pod_service.create_pod({ userId, contractId, projectName });
       await pod_service.copy_files_to_pod(pod_name, projectName, code);
 
       try {
@@ -51,7 +51,7 @@ export default class ServerToOrchestratorQueue {
          logger.error(`Command ${command.join(' ')} failed`, error);
          throw error;
       } finally {
-         await pod_service.delete_pod(userId, sessionId);
+         await pod_service.delete_pod(userId, contractId);
       }
    }
 

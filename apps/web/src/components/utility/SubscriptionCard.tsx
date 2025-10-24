@@ -47,7 +47,7 @@ function SubscriptionCard({
 }) {
     return (
         <div
-            className={`rounded-2xl relative overflow-hidden border backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl 
+            className={`rounded-2xl relative overflow-hidden border backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:shadow-2xl
             ${isBest ? 'md:w-[480px] md:h-[285px]' : 'md:w-[480px] md:h-[260px]'} 
             w-full max-w-[420px] h-auto 
             ${planStyles[plan]} 
@@ -70,13 +70,12 @@ function SubscriptionCard({
                         </h2>
                     </div>
                     <div
-                        className={`p-2.5 rounded-xl backdrop-blur-sm ${
-                            plan === 'FREE'
+                        className={`p-2.5 rounded-xl backdrop-blur-sm ${plan === 'FREE'
                                 ? 'bg-neutral-800/50'
                                 : plan === 'PREMIUM'
-                                  ? 'bg-white/20'
-                                  : 'bg-white/15'
-                        }`}
+                                    ? 'bg-white/20'
+                                    : 'bg-white/15'
+                            }`}
                     >
                         <LiaServicestack className="size-6 sm:size-7" />
                     </div>
@@ -87,13 +86,12 @@ function SubscriptionCard({
                         {features.slice(0, 4).map((feature, idx) => (
                             <div
                                 key={idx}
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-                                    plan === 'FREE'
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${plan === 'FREE'
                                         ? 'bg-neutral-800/60'
                                         : plan === 'PREMIUM'
-                                          ? 'bg-white/25'
-                                          : 'bg-white/15'
-                                }`}
+                                            ? 'bg-white/25'
+                                            : 'bg-white/15'
+                                    }`}
                             >
                                 <Check className="size-3" />
                                 <span className="whitespace-nowrap">{feature}</span>
@@ -115,11 +113,10 @@ function SubscriptionCard({
                         </div>
                     </div>
                     <Button
-                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${
-                            plan === 'FREE' || plan === 'PREMIUM'
+                        className={`px-5 py-1.5 rounded-lg font-semibold transition-all shadow-lg ${plan === 'FREE' || plan === 'PREMIUM'
                                 ? 'bg-[#7049FC] hover:bg-[#754fff] text-white'
                                 : 'bg-neutral-900 hover:bg-neutral-800 text-white'
-                        }`}
+                            }`}
                     >
                         {plan === 'FREE' ? 'Start Free' : 'Upgrade'}
                     </Button>
@@ -179,7 +176,7 @@ export default function SubscriptionPlans() {
     return (
         <section
             id="pricing"
-            className="w-full min-h-screen bg-[#0a0b0d] text-center text-white relative flex flex-col items-center justify-center z-20 px-4"
+            className="w-full min-h-screen bg-dark-base text-center text-white relative flex flex-col items-center justify-center z-20 px-4"
         >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
 
