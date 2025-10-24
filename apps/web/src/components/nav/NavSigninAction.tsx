@@ -58,7 +58,7 @@ export default function NavbarSigninAction() {
                     </div>
 
                     {showDropdown && (
-                        <div className="absolute top-full right-0 mt-2 z-[9999]">
+                        <div className="absolute top-full right-2 mt-2 z-[9999]">
                             <ProfileMenu />
                         </div>
                     )}
