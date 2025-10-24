@@ -3,7 +3,7 @@ import { Doto } from 'next/font/google';
 
 export const doto = Doto({
     subsets: ['latin'],
-    weight: '800',
+    weight: ['800', '900'],
     display: 'swap',
 });
 
@@ -20,7 +20,7 @@ export default function FeatureOne({ title, subTitle, description }: FeatureOneP
                 <h1
                     className={cn(
                         doto.className,
-                        'text-6xl font-bold tracking-wider text-left text-light/70',
+                        'text-6xl font-black tracking-wider text-left text-light/70',
                     )}
                 >
                     {title}
