@@ -107,7 +107,6 @@ export function ConnectedWalletInfoCard() {
         if (!publicKey) return alert('Wallet not connected!');
 
         try {
-
         } catch (err) {
             console.error(err);
         }
@@ -218,16 +217,31 @@ const AccountInfo = ({
                 >
                     Chain:
                 </div>
-                <div className={cn("w-full flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono", color)}>
+                <div
+                    className={cn(
+                        'w-full flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono',
+                        color,
+                    )}
+                >
                     Mainnet
                 </div>
             </div>
 
             <div className="w-full flex justify-start items-center gap-x-3">
-                <div className={cn("flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono", color)}>
+                <div
+                    className={cn(
+                        'flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono',
+                        color,
+                    )}
+                >
                     Balance:
                 </div>
-                <div className={cn("w-full flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono", color)}>
+                <div
+                    className={cn(
+                        'w-full flex items-center justify-center px-3 py-1 rounded-md text-sm font-mono',
+                        color,
+                    )}
+                >
                     {balance.toFixed(4)} SOL
                 </div>
             </div>
