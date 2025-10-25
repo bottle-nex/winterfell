@@ -40,7 +40,7 @@ export default async function runCommandController(req: Request, res: Response) 
         }
 
         switch (data.data as COMMAND) {
-            case COMMAND.ANCHOR_BUILD:
+            case COMMAND.WINTERFELL_BUILD:
                 logger.info('inside case');
                 server_orchestrator_queue.run_anchor_build_command(
                     user.id,
@@ -49,7 +49,7 @@ export default async function runCommandController(req: Request, res: Response) 
                 );
                 break;
 
-            case COMMAND.ANCHOR_TEST:
+            case COMMAND.WINTERFELL_TEST:
                 server_orchestrator_queue.run_anchor_test_command(
                     user.id,
                     contractId,
@@ -57,11 +57,21 @@ export default async function runCommandController(req: Request, res: Response) 
                 );
                 break;
 
-            case COMMAND.ANCHOR_DEPLOY:
+            case COMMAND.WINTERFELL_DEPLOY_DEVNET:
                 server_orchestrator_queue.run_anchor_deploy_command(
                     user.id,
                     contractId,
                     contract.title,
+                    'devnet',
+                );
+                break;
+
+            case COMMAND.WINTERFELL_DEPLOY_MAINNET:
+                server_orchestrator_queue.run_anchor_deploy_command(
+                    user.id,
+                    contractId,
+                    contract.title,
+                    'mainnet',
                 );
                 break;
 
