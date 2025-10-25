@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
     vim-tiny \
     jq \
     tree \
-    vim-tiny \
     bzip2 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,11 +23,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 # Verify Node.js installation
 RUN node --version && npm --version
 
-# Install Solana from pre-built binary
+# Install Solana from pre-built binary (FIXED: now includes complete SDK)
 RUN curl -sSfL https://github.com/solana-labs/solana/releases/download/v1.18.22/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
     tar jxf /tmp/solana.tar.bz2 -C /tmp && \
     mkdir -p /usr/local/solana && \
-    mv /tmp/solana-release/bin /usr/local/solana/ && \
+    mv /tmp/solana-release/* /usr/local/solana/ && \
     rm -rf /tmp/solana* && \
     ln -s /usr/local/solana/bin/* /usr/local/bin/
 
@@ -38,9 +37,9 @@ RUN solana --version
 # Install Anchor CLI
 RUN cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 anchor-cli --locked
 
-# Copy mount-code script
-COPY scripts/mount-code.sh /usr/local/bin/mount-code
-RUN chmod +x /usr/local/bin/mount-code
+# # Copy mount-code script
+# COPY scripts/mount-code.sh /usr/local/bin/mount-code
+# RUN chmod +x /usr/local/bin/mount-code
 
 # Setup Solana config
 WORKDIR /workspace
