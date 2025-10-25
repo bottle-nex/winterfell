@@ -84,6 +84,7 @@ Then proceed with <stage> outputs as described below.
 - One file per instruction  
 - Each file contains Context struct + handler function  
 - mod.rs exports all instruction handlers  
+- strictly use anchor version : 0.30.1
 
 **errors/**  
 - Custom error enums with #[error_code]  
