@@ -32,6 +32,7 @@ export default class StreamParser {
     >;
     private generatedFiles: FileContent[];
     private pendingContext: string | null = null;
+    private contractName: string;
 
     constructor() {
         this.buffer = '';
@@ -42,6 +43,7 @@ export default class StreamParser {
         this.isJsonBlock = false;
         this.generatedFiles = [];
         this.eventHandlers = new Map();
+        this.contractName = '';
     }
 
     public on(
@@ -83,6 +85,15 @@ export default class StreamParser {
         for (const line of lines) {
             const trimmed = line.trim();
             if (!trimmed && !this.insideCodeBlock) continue;
+
+            // Handle name
+            const nameMatch = trimmed.match(/<name>(.*?)<\/name>/);
+            if(nameMatch && !this.insideCodeBlock) {
+                const name = nameMatch[1].trim();
+                console.log('the name: ', chalk.cyan(name));
+                this.contractName = name;
+                continue;
+            }
 
             // Handle stages
             const stageMatch = trimmed.match(/<stage>(.*?)<\/stage>/);
@@ -160,7 +171,8 @@ export default class StreamParser {
                 const content = this.pendingContext
                     .replace(/<\s*context\s*>/i, '')
                     .replace(/<\/\s*context\s*>/i, '')
-                    .trim();
+                    .trim()
+                    .split('<')[0];
 
                 console.log('the context: ', chalk.red(content));
 
@@ -191,7 +203,7 @@ export default class StreamParser {
             const endMatch = rest.match(/<\/\s*context\s*>/i);
 
             if (endMatch) {
-                const content = rest.split(endMatch[0])[0].trim();
+                const content = rest.split(endMatch[0])[0].trim().split('<')[0];
                 llm_message = await prisma.message.create({
                     data: {
                         content: content,
@@ -342,6 +354,10 @@ export default class StreamParser {
 
     public getGeneratedFiles(): FileContent[] {
         return this.generatedFiles;
+    }
+
+    public getContractName(): string {
+        return this.contractName;
     }
 
     public reset(): void {

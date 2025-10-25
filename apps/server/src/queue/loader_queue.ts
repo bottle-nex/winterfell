@@ -4,7 +4,6 @@ import { AnchorBuildQueueData, WORKER_QUEUE_TYPES } from '../types/worker_queue_
 import { logger } from '../utils/logger';
 
 export default class ServerToOrchestratorQueue {
-    private static instance: ServerToOrchestratorQueue;
     private queue: Bull.Queue;
     constructor(queue_name: string) {
         this.queue = new Bull(queue_name, {
