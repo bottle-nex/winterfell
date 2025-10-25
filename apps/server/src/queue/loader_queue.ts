@@ -50,6 +50,7 @@ export default class ServerToOrchestratorQueue {
         userId: string,
         contractId: string,
         projectName: string,
+        network: 'devnet' | 'mainnet' = 'devnet',
         options?: Partial<JobOptions>,
     ): Promise<void> {
         try {
@@ -58,7 +59,8 @@ export default class ServerToOrchestratorQueue {
                 contractId,
                 projectName,
             };
-
+            // add this in cmd for network switching
+            console.error({ network });
             const job_options: JobOptions = {
                 ...options,
                 priority: 2,
