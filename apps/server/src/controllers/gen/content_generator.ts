@@ -2,12 +2,13 @@ import { GoogleGenAI } from '@google/genai';
 import Anthropic from '@anthropic-ai/sdk';
 import env from '../../configs/env';
 import { Response } from 'express';
-import { ChatRole, Message, prisma } from '@repo/database';
+import { ChatRole, Message, prisma, SystemMessageType } from '@repo/database';
 import StreamParser from '../../services/stream_parser';
 import { SYSTEM_PROMPT } from '../../prompt/system';
 import { objectStore } from '../../services/init';
 import { logger } from '../../utils/logger';
 import {
+    ErrorData,
     FILE_STRUCTURE_TYPES,
     PHASE_TYPES,
     StartingData,
@@ -72,8 +73,8 @@ export default class ContentGenerator {
             );
 
             const llmGeneratedFiles: FileContent[] = parser.getGeneratedFiles();
-            // const contractName: string = parser.getContractName();
-            const base_files: FileContent[] = prepareBaseTemplate('dlmm_pool');
+            const contractName: string = parser.getContractName();
+            const base_files: FileContent[] = prepareBaseTemplate(contractName);
             const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
 
             this.sendSSE(res, STAGE.END, { data: final_code });
@@ -180,7 +181,6 @@ export default class ContentGenerator {
             });
             for await (const chunk of response) {
                 if (chunk.text) {
-                    console.log(chunk.text);
                     fullResponse += chunk.text;
                     parser.feed(chunk.text, systemMessage);
                 }
@@ -189,6 +189,19 @@ export default class ContentGenerator {
             await this.saveLLMResponseToDb(fullResponse, contractId);
             return fullResponse;
         } catch (llmError) {
+            const systemMessage = await prisma.message.update({
+                where: {
+                    id: contractId,
+                },
+                data: {
+                    error: true,
+                },
+            });
+            const errorData: ErrorData = {
+                message: 'Communication failed with the secure model API.',
+                error: 'Internal server error',
+            };
+            this.sendSSE(res, STAGE.ERROR, errorData, systemMessage);
             console.error('Gemini LLM Error:', llmError);
             throw llmError;
         }
@@ -253,6 +266,19 @@ export default class ContentGenerator {
             await this.saveLLMResponseToDb(fullResponse, contractId);
             return fullResponse;
         } catch (llmError) {
+            const systemMessage = await prisma.message.update({
+                where: {
+                    id: contractId,
+                },
+                data: {
+                    error: true,
+                },
+            });
+            const errorData: ErrorData = {
+                message: 'Communication failed with the secure model API.',
+                error: 'Internal server error',
+            };
+            this.sendSSE(res, STAGE.ERROR, errorData, systemMessage);
             console.error('Claude LLM Error:', llmError);
             throw llmError;
         }
