@@ -4,7 +4,6 @@ import { AnchorBuildQueueData, WORKER_QUEUE_TYPES } from '../types/worker_queue_
 import { logger } from '../utils/logger';
 
 export default class ServerToOrchestratorQueue {
-    private static instance: ServerToOrchestratorQueue;
     private queue: Bull.Queue;
     constructor(queue_name: string) {
         this.queue = new Bull(queue_name, {
@@ -50,6 +49,7 @@ export default class ServerToOrchestratorQueue {
         userId: string,
         contractId: string,
         projectName: string,
+        network: 'devnet' | 'mainnet' = 'devnet',
         options?: Partial<JobOptions>,
     ): Promise<void> {
         try {
@@ -58,7 +58,8 @@ export default class ServerToOrchestratorQueue {
                 contractId,
                 projectName,
             };
-
+            // add this in cmd for network switching
+            console.error({ network });
             const job_options: JobOptions = {
                 ...options,
                 priority: 2,
