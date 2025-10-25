@@ -41,9 +41,13 @@ export default class ServerToOrchestratorQueue {
       try {
          const pod_name = await pod_service.create_pod({ userId, contractId, projectName });
          await pod_service.copy_files_to_pod(pod_name, projectName, codebase);
-         console.log('files copied');
+         logger.info('files copied');
          pod_service.stream_logs(pod_name, (chunk) => logger.info(`[${pod_name}] ${chunk}`));
-         const result = await pod_service.execute_command(pod_name, command);
+         const result = await pod_service.execute_command(pod_name, [
+            'sh',
+            '-c',
+            `cd /workspace/${projectName} && ${command.join(' ')}`,
+         ]);
 
          return {
             success: true,

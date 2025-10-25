@@ -34,6 +34,8 @@ export default class PodService {
 
          const podName = response.metadata?.name as string;
          await waitForPodRunning(podName, this.namespace, 60);
+         await this.waitForContainerReady(podName);
+
          return podName;
       } catch (err) {
          logger.error('Failed to create pod', {
@@ -150,120 +152,53 @@ export default class PodService {
    ): Promise<void> {
       const total_files = files.length;
 
-      // Check if files exist
       if (!files || files.length === 0) {
          logger.warn('No files to copy', { pod_name, projectName });
          return;
       }
 
-      logger.info(`Starting to copy ${total_files} files to pod ${pod_name}`);
-
       try {
-         // Add a small delay to ensure container is ready for exec commands
-         await this.waitForContainerReady(pod_name);
-
-         // Verify pod is ready to accept commands
-         try {
-            await this.execute_command(pod_name, ['echo', 'ready']);
-            logger.debug('Pod ready to accept commands');
-         } catch (readyErr) {
-            logger.error('Pod not ready for commands', {
-               err: readyErr instanceof Error ? readyErr.message : String(readyErr),
-               pod_name,
-            });
-            throw new Error('Pod not ready to accept exec commands');
-         }
-
-         let copied = 0;
+         const base_dir = `/workspace/${projectName}`;
+         await this.execute_command(pod_name, ['mkdir', '-p', base_dir]);
 
          for (const file of files) {
-            const full_path = `/workspace/${projectName}/${file.path}`;
+            const full_path = `${base_dir}/${file.path}`;
             const dir = full_path.substring(0, full_path.lastIndexOf('/'));
 
-            // Create directory structure
-            if (dir !== `/workspace/${projectName}`) {
-               try {
-                  await this.execute_command(pod_name, ['mkdir', '-p', dir]);
-                  logger.debug(`Created directory: ${dir}`);
-               } catch (mkdirErr) {
-                  logger.error('Failed to create directory', {
-                     dir,
-                     error: mkdirErr instanceof Error ? mkdirErr.message : String(mkdirErr),
-                  });
-                  throw mkdirErr;
-               }
+            if (dir !== base_dir) {
+               await this.execute_command(pod_name, ['mkdir', '-p', dir]);
+               logger.debug('dir created : ', dir);
             }
 
-            // Copy file content
-            try {
-               const base_64_content = Buffer.from(file.content).toString('base64');
+            const base_64_content = Buffer.from(file.content).toString('base64');
 
-               // Check if base64 content is too large for single command
-               if (base_64_content.length > 100000) {
-                  logger.warn('Large file detected', {
-                     path: file.path,
-                     size: base_64_content.length,
-                  });
-               }
-
-               await this.execute_command(pod_name, [
-                  'sh',
-                  '-c',
-                  `echo '${base_64_content}' | base64 -d > ${full_path}`,
-               ]);
-
-               copied++;
-               logger.debug(`[${copied}/${total_files}] Copied ${file.path}`);
-            } catch (copyErr) {
-               logger.error('Failed to copy file', {
-                  path: file.path,
-                  error: copyErr instanceof Error ? copyErr.message : String(copyErr),
-               });
-               throw copyErr;
-            }
+            await this.execute_command(pod_name, [
+               'sh',
+               '-c',
+               `echo '${base_64_content}' | base64 -d > ${full_path}`,
+            ]);
          }
-
          logger.info(`Successfully copied all ${total_files} files to ${pod_name}`);
-
-         // Verify files were created
-         const verifyResult = await this.execute_command(pod_name, [
-            'sh',
-            '-c',
-            `find /workspace/${projectName} -type f | wc -l`,
-         ]);
-
-         const fileCount = parseInt(verifyResult.stdout.trim());
-         logger.info('File verification', {
-            expected: total_files,
-            actual: fileCount,
-            match: fileCount === total_files,
-         });
-
-         if (fileCount !== total_files) {
-            throw new Error(`File count mismatch: expected ${total_files}, got ${fileCount}`);
-         }
       } catch (err) {
          logger.error('Failed to copy files to pod', {
             error: err instanceof Error ? err.message : String(err),
-            stack: err instanceof Error ? err.stack : undefined,
             pod_name,
             projectName,
-            fileCount: files.length,
          });
          throw err;
       }
    }
+
    private async waitForContainerReady(
       pod_name: string,
       maxRetries: number = 15,
-      initialDelayMs: number = 1000,
+      initialDelayMs: number = 5000,
    ): Promise<void> {
       let retries = 0;
       let delay = initialDelayMs;
 
       while (retries < maxRetries) {
          try {
-
             await this.execute_command(pod_name, ['echo', 'ready']);
             logger.info('Container ready to accept commands', { pod_name });
             return;
