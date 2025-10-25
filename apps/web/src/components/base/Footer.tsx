@@ -2,6 +2,8 @@ import { LiaServicestack } from 'react-icons/lia';
 import { FaTwitter, FaGithub, FaDiscord, FaLinkedin } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { Bruno_Ace } from 'next/font/google';
+import { cn } from '@/src/lib/utils';
+import { doto } from './FeatureOne';
 
 const bruno = Bruno_Ace({
     subsets: ['latin'],
@@ -58,11 +60,10 @@ export default function Footer() {
                     {footerLinks.map((section, index) => (
                         <div
                             key={section.title}
-                            className={`w-full h-full px-4 flex flex-col items-start text-neutral-200 gap-y-3 mb-8 md:mb-0 pb-6 md:pb-0 ${
-                                index < footerLinks.length - 1
+                            className={`w-full h-full px-4 flex flex-col items-start text-neutral-200 gap-y-3 mb-8 md:mb-0 pb-6 md:pb-0 ${index < footerLinks.length - 1
                                     ? 'md:border-r border-b md:border-b-0 border-neutral-700'
                                     : ''
-                            }`}
+                                }`}
                         >
                             <div className="md:text-3xl text-2xl font-semibold">
                                 {section.title}
@@ -98,12 +99,12 @@ export default function Footer() {
             <div
                 className={`md:h-[35%] py-12 md:py-0 text-neutral-200 w-full flex flex-col justify-center items-center ${bruno.className}`}
             >
-                <div className="md:text-9xl text-5xl font-extrabold tracking-wider flex items-center flex-col md:flex-row">
-                    <span>WINTERFELL</span>
+                <div className="md:text-[10rem] text-5xl font-black tracking-wider flex items-center flex-col md:flex-row">
+                    <span className={cn(doto.className)}>WINTERFELL</span>
                     <LiaServicestack className="text-primary md:h-52 md:w-52 h-24 w-24 transition-all duration-500" />
                 </div>
                 <p className="text-neutral-500 md:text-sm text-xs tracking-wider mt-4 text-center px-4">
-                    © 2024 Lovable for Anchor. Powered by AI + Solana.
+                    © 2024 Winterfell. Powered by AI + Solana.
                 </p>
             </div>
         </motion.div>
