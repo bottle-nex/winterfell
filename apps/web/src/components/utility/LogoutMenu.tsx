@@ -1,5 +1,5 @@
 'use client';
-import { SlDocs } from "react-icons/sl";
+import { SlDocs } from 'react-icons/sl';
 import { TbSettings2 } from 'react-icons/tb';
 import { IoMdLogOut } from 'react-icons/io';
 import Card from '../ui/Card';
@@ -19,7 +19,7 @@ export default function ProfileMenu() {
                 <div>
                     <div className="px-4 py-[11px] text-xs font-light text-light hover:bg-dark dark:text-light-base border-b border-neutral-700 flex justify-between cursor-pointer tracking-wide">
                         Docs
-                       <SlDocs/> 
+                        <SlDocs />
                     </div>
                     <div className="px-4 py-[11px] text-xs font-light text-light hover:bg-dark dark:text-light-base border-b border-neutral-700 flex justify-between cursor-pointer tracking-wide">
                         Settings

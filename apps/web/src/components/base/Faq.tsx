@@ -4,13 +4,10 @@ import { useState, useRef, memo } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { doto } from './FeatureOne';
 import { motion, useInView } from 'framer-motion';
-import Image from 'next/image';
 import { Button } from '../ui/button';
-import { RiCodeSSlashFill } from 'react-icons/ri';
 import { FaGithub } from 'react-icons/fa';
 
 /* eslint-disable react/prop-types */
-
 interface FaqData {
     question: string;
     answer: string;
@@ -33,8 +30,9 @@ const FaqItem = memo<FaqItemProps>(({ faq, index, isOpen, onToggle }) => {
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className={cn("overflow-hidden transition-all duration-300",
-                index <= 5 ? "border-b border-neutral-300" : ""
+            className={cn(
+                'overflow-hidden transition-all duration-300',
+                index <= 5 ? 'border-b border-neutral-300' : '',
             )}
         >
             <div
@@ -45,13 +43,15 @@ const FaqItem = memo<FaqItemProps>(({ faq, index, isOpen, onToggle }) => {
                     {faq.question}
                 </span>
                 <AiOutlinePlus
-                    className={`w-6 h-6 text-primary flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''
-                        }`}
+                    className={`w-6 h-6 text-primary flex-shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-45' : ''
+                    }`}
                 />
             </div>
             <div
-                className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96' : 'max-h-0'
-                    }`}
+                className={`overflow-hidden transition-all duration-300 ${
+                    isOpen ? 'max-h-96' : 'max-h-0'
+                }`}
             >
                 <div className="pb-6 pt-1">
                     <p className="text-dark-base/70 leading-relaxed text-left">{faq.answer}</p>
@@ -102,15 +102,18 @@ export default function Faq() {
     };
 
     return (
-        <section id='faq' className="relative min-h-screen bg-light px-6 md:px-12 lg:px-20 py-16 lg:py-20 z-10">
+        <section
+            id="faq"
+            className="relative min-h-screen bg-light px-6 md:px-12 lg:px-20 py-16 lg:py-20 z-10"
+        >
             <div
                 className="absolute inset-0 z-0"
                 style={{
                     backgroundImage: `
         radial-gradient(circle, rgb(108, 68, 252) 2px, transparent 2px)
       `,
-                    backgroundSize: "40px 40px",
-                    backgroundPosition: "0 0",
+                    backgroundSize: '40px 40px',
+                    backgroundPosition: '0 0',
                 }}
             />
             <div className="max-w-7xl mx-auto">
@@ -138,8 +141,6 @@ export default function Faq() {
                                     </span>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
 

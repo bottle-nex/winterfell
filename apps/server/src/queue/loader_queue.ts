@@ -65,7 +65,7 @@ export default class ServerToOrchestratorQueue {
             };
 
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND, data, job_options);
-            console.log("after stallling data");
+            console.log('after stallling data');
         } catch (err) {
             logger.error('failed to run anchor deploy command', err);
         }
