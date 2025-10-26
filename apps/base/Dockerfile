@@ -24,7 +24,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 RUN node --version && npm --version
 
 # Install Solana from pre-built binary (FIXED: now includes complete SDK)
-RUN curl -sSfL https://github.com/solana-labs/solana/releases/download/v1.18.22/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
+RUN curl -sSfL https://github.com/solana-labs/solana/releases/download/v2.0.3/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
     tar jxf /tmp/solana.tar.bz2 -C /tmp && \
     mkdir -p /usr/local/solana && \
     mv /tmp/solana-release/* /usr/local/solana/ && \

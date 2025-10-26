@@ -24,7 +24,7 @@ export default class PodTemplate {
             containers: [
                {
                   name: 'anchor-dev',
-                  image: 'winterfellhub/winterfell-base:latest',
+                  image: 'winterfellhub/winterfell-base:build',
                   command: ['/bin/sh'],
                   args: ['-c', 'tail -f /dev/null'],
                   stdin: true,
