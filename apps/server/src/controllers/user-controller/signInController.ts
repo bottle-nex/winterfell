@@ -5,7 +5,7 @@ import { prisma } from '@repo/database';
 const SERVER_JWT_SECRET = process.env.SERVER_JWT_SECRET;
 
 export default async function signInController(req: Request, res: Response) {
-    const { user } = req.body;
+    const { user, account } = req.body;
     try {
         const existingUser = await prisma.user.findUnique({
             where: {
@@ -23,6 +23,8 @@ export default async function signInController(req: Request, res: Response) {
                     name: user.name,
                     email: user.email,
                     image: user.image,
+                    provider: account.provider === 'github' ? 'github' : 'google',
+                    githubAccessToken: account.provider === 'github' ? account.access_token : null,
                 },
             });
         } else {
@@ -31,6 +33,8 @@ export default async function signInController(req: Request, res: Response) {
                     name: user.name,
                     email: user.email,
                     image: user.image,
+                    provider: account.provider === 'github' ? 'github' : 'google',
+                    githubAccessToken: account.provider === 'github' ? account.access_token : null,
                 },
             });
         }

@@ -95,6 +95,11 @@ export default function BuilderChats() {
         }
     }
 
+    function returnParsedData(message: string) {
+        const result = message.split('<stage>')[0];
+        return result;
+    }
+
     return (
         <div className="w-full flex flex-col pt-4" style={{ height: 'calc(100vh - 3.5rem)' }}>
             <div className="flex-1 flex flex-col gap-y-3 text-light text-sm px-6 overflow-y-auto min-h-0 custom-scrollbar">
@@ -123,7 +128,7 @@ export default function BuilderChats() {
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
                                     <AppLogo showLogoText={false} />
                                     <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-dark text-light text-left tracking-wider text-[13px] italic">
-                                        {message.content}
+                                        {returnParsedData(message.content)}
                                     </div>
                                 </div>
                             </div>
