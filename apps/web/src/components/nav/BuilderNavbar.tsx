@@ -24,6 +24,8 @@ export default function BuilderNavbar() {
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
     }, []);
 
+    
+
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
 
     return (
@@ -86,6 +88,7 @@ export default function BuilderNavbar() {
 
                     <ToolTipComponent content="Publish the code snippet to GitHub" side="bottom">
                         <Button
+                            onClick={handleCodePushToGithub}
                             size={'sm'}
                             className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
                         >
