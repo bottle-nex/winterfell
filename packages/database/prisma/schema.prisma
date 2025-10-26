@@ -169,8 +169,9 @@ enum SystemMessageType {
 // user message - prompt
 // user message - prompt
 // user message - prompt
-// ai message - 
+// ai message - ai generated response FileContent[]
 // user message - prompt
+
 enum ContractGenerationPhase {
   PLANNING
   GENERATING_CODE
