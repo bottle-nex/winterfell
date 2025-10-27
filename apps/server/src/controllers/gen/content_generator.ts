@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import Anthropic from '@anthropic-ai/sdk';
 import env from '../../configs/env';
 import { Response } from 'express';
-import { ChatRole, Message, prisma, SystemMessageType } from '@repo/database';
+import { ChatRole, Message, prisma } from '@repo/database';
 import StreamParser from '../../services/stream_parser';
 import { SYSTEM_PROMPT } from '../../prompt/system';
 import { objectStore } from '../../services/init';

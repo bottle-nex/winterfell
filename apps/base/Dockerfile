@@ -1,55 +1,70 @@
 FROM rust:1.78-slim-bookworm
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    ca-certificates \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    libudev-dev \
-    git \
-    vim-tiny \
-    jq \
-    tree \
-    bzip2 \
+# ----------------------------
+# Environment variables
+# ----------------------------
+ENV DEBIAN_FRONTEND=noninteractive
+ENV SOLANA_RELEASE=v1.18.22
+ENV ANCHOR_CLI_TAG=v0.29.0
+ENV ANCHOR_WALLET=/root/.config/solana/id.json
+ENV PATH="/root/.local/share/solana/install/active_release/bin:/usr/local/solana/bin:${PATH}"
+
+# ----------------------------
+# 1. Install dependencies
+# ----------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates gnupg2 \
+    build-essential pkg-config libssl-dev libudev-dev \
+    clang llvm cmake lld \
+    git jq tree bzip2 vim-tiny python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 20.x
+# ----------------------------
+# 2. Install Node.js + Yarn
+# ----------------------------
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get update && apt-get install -y --no-install-recommends nodejs && \
+    npm install -g yarn@1.22.19 && \
     rm -rf /var/lib/apt/lists/*
 
-# Verify Node.js installation
-RUN node --version && npm --version
-
-# Install Solana from pre-built binary (FIXED: now includes complete SDK)
-RUN curl -sSfL https://github.com/solana-labs/solana/releases/download/v2.0.3/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
-    tar jxf /tmp/solana.tar.bz2 -C /tmp && \
-    mkdir -p /usr/local/solana && \
-    mv /tmp/solana-release/* /usr/local/solana/ && \
+# ----------------------------
+# 3. Install Solana CLI
+# ----------------------------
+RUN mkdir -p /usr/local/solana && \
+    curl -sSfL https://github.com/solana-labs/solana/releases/download/${SOLANA_RELEASE}/solana-release-x86_64-unknown-linux-gnu.tar.bz2 -o /tmp/solana.tar.bz2 && \
+    tar -xjf /tmp/solana.tar.bz2 -C /tmp && \
+    mv /tmp/solana-release/bin /usr/local/solana/ && \
     rm -rf /tmp/solana* && \
-    ln -s /usr/local/solana/bin/* /usr/local/bin/
+    ln -sf /usr/local/solana/bin/* /usr/local/bin/
 
 # Verify Solana
-RUN solana --version
+RUN export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH" && \
+    solana --version
 
-# Install Anchor CLI
-RUN cargo install --git https://github.com/coral-xyz/anchor --tag v0.30.1 anchor-cli --locked
+# ----------------------------
+# 4. Install Anchor CLI
+# ----------------------------
+RUN cargo install --git https://github.com/coral-xyz/anchor --tag ${ANCHOR_CLI_TAG} anchor-cli --locked
 
-# # Copy mount-code script
-# COPY scripts/mount-code.sh /usr/local/bin/mount-code
-# RUN chmod +x /usr/local/bin/mount-code
+# ----------------------------
+# 5. Preinstall SBF Tools to prevent missing SDK/lib errors
+# ----------------------------
+WORKDIR /tmp/sbf-ensure
+RUN mkdir -p src && echo "fn main(){}" > src/main.rs && \
+    export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH" && \
+    cargo build-sbf --verbose --force-tools-install || true
 
-# Setup Solana config
+# ----------------------------
+# 6. Setup Solana wallet + config
+# ----------------------------
 WORKDIR /workspace
 RUN mkdir -p /root/.config/solana && \
     solana-keygen new --no-bip39-passphrase -o /root/.config/solana/id.json -s && \
     solana config set --url localhost
 
-ENV ANCHOR_WALLET="/root/.config/solana/id.json"
-
-# Final verification
-RUN solana --version && anchor --version && node --version && npm --version
+# ----------------------------
+# 7. Final verification
+# ----------------------------
+RUN solana --version && anchor --version && rustc --version && node --version && yarn --version
 
 CMD ["/bin/bash"]
