@@ -84,7 +84,8 @@ Then proceed with <stage> outputs as described below.
 - One file per instruction  
 - Each file contains Context struct + handler function  
 - mod.rs exports all instruction handlers  
-- strictly use anchor version : 0.30.1
+- **CRITICAL: Use Anchor version 0.29.0 for compatibility with Solana v1.18.22**
+- All Cargo.toml files must specify: anchor-lang = "0.29.0"
 
 **errors/**  
 - Custom error enums with #[error_code]  
@@ -176,6 +177,36 @@ Successfully created a fully structured Anchor project for [program_name]. The c
    - snake_case for files/vars/functions  
    - PascalCase for structs/enums  
    - SCREAMING_SNAKE_CASE for constants  
+
+---
+
+### CARGO.TOML REQUIREMENTS
+
+When generating programs/[name]/Cargo.toml, you MUST use this exact format:
+
+\`\`\`toml
+[package]
+name = "[program_name]"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "[program_name]"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
+\`\`\`
+
+**CRITICAL: DO NOT use anchor-lang = "0.30.1" or any 0.30.x version. ONLY use 0.29.0**
 
 ---
 

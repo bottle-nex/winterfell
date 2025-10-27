@@ -46,7 +46,7 @@ wallet = "~/.config/solana/id.json"
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"`,
     },
 
-    // package.json
+    // package.json - DOWNGRADED ANCHOR VERSION
     {
         path: 'package.json',
         content: `{
@@ -58,7 +58,7 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"`,
     "lint": "prettier */*.js \\"*/**/*{.js,.ts}\\" --check"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.1"
+    "@coral-xyz/anchor": "^0.29.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
@@ -118,7 +118,7 @@ test-ledger`,
     // PROGRAM CONFIGURATION
     // ============================================
 
-    // Program Cargo.toml
+    // Program Cargo.toml - DOWNGRADED ANCHOR-LANG VERSION
     {
         path: 'programs/<PROJECT_NAME>/Cargo.toml',
         content: `[package]
@@ -139,7 +139,7 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-anchor-lang = "0.30.1"`,
+anchor-lang = "0.29.0"`,
     },
 
     // ============================================
