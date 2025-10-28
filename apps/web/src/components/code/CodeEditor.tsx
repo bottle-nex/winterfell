@@ -5,7 +5,7 @@ import { Editor, Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import Filetree from './Filetree';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import StatusBar from './StatusBar';
+import StatusBar from './Terminal';
 
 export default function CodeEditor(): JSX.Element {
     const { collapseFileTree, currentCode } = useCodeEditor();
