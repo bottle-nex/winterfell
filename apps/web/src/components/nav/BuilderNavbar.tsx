@@ -12,6 +12,9 @@ import { TbLayoutSidebarLeftCollapseFilled } from 'react-icons/tb';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { WalletPanel } from '../base/WalletPanel';
+import axios from 'axios';
+import { EXPORT_CONTRACT_URL } from '@/routes/api_routes';
+import { useChatStore } from '@/src/store/user/useChatStore';
 
 export default function BuilderNavbar() {
     const { session } = useUserSessionStore();
@@ -19,12 +22,27 @@ export default function BuilderNavbar() {
     const [openSettingsPanel, setOpenSettingsPanel] = useState<boolean>(false);
     const [isMac, setIsMac] = useState<boolean>(false);
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
+    const { contractId } = useChatStore();
 
     useEffect(() => {
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
     }, []);
 
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
+
+    async function handleCodePushToGithub() {
+        try {
+            const response = await axios.post(`${EXPORT_CONTRACT_URL}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session?.user.token}`,
+                },
+                body: JSON.stringify({
+                    contractId: contractId,
+                }),
+            });
+        } catch (error) {}
+    }
 
     return (
         <div className="min-h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
@@ -93,6 +111,7 @@ export default function BuilderNavbar() {
                             <span className="text-xs">Publish</span>
                         </Button>
                     </ToolTipComponent>
+
                     {session?.user.image && (
                         <Image
                             src={session?.user.image}

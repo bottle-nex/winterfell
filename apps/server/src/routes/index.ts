@@ -9,7 +9,7 @@ import subscriptionMiddleware from '../middlewares/subscriptionMiddleware';
 import getUserPlanController from '../controllers/payment-controller/getUserPlanController';
 import syncFilesController from '../controllers/files/syncFilesController';
 import runCommandController from '../controllers/contract-controller/runCommandController';
-import githubCodePushController from '../controllers/github-deploy-controller/githubCodePushController';
+import { githubCodePushController } from '../controllers/github-deploy-controller/githubCodePushController';
 
 const router: Router = Router();
 
