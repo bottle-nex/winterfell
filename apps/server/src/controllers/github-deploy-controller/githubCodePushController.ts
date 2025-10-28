@@ -2,48 +2,55 @@ import { Request, Response } from 'express';
 import { get_github_owner } from '../../services/git_services';
 import { github_worker_queue } from '../../services/init';
 
-export default async function githubCodePushController(req: Request, res: Response) {
+export async function githubCodePushController(req: Request, res: Response) {
     const user_id = req.user?.id;
     if (!user_id) {
-        res.status(401).json({ error: 'Unauthorized' });
-        return;
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const { repo_name, contract_id } = req.body;
-    const github_access_token = req.user?.githubAccessToken;
 
-    if (!github_access_token) {
-        res.status(400).json({
-            error: 'Login with github',
+    if (!repo_name || !contract_id) {
+        return res.status(400).json({
+            error: 'repo_name and contract_id are required',
         });
-        return;
+    }
+
+    if (!/^[a-zA-Z0-9_.-]+$/.test(repo_name)) {
+        return res.status(400).json({
+            error: 'Invalid repo name. Use only alphanumeric characters, dash, underscore, or dot.',
+        });
+    }
+
+    const github_access_token = req.user?.githubAccessToken;
+    if (!github_access_token) {
+        return res.status(400).json({
+            error: 'GitHub authentication required. Please login with GitHub.',
+        });
     }
 
     try {
         const owner = await get_github_owner(github_access_token);
-        // check owner here
 
-        const jobData = {
+        const job = await github_worker_queue.enqueue({
             github_access_token,
             owner,
             repo_name,
             user_id,
             contract_id,
-        };
+        });
 
-        await github_worker_queue.enqueue(jobData);
-
-        res.status(200).json({
+        return res.status(202).json({
             success: true,
-            message: 'Code pushed successfully',
+            message: 'Export job queued successfully',
+            job_id: job.id,
+            status_url: `/api/github/status/${job.id}`,
         });
-        return;
     } catch (error) {
-        console.error('Error in run-command-controller: ', error);
-        res.status(500).json({
+        console.error('Error in github-push-controller:', error);
+        return res.status(500).json({
             success: false,
-            message: 'Internal server error',
+            message: 'Failed to queue export job',
         });
-        return;
     }
 }

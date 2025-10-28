@@ -13,6 +13,7 @@ import StreamEventProcessor from '@/src/class/handle_stream_event';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { useChatStore } from '@/src/store/user/useChatStore';
 
 export default function BuilderChats() {
     const { messages, loading, setLoading } = useBuilderChatStore();
@@ -22,6 +23,7 @@ export default function BuilderChats() {
     const hasInitialized = useRef(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
     const { setCollapseFileTree } = useCodeEditor();
+    const { setContractId } = useChatStore();
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -56,6 +58,9 @@ export default function BuilderChats() {
                     message: message,
                 }),
             });
+
+            console.log('--------------------------------------->');
+            console.log(response.body);
 
             if (!response.ok) {
                 throw new Error('Failed to start chat');
