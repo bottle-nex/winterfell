@@ -1,8 +1,8 @@
 import { V1Pod } from '@kubernetes/client-node';
 
 export default class PodTemplate {
-   public static get_anchor_pod_template(userId: string, sessionId: string, projectName?: string) {
-      const podName: string = this.get_pod_name(userId, sessionId);
+   public static get_anchor_pod_template(userId: string, contractId: string, projectName?: string) {
+      const podName: string = this.get_pod_name(userId, contractId);
       const template: V1Pod = {
          apiVersion: 'v1',
          kind: 'Pod',
@@ -11,7 +11,7 @@ export default class PodTemplate {
             labels: {
                app: 'sharks-anchor',
                userId: userId,
-               sessionId: sessionId,
+               sessionId: contractId,
                type: 'development-pod',
             },
             annotations: {
@@ -24,7 +24,7 @@ export default class PodTemplate {
             containers: [
                {
                   name: 'anchor-dev',
-                  image: 'winterfellhub/anchor-builder:1.0',
+                  image: 'winterfellhub/winterfell-base:latest',
                   command: ['/bin/sh'],
                   args: ['-c', 'tail -f /dev/null'],
                   stdin: true,
@@ -37,7 +37,7 @@ export default class PodTemplate {
                      },
                      {
                         name: 'SESSION_ID',
-                        value: sessionId,
+                        value: contractId,
                      },
                      {
                         name: 'RUST_BACKTRACE',
@@ -73,7 +73,7 @@ export default class PodTemplate {
       return template;
    }
 
-   public static get_pod_name(userId: string, sessionId: string) {
-      return `anchor-pod-template-${userId}-${sessionId}`.toLowerCase().substring(0, 63);
+   public static get_pod_name(userId: string, contractId: string) {
+      return `anchor-pod-template-${userId}-${contractId}`.toLowerCase().substring(0, 63);
    }
 }
