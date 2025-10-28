@@ -5,110 +5,224 @@ import { GithubPushJobData, FileContent } from '../types/github_worker_queue_typ
 import { get_s3_codebase } from '../services/git_services';
 
 export class GithubWorkerQueue {
-    private queue: Bull.Queue;
+    private queue: Bull.Queue<GithubPushJobData>;
 
-    constructor(queue_name: string) {
-        this.queue = new Bull(queue_name, { redis: 'redis://localhost:6379' });
-        this.setup_processors();
+    constructor(queue_name: string, redis_url: string = 'redis://localhost:6379') {
+        this.queue = new Bull(queue_name, { redis: redis_url });
+        this.queue.process(this.processJob.bind(this));
+        logger.info(`GitHub push queue initialized: ${queue_name}`);
     }
 
-    private setup_processors() {
-        this.queue.process(this.process_job.bind(this));
-        logger.info(`github push queue initialized on ${this.queue.name}`);
-    }
-
-    private async process_job(job: Job<GithubPushJobData>) {
+    private async processJob(job: Job<GithubPushJobData>) {
         const { github_access_token, owner, repo_name, user_id, contract_id } = job.data;
         const octokit = new Octokit({ auth: github_access_token });
 
         try {
-            let repo_exists = true;
-            try {
-                await octokit.repos.get({ owner, repo: repo_name });
-            } catch (err: any) {
-                if (err.status === 404) repo_exists = false;
+            // Step 1: Ensure repository exists
+            await this.ensureRepositoryExists(octokit, owner, repo_name, user_id);
+
+            // Step 2: Get files from S3
+            const files = await get_s3_codebase(contract_id);
+            if (!files || files.length === 0) {
+                throw new Error('No files found in codebase');
             }
 
-            if (!repo_exists) {
-                logger.info(`Creating repo ${repo_name} for user ${user_id}`);
+            // Step 3: Create blobs for all files
+            const blobs = await this.createBlobs(octokit, owner, repo_name, files);
+
+            // Step 4: Get base commit SHA if main branch exists
+            const baseCommitSha = await this.getBaseCommitSha(octokit, owner, repo_name);
+
+            // Step 5: Create tree with base tree to preserve existing files
+            const tree = await this.createTree(
+                octokit,
+                owner,
+                repo_name,
+                files,
+                blobs,
+                baseCommitSha,
+            );
+
+            // Step 6: Create commit
+            const commit = await this.createCommit(
+                octokit,
+                owner,
+                repo_name,
+                user_id,
+                tree.data.sha,
+                baseCommitSha,
+            );
+
+            // Step 7: Update main branch reference
+            await this.updateMainBranch(octokit, owner, repo_name, commit.data.sha);
+
+            const repo_url = `https://github.com/${owner}/${repo_name}`;
+            logger.info(`Successfully pushed to ${repo_url} for user ${user_id}`);
+
+            return { success: true, repo_url };
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            logger.error(`Failed to push repo ${repo_name} for user ${user_id}:`, error);
+            throw new Error(`GitHub push failed: ${errorMessage}`);
+        }
+    }
+
+    private async ensureRepositoryExists(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        user_id: string,
+    ): Promise<void> {
+        try {
+            await octokit.repos.get({ owner, repo: repo_name });
+            logger.info(`Repository ${repo_name} already exists`);
+        } catch (err: any) {
+            if (err.status === 404) {
+                logger.info(`Creating repository ${repo_name} for user ${user_id}`);
                 await octokit.repos.createForAuthenticatedUser({
                     name: repo_name,
                     private: false,
+                    auto_init: false,
                 });
+            } else {
+                throw err;
             }
+        }
+    }
 
-            const files = await get_s3_codebase(contract_id);
-
-            const blobs = await Promise.all(
-                files.map((f: any) =>
-                    octokit.git.createBlob({
-                        owner,
-                        repo: repo_name,
-                        content: f.content,
-                        encoding: 'utf-8',
-                    }),
-                ),
-            );
-
-            let base_tree_sha: string | undefined;
-            try {
-                const ref_data = await octokit.git.getRef({
+    private async createBlobs(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        files: FileContent[],
+    ) {
+        return Promise.all(
+            files.map((file) =>
+                octokit.git.createBlob({
                     owner,
                     repo: repo_name,
-                    ref: 'heads/main',
-                });
-                const commit_data = await octokit.git.getCommit({
-                    owner,
-                    repo: repo_name,
-                    commit_sha: ref_data.data.object.sha,
-                });
-                base_tree_sha = commit_data.data.tree.sha;
-            } catch {
-                base_tree_sha = undefined;
+                    content: file.content,
+                    encoding: 'utf-8',
+                }),
+            ),
+        );
+    }
+
+    private async getBaseCommitSha(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+    ): Promise<string | undefined> {
+        try {
+            const ref = await octokit.git.getRef({
+                owner,
+                repo: repo_name,
+                ref: 'heads/main',
+            });
+            return ref.data.object.sha;
+        } catch (err: any) {
+            if (err.status === 409 || err.status === 404) {
+                return undefined;
             }
+            throw err;
+        }
+    }
 
-            const tree = await octokit.git.createTree({
+    private async createTree(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        files: FileContent[],
+        blobs: any[],
+        baseCommitSha?: string,
+    ) {
+        let baseTreeSha: string | undefined;
+
+        if (baseCommitSha) {
+            const commit = await octokit.git.getCommit({
                 owner,
                 repo: repo_name,
-                tree: files.map((f: any, i: number) => ({
-                    path: f.path,
-                    mode: '100644',
-                    type: 'blob',
-                    sha: blobs[i].data.sha,
-                })),
-                base_tree: base_tree_sha,
+                commit_sha: baseCommitSha,
             });
+            baseTreeSha = commit.data.tree.sha;
+        }
 
-            const commit = await octokit.git.createCommit({
-                owner,
-                repo: repo_name,
-                message: `Initial commit from user ${user_id}`,
-                tree: tree.data.sha,
-                parents: base_tree_sha ? [base_tree_sha] : [],
-            });
+        return octokit.git.createTree({
+            owner,
+            repo: repo_name,
+            tree: files.map((file, i) => ({
+                path: file.path,
+                mode: '100644' as const,
+                type: 'blob' as const,
+                sha: blobs[i].data.sha,
+            })),
+            base_tree: baseTreeSha,
+        });
+    }
 
+    private async createCommit(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        user_id: string,
+        tree_sha: string,
+        baseCommitSha?: string,
+    ) {
+        return octokit.git.createCommit({
+            owner,
+            repo: repo_name,
+            message: `Deploy from Lovable for Anchor - User: ${user_id}`,
+            tree: tree_sha,
+            parents: baseCommitSha ? [baseCommitSha] : [],
+        });
+    }
+
+    private async updateMainBranch(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        commit_sha: string,
+    ) {
+        try {
             await octokit.git.updateRef({
                 owner,
                 repo: repo_name,
                 ref: 'heads/main',
-                sha: commit.data.sha,
+                sha: commit_sha,
                 force: true,
             });
-
-            logger.info(`Repo ${repo_name} successfully updated for user ${user_id}`);
-            return { success: true, repo_url: `https://github.com/${owner}/${repo_name}` };
-        } catch (error) {
-            logger.error(`Failed pushing repo ${repo_name} for user ${user_id}`, error);
-            throw error;
+        } catch (err: any) {
+            if (err.status === 422 || err.status === 404) {
+                await octokit.git.createRef({
+                    owner,
+                    repo: repo_name,
+                    ref: 'refs/heads/main',
+                    sha: commit_sha,
+                });
+            } else {
+                throw err;
+            }
         }
     }
 
-    public async enqueue(job_data: GithubPushJobData) {
-        return this.queue.add(job_data, { attempts: 3, backoff: 5000 });
+    public async enqueue(job_data: GithubPushJobData): Promise<Bull.Job<GithubPushJobData>> {
+        const jobId = `${job_data.user_id}-${job_data.repo_name}`;
+
+        return this.queue.add(job_data, {
+            jobId,
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 5000 },
+            removeOnComplete: true,
+            removeOnFail: false,
+        });
     }
 
-    public async close() {
+    public async getJob(job_id: string): Promise<Bull.Job<GithubPushJobData> | null> {
+        return this.queue.getJob(job_id);
+    }
+
+    public async close(): Promise<void> {
         await this.queue.close();
-        logger.info(`GithubPushService queue ${this.queue.name} closed`);
+        logger.info(`GitHub worker queue closed`);
     }
 }
