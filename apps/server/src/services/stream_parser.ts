@@ -88,7 +88,7 @@ export default class StreamParser {
 
             // Handle name
             const nameMatch = trimmed.match(/<name>(.*?)<\/name>/);
-            if(nameMatch && !this.insideCodeBlock) {
+            if (nameMatch && !this.insideCodeBlock) {
                 const name = nameMatch[1].trim();
                 console.log('the name: ', chalk.cyan(name));
                 this.contractName = name;
