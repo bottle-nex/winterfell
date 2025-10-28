@@ -56,10 +56,10 @@ export default class ServerToOrchestratorQueue {
          };
       } catch (error) {
          logger.error(`Command ${command.join(' ')} failed`, error);
-         await pod_service.delete_pod(userId, contractId);
+         // await pod_service.delete_pod(userId, contractId);
          throw error;
       } finally {
-         await pod_service.delete_pod(userId, contractId);
+         // await pod_service.delete_pod(userId, contractId);
       }
    }
 

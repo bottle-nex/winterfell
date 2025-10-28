@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import { get_github_owner } from "../../services/git_services";
-import { github_worker_queue } from "../../services/init";
+import { Request, Response } from 'express';
+import { get_github_owner } from '../../services/git_services';
+import { github_worker_queue } from '../../services/init';
 
 export default async function githubCodePushController(req: Request, res: Response) {
     const user_id = req.user?.id;
@@ -14,7 +14,7 @@ export default async function githubCodePushController(req: Request, res: Respon
 
     if (!github_access_token) {
         res.status(400).json({
-            error: 'Login with github'
+            error: 'Login with github',
         });
         return;
     }
@@ -35,16 +35,15 @@ export default async function githubCodePushController(req: Request, res: Respon
 
         res.status(200).json({
             success: true,
-            message: 'Code pushed successfully'
+            message: 'Code pushed successfully',
         });
         return;
-
     } catch (error) {
         console.error('Error in run-command-controller: ', error);
         res.status(500).json({
             success: false,
             message: 'Internal server error',
         });
-        return;    
-    }    
+        return;
+    }
 }
