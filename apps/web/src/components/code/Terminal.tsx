@@ -8,6 +8,7 @@ import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useParams } from 'next/navigation';
 import executeCommandServer from '@/src/lib/server/execute-command-server';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import { useWebSocket } from '@/src/hooks/useWebSocket';
 
 enum TerminalTabOptions {
     SHELL = 'shell',
@@ -19,7 +20,7 @@ interface Line {
     text: string;
 }
 
-export default function StatusBar() {
+export default function Terminal() {
     const [showTerminal, setShowTerminal] = useState<boolean>(false);
     const [height, setHeight] = useState<number>(220);
     const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -33,7 +34,7 @@ export default function StatusBar() {
     const params = useParams();
     const contractId = params.contractId as string;
     const { session } = useUserSessionStore();
-
+    useWebSocket();
     const Prompt = () => (
         <span className="text-green-500 select-none">
             ➜ <span className="text-blue-400">~</span>
