@@ -17,6 +17,7 @@ import {
 } from '../../types/stream_event_types';
 import { FileContent, STAGE } from '../../types/content_types';
 import { mergeWithLLMFiles, prepareBaseTemplate } from '../../class/test';
+import re_stating_prompt from '../../prompt/re-stating-prompt';
 
 type LLMProvider = 'gemini' | 'claude';
 
@@ -58,7 +59,18 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         llmProvider: LLMProvider = 'claude',
+        userInstruction?: string,
     ): Promise<void> {
+        //const isFirstMessage = await this.isFirstMessage(contractId);
+        //isFirstMessage.bool && isFirstMessage.fetched_contract && userInstruction
+            //? (this.systemPrompt = SYSTEM_PROMPT)
+            //: (this.systemPrompt = re_stating_prompt(
+               //   userInstruction!,
+             //     isFirstMessage.fetched_contract,
+           //   ));
+
+        // console.log('is first message: ', isFirstMessage.bool);
+
         const parser = this.getParser(contractId, res);
         this.createStream(res);
 
@@ -370,6 +382,44 @@ export default class ContentGenerator {
     private deleteParser(contractId: string): void {
         this.parsers.delete(contractId);
     }
+
+private async isFirstMessage(contractId: string): Promise<{
+    bool: boolean;
+    fetched_contract: string;
+}> {
+    const contract = await prisma.contract.findUnique({
+        where: { id: contractId },
+        select: { messages: true },
+    });
+    console.log("contract: ", contract);
+
+    const system_messages = contract?.messages.filter(m => m.role === 'SYSTEM');
+    console.log("system messages: ", system_messages);
+
+    // If no messages found → it's the first message
+    if (!contract || !contract.messages || contract.messages.length === 0 || !system_messages || system_messages.length === 0) {
+        return {
+            bool: true,
+            fetched_contract: '',
+        };
+    }
+
+    // Otherwise, fetch the existing contract code using Fetch API
+    const contract_url = `${env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/resource`;
+
+    const response = await fetch(contract_url);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch contract: ${response.statusText}`);
+    }
+
+    const fetched_contract = await response.text();
+
+    return {
+        bool: false,
+        fetched_contract,
+    };
+}
+
 
     private sendSSE(
         res: Response,
