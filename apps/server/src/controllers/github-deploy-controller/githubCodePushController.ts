@@ -13,13 +13,10 @@ export default async function githubCodePushController(req: Request, res: Respon
         });
     }
 
-    console.log('github access token is ', github_access_token);
-    console.log('user id is: ', user_id);
-
     if (!github_access_token) {
         return res.status(400).json({
             success: false,
-            error: 'Please connect your GitHub account.',
+            error: 'GitHub authentication required.',
             requiresGithub: true,
         });
     }
@@ -29,18 +26,16 @@ export default async function githubCodePushController(req: Request, res: Respon
     if (!repo_name || !contract_id) {
         return res.status(400).json({
             success: false,
-            error: 'Insufficient creds',
+            error: 'Insufficient credentials',
         });
     }
 
     if (!/^[a-zA-Z0-9_.-]+$/.test(repo_name)) {
         return res.status(400).json({
             success: false,
-            error: 'Invalid repo name. Use only alphanumeric characters, dash, underscore, or dot.',
+            error: 'Invalid repo name.',
         });
     }
-
-    console.log('another attempt');
 
     try {
         const owner = await get_github_owner(github_access_token);
@@ -59,7 +54,6 @@ export default async function githubCodePushController(req: Request, res: Respon
             job_id: job.id,
         });
     } catch (error: any) {
-        // Handle expired token
         if (error.status === 401) {
             return res.status(401).json({
                 success: false,
@@ -68,7 +62,6 @@ export default async function githubCodePushController(req: Request, res: Respon
             });
         }
 
-        console.error('Error in github-push-controller:', error);
         return res.status(500).json({
             success: false,
             message: 'Failed to queue export job',
