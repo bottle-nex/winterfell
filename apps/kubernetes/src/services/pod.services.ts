@@ -10,7 +10,7 @@ import { k8s_config } from './init_services';
 
 export default class PodService {
    public namespace: string = env.KUBERNETES_NAMESPACE;
-   private container_name: string = '';
+   private container_name: string = 'anchor-dev';
 
    public async create_pod(req: CreatePodRequest) {
       try {
@@ -34,6 +34,8 @@ export default class PodService {
 
          const podName = response.metadata?.name as string;
          await waitForPodRunning(podName, this.namespace, 60);
+         await this.waitForContainerReady(podName);
+
          return podName;
       } catch (err) {
          logger.error('Failed to create pod', {
@@ -148,39 +150,69 @@ export default class PodService {
       projectName: string,
       files: FileContent[],
    ): Promise<void> {
-      try {
-         const total_files = files.length;
-         logger.info(`Copying ${total_files} files to pod ${pod_name}`);
+      const total_files = files.length;
 
-         let copied = 0;
+      if (!files || files.length === 0) {
+         logger.warn('No files to copy', { pod_name, projectName });
+         return;
+      }
+
+      try {
+         const base_dir = `/workspace/${projectName}`;
+         await this.execute_command(pod_name, ['mkdir', '-p', base_dir]);
 
          for (const file of files) {
-            const full_path = `/workspace/${projectName}/${file.path}`;
+            const full_path = `${base_dir}/${file.path}`;
             const dir = full_path.substring(0, full_path.lastIndexOf('/'));
 
-            if (dir !== `/workspace/${projectName}`) {
+            if (dir !== base_dir) {
                await this.execute_command(pod_name, ['mkdir', '-p', dir]);
+               logger.debug('dir created : ', dir);
             }
+
             const base_64_content = Buffer.from(file.content).toString('base64');
+
             await this.execute_command(pod_name, [
                'sh',
                '-c',
                `echo '${base_64_content}' | base64 -d > ${full_path}`,
             ]);
-            copied++;
-            logger.debug(`[${copied}/${total_files}] Copied ${file.path}`);
          }
-
-         logger.info(`all ${total_files} files copied to ${pod_name}`);
-         const verifyResult = await this.execute_command(pod_name, [
-            'sh',
-            '-c',
-            `find /workspace/${projectName} -type f | wc -l`,
-         ]);
-
-         logger.debug('Files created count', { count: verifyResult.stdout.trim() });
+         logger.info(`Successfully copied all ${total_files} files to ${pod_name}`);
       } catch (err) {
-         logger.error('Failed to copy files to pod', { err, pod_name });
+         logger.error('Failed to copy files to pod', {
+            error: err instanceof Error ? err.message : String(err),
+            pod_name,
+            projectName,
+         });
+         throw err;
+      }
+   }
+
+   private async waitForContainerReady(
+      pod_name: string,
+      maxRetries: number = 15,
+      initialDelayMs: number = 5000,
+   ): Promise<void> {
+      let retries = 0;
+      let delay = initialDelayMs;
+
+      while (retries < maxRetries) {
+         try {
+            await this.execute_command(pod_name, ['echo', 'ready']);
+            logger.info('Container ready to accept commands', { pod_name });
+            return;
+         } catch (error) {
+            retries++;
+            const errorMsg = error instanceof Error ? error.message : String(error);
+
+            if (retries >= maxRetries) {
+               throw new Error(`Container not ready after ${maxRetries} attempts: ${errorMsg}`);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            delay = Math.min(delay * 1.5, 8000);
+         }
       }
    }
 }

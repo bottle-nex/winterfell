@@ -7,18 +7,23 @@ import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { CHAT_URL } from '@/routes/api_routes';
 import { StreamEvent } from '@/src/types/stream_event_types';
-import BuilderChatSystemMessage from './BuilderChatSystemMessage';
 import AnimtaedLoader from '../ui/animated-loader';
 
 import StreamEventProcessor from '@/src/class/handle_stream_event';
+import SystemMessage from './SystemMessage';
+import AppLogo from '../tickers/AppLogo';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { useChatStore } from '@/src/store/user/useChatStore';
 
 export default function BuilderChats() {
     const { messages, loading, setLoading } = useBuilderChatStore();
     const { session } = useUserSessionStore();
     const params = useParams();
-    const chatId = params.chatId as string;
+    const contractId = params.contractId as string;
     const hasInitialized = useRef(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
+    const { setCollapseFileTree } = useCodeEditor();
+    const { setContractId } = useChatStore();
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -30,12 +35,15 @@ export default function BuilderChats() {
         if (hasInitialized.current) return;
         hasInitialized.current = true;
 
-        const initialMessage = messages.find((msg) => msg.chatId === chatId && msg.role === 'USER');
+        const initialMessage = messages.find(
+            (msg) => msg.contractId === contractId && msg.role === 'USER',
+        );
         if (initialMessage) {
             startChat(initialMessage.content);
+            setContractId(contractId);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chatId]);
+    }, [contractId]);
 
     async function startChat(message: string) {
         try {
@@ -47,10 +55,13 @@ export default function BuilderChats() {
                     Authorization: `Bearer ${session?.user.token}`,
                 },
                 body: JSON.stringify({
-                    chatId: chatId,
+                    contractId: contractId,
                     message: message,
                 }),
             });
+
+            console.log('--------------------------------------->');
+            console.log(response.body);
 
             if (!response.ok) {
                 throw new Error('Failed to start chat');
@@ -82,11 +93,17 @@ export default function BuilderChats() {
                     }
                 }
             }
+            setCollapseFileTree(true);
         } catch (error) {
             console.error('Chat stream error:', error);
         } finally {
             setLoading(false);
         }
+    }
+
+    function returnParsedData(message: string) {
+        const result = message.split('<stage>')[0];
+        return result;
     }
 
     return (
@@ -115,31 +132,34 @@ export default function BuilderChats() {
                         {message.role === 'AI' && (
                             <div className="flex justify-start w-full">
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
-                                    <Image
-                                        className="rounded-full flex-shrink-0"
-                                        src={'/icons/claude.png'}
-                                        alt="ai"
-                                        width={24}
-                                        height={24}
-                                    />
+                                    <AppLogo showLogoText={false} />
                                     <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-dark text-light text-left tracking-wider text-[13px] italic">
-                                        {message.content}
+                                        {returnParsedData(message.content)}
                                     </div>
                                 </div>
                             </div>
                         )}
                         {message.role === 'SYSTEM' && (
-                            <div className="flex justify-start items-start w-full mt-4">
+                            <div className="flex justify-start items-start w-full my-4 ">
                                 <div className="flex items-start gap-x-2 w-full">
-                                    <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-[#0c0d0e] w-full text-light text-left tracking-wider text-[13px]">
-                                        <div className="flex items-center gap-x-2 mb-2">
-                                            <AnimtaedLoader
-                                                shouldAnimate={loading}
-                                                className="h-4 w-4"
-                                            />
-                                            <span>Processing your request...</span>
-                                        </div>
-                                        <BuilderChatSystemMessage message={message} />
+                                    <div className="rounded-[4px] text-sm font-normal w-full text-light text-left tracking-wider text-[13px]">
+                                        {loading && (
+                                            <div className="flex items-center gap-x-2 mb-2">
+                                                <AnimtaedLoader
+                                                    shouldAnimate={loading}
+                                                    className="h-4 w-4"
+                                                />
+                                                <span>Processing your request...</span>
+                                            </div>
+                                        )}
+                                        <SystemMessage
+                                            message={message}
+                                            data={{
+                                                currentStage: undefined as never,
+                                                currentPhase: undefined as never,
+                                                currentFile: undefined as never,
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             </div>

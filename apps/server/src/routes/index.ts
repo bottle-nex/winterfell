@@ -8,6 +8,10 @@ import updateSubscriptionController from '../controllers/payment-controller/upda
 import subscriptionMiddleware from '../middlewares/subscriptionMiddleware';
 import getUserPlanController from '../controllers/payment-controller/getUserPlanController';
 import syncFilesController from '../controllers/files/syncFilesController';
+import runCommandController from '../controllers/contract-controller/runCommandController';
+import githubCodePushController from '../controllers/github-deploy-controller/githubCodePushController';
+import githubJobStatusController from '../controllers/github-deploy-controller/githubJobStatusController';
+import githubConnectController from '../controllers/github-deploy-controller/githubSignInController';
 
 const router: Router = Router();
 
@@ -16,9 +20,13 @@ router.post('/sign-in', signInController);
 router.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ message: 'Server is running' });
 });
+router.post('/github/connect', authMiddleware, githubConnectController);
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);
+router.post('/contract/run-command', authMiddleware, runCommandController);
+router.post('/contract/export', authMiddleware, githubCodePushController);
+router.get('/contract/push-status', githubJobStatusController);
 
 // file-routes
 router.get('/files/:contractId', authMiddleware, getFilesController);

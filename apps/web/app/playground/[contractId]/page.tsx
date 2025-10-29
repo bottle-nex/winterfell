@@ -3,13 +3,15 @@ import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import React, { useEffect, useState } from 'react';
+import { useChatStore } from '@/src/store/user/useChatStore';
+import React, { useEffect } from 'react';
 
-export default function Page({ params }: { params: Promise<{ chatId: string }> }) {
+export default function Page({ params }: { params: Promise<{ contractId: string }> }) {
     const { cleanStore } = useBuilderChatStore();
     const { reset, collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const unwrappedParams = React.use(params);
-    const { chatId } = unwrappedParams;
+    const { contractId } = unwrappedParams;
+    const { resetContractId } = useChatStore();
 
     useEffect(() => {
         function handleKeyDown(event: KeyboardEvent) {
@@ -26,11 +28,12 @@ export default function Page({ params }: { params: Promise<{ chatId: string }> }
 
     useEffect(() => {
         return () => {
+            resetContractId();
             cleanStore();
             reset();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chatId]);
+    }, [contractId]);
 
     return (
         <div className="h-screen w-screen flex flex-col overflow-hidden">

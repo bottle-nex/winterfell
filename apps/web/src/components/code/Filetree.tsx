@@ -94,9 +94,9 @@ export default function Filetree() {
                         <div className="flex items-center gap-2">
                             {item.isFolder ? (
                                 context.isExpanded ? (
-                                    <AiFillFolderOpen size={16} className="text-primary" />
+                                    <AiFillFolderOpen size={16} className="text-[#317FFF]" />
                                 ) : (
-                                    <AiFillFolder size={16} className="text-primary" />
+                                    <AiFillFolder size={16} className="text-[#317FFF]" />
                                 )
                             ) : (
                                 <FileIcon

@@ -10,10 +10,11 @@ import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
 import ModelSelect from '../base/ModelSelect';
 import { ChatRole } from '@/src/types/prisma-types';
+import { useModelStore } from '@/src/store/model/useModelStore';
 
 export default function BuilderChatInput() {
     const [inputValue, setInputValue] = useState<string>('');
-    const [model, setModel] = useState<'gemini' | 'claude'>('gemini');
+    const { selectedModel, setSelectedModel } = useModelStore();
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
     const { setMessage } = useBuilderChatStore();
@@ -27,11 +28,11 @@ export default function BuilderChatInput() {
             return;
         }
 
-        const newChatId = uuid();
+        const newContractId = uuid();
 
         setMessage({
             id: uuid(),
-            chatId: newChatId,
+            contractId: newContractId,
             role: ChatRole.USER,
             content: inputValue,
             planning: false,
@@ -43,7 +44,7 @@ export default function BuilderChatInput() {
             createdAt: new Date(),
         });
 
-        router.push(`/playground/${newChatId}`);
+        router.push(`/playground/${newContractId}`);
     }
 
     function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -57,7 +58,7 @@ export default function BuilderChatInput() {
         <>
             <div className="relative group w-full">
                 <div className="relative rounded-lg border border-neutral-800 overflow-hidden">
-                    <div className="relative bg-[#0c0d0f]">
+                    <div className="relative bg-[#0c0d0e]">
                         <div className="absolute left-4 top-5 text-neutral-600 font-mono text-sm select-none">
                             &gt;
                         </div>
@@ -81,7 +82,7 @@ export default function BuilderChatInput() {
 
                     <div className="flex items-center justify-between px-4 py-2.5 border-t border-neutral-800/50 bg-[#101114]">
                         <div className="flex items-center gap-x-1">
-                            <ModelSelect value={model} onChange={setModel} />
+                            <ModelSelect value={selectedModel} onChange={setSelectedModel} />
                             <Button
                                 type="button"
                                 className="group/btn bg-transparent hover:bg-transparent flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-300 transition-colors"

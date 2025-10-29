@@ -31,7 +31,7 @@ export interface User {
 
     subscription?: Subscription | null;
     contracts?: Contract[];
-    chats?: Chat[];
+    messages?: Message[];
 }
 
 export interface Contract {
@@ -51,7 +51,7 @@ export interface Contract {
     createdAt: string;
     updatedAt: string;
     deployments?: Deployment[];
-    chats?: Chat[];
+    messages: Message[];
 }
 
 export interface Deployment {
@@ -64,21 +64,10 @@ export interface Deployment {
     status: string;
 }
 
-export interface Chat {
-    id: string;
-    userId: string;
-    contractId: string;
-    user?: User;
-    contract?: Contract;
-    createdAt: string;
-    updatedAt: string;
-    messages?: Message[];
-}
-
 export interface Message {
     id: string;
-    chatId: string;
-    chat?: Chat;
+    contractId: string;
+    contract?: Contract;
     role: ChatRole;
     content: string;
     planning: boolean;

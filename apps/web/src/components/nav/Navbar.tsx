@@ -13,7 +13,7 @@ import LoginModal from '../utility/LoginModal';
 const navItems: NavItemsType[] = [
     { name: 'Features', link: '#feature' },
     { name: 'Pricing', link: '#pricing' },
-    { name: 'Contact', link: '#contact' },
+    { name: 'Faq', link: '#faq' },
     { name: 'About', link: '#about' },
 ];
 
@@ -29,8 +29,9 @@ export default function Navbar() {
             setOpenLoginModal(true);
             return;
         }
-        const newChatId = uuid();
-        router.push(`/playground/${newChatId}`);
+
+        const newContractId = uuid();
+        router.push(`/playground/${newContractId}`);
     }
 
     useEffect(() => {

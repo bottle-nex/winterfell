@@ -21,7 +21,7 @@ export default function NavItems({ items, className }: NavItemsProps) {
     const handleClick = (idx: number, onClick?: () => void) => {
         if (onClick) {
             onClick();
-            setActive(idx); // highlight the clicked item
+            setActive(idx);
         }
     };
 

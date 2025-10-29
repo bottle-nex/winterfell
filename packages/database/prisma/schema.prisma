@@ -16,6 +16,7 @@ model User {
   password          String? // if using credentials login
   provider          String?
   githubAccessToken String?
+  githubUsername    String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -169,5 +170,13 @@ enum SystemMessageType {
 // user message - prompt
 // user message - prompt
 // user message - prompt
-// ai message - 
+// ai message - ai generated response FileContent[]
 // user message - prompt
+
+enum ContractGenerationPhase {
+  PLANNING
+  GENERATING_CODE
+  BUILDING
+  CREATING_FILES
+  FINALIZING
+}

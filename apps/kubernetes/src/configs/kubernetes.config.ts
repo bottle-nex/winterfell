@@ -18,12 +18,16 @@ export default class KubernetesConfig {
    }
 
    public async exec_command_in_pod(params: {
-      namespace: string; // it is the container for all resources that the pod needs (not commands)
+      namespace: string;
       pod_name: string;
+      container_name: string;
       command: string[];
-      container_name?: string;
    }): Promise<{ stdout: string; stderr: string }> {
       const { namespace, pod_name, command, container_name } = params;
+
+      if (!pod_name || !namespace) {
+         throw new Error('pod name / namespace is required');
+      }
 
       return new Promise((resolve, reject) => {
          let stdout_data = '';
@@ -46,21 +50,22 @@ export default class KubernetesConfig {
          this.exec.exec(
             namespace,
             pod_name,
-            container_name!,
+            container_name,
             command,
             stdout_stream,
             stderr_stream,
             null,
             false,
-
             (status: any) => {
-               if (status.state === 'Success') {
+               if (status.status === 'Success') {
                   resolve({
                      stdout: stdout_data,
                      stderr: stderr_data,
                   });
                } else {
-                  reject(new Error(stderr_data));
+                  reject(
+                     new Error(`Exec failed: ${status.message || stderr_data || 'Unknown error'}`),
+                  );
                }
             },
          );

@@ -2,6 +2,7 @@ export interface AuthUser {
     id: string;
     name: string;
     email: string;
+    githubAccessToken?: string;
 }
 
 declare global {

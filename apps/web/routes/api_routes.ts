@@ -13,3 +13,7 @@ export const GET_PLAN_URL = SUBSCRIPTION_URL + '/get-plan';
 
 export const FILES_URL = API_URL + '/files';
 export const SYNC_FILES_URL = FILES_URL + '/sync';
+export const RUN_COMMAND_URL = API_URL + '/contract/run-command';
+
+export const EXPORT_CONTRACT_URL = API_URL + '/contract/export';
+export const GITHUB_CONNECT_URL = API_URL + '/github/connect'

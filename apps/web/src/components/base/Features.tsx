@@ -72,7 +72,7 @@ export default function Features() {
             style={{ height: '350vh' }}
         >
             <div className="sticky top-0 w-screen h-screen flex flex-col items-center justify-start pt-26 px-4 md:px-10 gap-x-16 bg-primary z-10 overflow-hidden rounded-[4px]">
-                <div className="w-full md:max-w-[60%] md:text-5xl text-lg sm:text-2xl font-bold tracking-wider text-[#FDF9F0] md:leading-[1.2] relative text-center md:text-left">
+                <div className="w-full md:max-w-[60%] md:text-5xl text-lg sm:text-2xl font-bold tracking-wider text-[#FDF9F0] md:leading-[1.2] relative text-center">
                     BECAUSE CODING SHOULDN&apos;T RUIN YOUR SLEEP SCHEDULE
                     <div className="absolute text-[10px] sm:text-[12px] md:text-[15px] -top-6 font-extralight w-full flex justify-center text-[#d6caae]">
                         fin-tastic features. zero-hassle.

@@ -5,7 +5,7 @@ import { cn } from '@/src/lib/utils';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import LoginModal from '../utility/LoginModal';
 import ProfileMenu from '../utility/LogoutMenu';
 
@@ -58,7 +58,7 @@ export default function NavbarSigninAction() {
                     </div>
 
                     {showDropdown && (
-                        <div className="absolute top-full right-0 mt-2 z-[9999]">
+                        <div className="absolute top-full right-2 mt-2 z-[9999]">
                             <ProfileMenu />
                         </div>
                     )}

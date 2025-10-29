@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { MdTerminal } from 'react-icons/md';
 import { Button } from '../ui/button';
+import { COMMAND, CommandResponse } from './TerminalCommands';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { useParams } from 'next/navigation';
+import executeCommandServer from '@/src/lib/server/execute-command-server';
+import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import { useWebSocket } from '@/src/hooks/useWebSocket';
 
 enum TerminalTabOptions {
     SHELL = 'shell',
@@ -14,7 +20,7 @@ interface Line {
     text: string;
 }
 
-export default function StatusBar() {
+export default function Terminal() {
     const [showTerminal, setShowTerminal] = useState<boolean>(false);
     const [height, setHeight] = useState<number>(220);
     const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -22,9 +28,13 @@ export default function StatusBar() {
     const [logs, setLogs] = useState<Line[]>([]);
     const [helpLogs, setHelpLogs] = useState<Line[]>([]);
     const [input, setInput] = useState<string>('');
+    const { currentFile } = useCodeEditor();
     const outputRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-
+    const params = useParams();
+    const contractId = params.contractId as string;
+    const { session } = useUserSessionStore();
+    useWebSocket();
     const Prompt = () => (
         <span className="text-green-500 select-none">
             ➜ <span className="text-blue-400">~</span>
@@ -97,49 +107,44 @@ export default function StatusBar() {
 
     // Handle commands
     const handleCommand = (command: string) => {
-        const trimmed = command.trim();
+        if (!session || !session.user || !session.user.token) return null;
+
+        const trimmed = command.trim() as COMMAND;
         if (!trimmed) return;
 
         let output = '';
         switch (trimmed) {
-            case 'clear':
+            case COMMAND.CLEAR:
                 if (activeTab === TerminalTabOptions.SHELL) setLogs([]);
                 else setHelpLogs([]);
                 return;
-            case '--help':
-                output = `
-AVAILABLE COMMANDS:
-clear              Clear the terminal
---help             Show available commands
---commands         Show winterfell commands
---platform         Show platform details
---hotkeys          Show hot keys/ shortcuts
-`;
+            case COMMAND.HELP:
+                output = CommandResponse[trimmed];
                 break;
-            case '--hotkeys':
-                output = `
-HOT KEYS:
-Ctrl/ Cmd + S          Switch Terminal Tabs
-Ctrl/ Cmd + K          Toggle shell`;
+            case COMMAND.HOT_KEYS:
+                output = CommandResponse[trimmed];
                 break;
-            case '--platform':
-                output = `
-PLATFORM DETAILS:
-portal              Winterfell
-version             1.0.0
-shell               winterfell`;
+            case COMMAND.PLATFORM:
+                output = CommandResponse[trimmed];
                 break;
 
-            case '--commands':
-                output = `
-WINTERFELL SHELL COMMANDS:
-winterfell build                to build the contract
-winterfell test                 to run the test file
+            case COMMAND.COMMANDS:
+                output = CommandResponse[trimmed];
+                break;
 
+            case COMMAND.WINTERFELL_BUILD:
+                output = CommandResponse[trimmed];
+                executeCommandServer('WINTERFELL_BUILD', contractId, session.user.token);
+                break;
 
-PREMIUM FEATURES:
-winterfell deploy --devnet      to deploy the contract on devnet
-winterfell deploy --mainnet     to deploy the contract on mainnet`;
+            case COMMAND.WINTERFELL_TEST:
+                output = CommandResponse[trimmed];
+                executeCommandServer('WINTERFELL_TEST', contractId, session.user.token);
+                break;
+
+            case COMMAND.WINTERFELL_DEPLOY_DEVNET:
+                output = CommandResponse[trimmed];
+                executeCommandServer('WINTERFELL_DEPLOY_DEVNET', contractId, session.user.token);
                 break;
 
             default:
@@ -155,6 +160,33 @@ winterfell deploy --mainnet     to deploy the contract on mainnet`;
             { type: 'command', text: trimmed },
             { type: 'output', text: output },
         ]);
+    };
+
+    const handleCurrentFileExtension = () => {
+        if (!currentFile) return 'no selected file.';
+
+        const extension = currentFile.name.split('.')[1];
+
+        switch (extension) {
+            case 'rs':
+                return 'Rust';
+
+            case 'ts':
+                return 'TypeScript';
+
+            case 'gitignore':
+            case 'prettierignore':
+                return 'Ignore';
+
+            case 'json':
+                return 'JSON';
+
+            case 'toml':
+                return 'TOML';
+
+            default:
+                return 'File';
+        }
     };
 
     const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -259,7 +291,7 @@ winterfell deploy --mainnet     to deploy the contract on mainnet`;
                         Ln 128, Col 14
                     </div>
                     <div className="hover:text-light/80 cursor-pointer tracking-wider">
-                        TypeScript
+                        {handleCurrentFileExtension()}
                     </div>
                 </div>
             </div>

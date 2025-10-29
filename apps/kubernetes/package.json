@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:bull --external:ioredis --external:ws --external:@google/genai --external:@anthropic-ai/sdk",
+    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:bull --external:ioredis --external:@kubernetes/client-node --external:winston",
     "start": "node dist/index.js",
-    "dev": "yarn build && yarn start"
+    "dev": "yarn build && yarn start",
+    "lint": "eslint './src/**/*.{ts,js}'",
+    "format": "prettier --write './src/**/*.{ts,tsx,js,jsx,json,md}'"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +20,7 @@
     "@types/express": "^5.0.3",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "axios": "^1.12.2",
     "bull": "^4.16.5",
     "dotenv": "^17.2.3",
     "eslint": "^9.32.0",
