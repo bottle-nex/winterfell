@@ -26,6 +26,7 @@ export enum PHASE_TYPES {
     THINKING = 'THINKING',
     GENERATING = 'GENERATING',
     BUILDING = 'BUILDING',
+    DELETING = 'DELETING',
     CREATING_FILES = 'CREATING_FILES',
     COMPLETE = 'COMPLETE',
     ERROR = 'ERROR',
@@ -63,6 +64,10 @@ interface BuildingData {
     phase: 'building';
 }
 
+interface DeletingData {
+    phase: 'deleting';
+}
+
 interface CreatingFilesData {
     phase: 'creating_files';
 }
@@ -88,6 +93,7 @@ export type StreamEventData =
     | GeneratingData
     | EditingFileData
     | BuildingData
+    | DeletingData
     | CreatingFilesData
     | CompleteData
     | ErrorData;

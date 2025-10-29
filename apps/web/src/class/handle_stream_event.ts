@@ -45,6 +45,12 @@ export default class StreamEventProcessor {
                 setPhase(event.type);
                 break;
 
+            case PHASE_TYPES.DELETING:
+                // delete the specific file
+                setPhase(event.type);
+                
+                break;
+
             case FILE_STRUCTURE_TYPES.EDITING_FILE:
                 setPhase(event.type);
                 if ('file' in event.data) {
