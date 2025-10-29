@@ -30,21 +30,21 @@ const phases: PhaseItem[] = [
 
 type SystemMessageProps =
     | {
-          message: Message;
-          data: {
-              currentStage: never;
-              currentPhase: never;
-              currentFile: never;
-          };
-      }
+        message: Message;
+        data: {
+            currentStage: never;
+            currentPhase: never;
+            currentFile: never;
+        };
+    }
     | {
-          message: never;
-          data: {
-              currentStage: STAGE;
-              currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
-              currentFile?: string;
-          };
-      };
+        message: never;
+        data: {
+            currentStage: STAGE;
+            currentPhase?: PHASE_TYPES | FILE_STRUCTURE_TYPES;
+            currentFile?: string;
+        };
+    };
 
 export default function SystemMessage(systemMessage: SystemMessageProps) {
     const { currentStage, currentPhase, currentFile } = dataFetcher(systemMessage);
@@ -75,8 +75,8 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                         index < currentIndex
                             ? 'complete'
                             : index === currentIndex
-                              ? 'buffering'
-                              : 'hung';
+                                ? 'buffering'
+                                : 'hung';
 
                     return (
                         <div key={stage} className="flex items-center gap-x-3">
@@ -85,7 +85,7 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                                     'flex items-center justify-center w-4 h-4 rounded-full border transition-all',
                                     status === 'hung' && 'border-neutral-700',
                                     status === 'buffering' &&
-                                        'border-primary bg-primary/20 animate-pulse',
+                                    'border-primary bg-primary/20 animate-pulse',
                                     status === 'complete' && 'bg-primary border-primary text-white',
                                 )}
                             >
@@ -102,17 +102,12 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                                 >
                                     {show}
                                 </div>
-                                {stage === STAGE.GENERATING_CODE &&
-                                    currentStage === STAGE.GENERATING_CODE && (
-                                        <div className="pl-5 opacity-50 text-xs ">
-                                            {phases.find((p) => p.phase === currentPhase)?.show +
-                                                ' '}
-                                            {currentFile &&
-                                                currentPhase ===
-                                                    FILE_STRUCTURE_TYPES.EDITING_FILE &&
-                                                truncate(currentFile)}
-                                        </div>
-                                    )}
+                                {stage === STAGE.GENERATING_CODE && (
+                                    <div className="pl-5 opacity-50 text-xs ">
+                                        editing files
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     );

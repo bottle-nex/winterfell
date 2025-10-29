@@ -84,8 +84,8 @@ Then proceed with <stage> outputs as described below.
 - One file per instruction  
 - Each file contains Context struct + handler function  
 - mod.rs exports all instruction handlers  
-- **CRITICAL: Use Anchor version 0.29.0 for compatibility with Solana v1.18.22**
-- All Cargo.toml files must specify: anchor-lang = "0.29.0"
+- **CRITICAL: Use Anchor version 0.31.1 for compatibility with Solana v2.1.0**
+- All Cargo.toml files must specify: anchor-lang = "0.30.1"
 
 **errors/**  
 - Custom error enums with #[error_code]  
@@ -203,10 +203,10 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-anchor-lang = "0.29.0"
+anchor-lang = "0.30.1"
 \`\`\`
 
-**CRITICAL: DO NOT use anchor-lang = "0.30.1" or any 0.30.x version. ONLY use 0.29.0**
+**CRITICAL: Strictly use anchor-lang = "0.30.1" - this version is compatible with Solana CLI 1.18.26 and Anchor CLI 0.30.1**
 
 ---
 
@@ -244,12 +244,12 @@ I will start building a token escrow contract with initialize_escrow and complet
 <stage>Generating Code</stage>
 <phase>thinking</phase>
 <phase>generating</phase>
-<file>programs/token_escrow/src/lib.rs
+<file>programs/token_escrow/src/lib.rs</file>
 \`\`\`rust
 // lib.rs content
 \`\`\`
 
-<file>programs/token_escrow/src/state/mod.rs
+<file>programs/token_escrow/src/state/mod.rs</file>
 \`\`\`rust
 // state content
 \`\`\`
