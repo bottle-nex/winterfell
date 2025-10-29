@@ -13,6 +13,7 @@ import githubCodePushController from '../controllers/github-deploy-controller/gi
 import githubJobStatusController from '../controllers/github-deploy-controller/githubJobStatusController';
 import githubConnectController from '../controllers/github-deploy-controller/githubSignInController';
 import continueChatController from '../controllers/chat-controller/continueChatController';
+import getChatController from '../controllers/chat-controller/getChatController';
 
 const router: Router = Router();
 
@@ -29,6 +30,7 @@ router.post('/continue', authMiddleware, continueChatController);
 router.post('/contract/run-command', authMiddleware, runCommandController);
 router.post('/contract/export', authMiddleware, githubCodePushController);
 router.get('/contract/push-status', githubJobStatusController);
+router.post('/contract/get-chat', authMiddleware, getChatController);
 
 // file-routes
 router.get('/files/:contractId', authMiddleware, getFilesController);

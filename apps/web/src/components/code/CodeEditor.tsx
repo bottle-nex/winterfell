@@ -9,7 +9,7 @@ import StatusBar from './Terminal';
 
 export default function CodeEditor(): JSX.Element {
     const { collapseFileTree, currentCode } = useCodeEditor();
-
+    console.log(currentCode);
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
             base: 'vs-dark',

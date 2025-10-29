@@ -250,6 +250,7 @@ export default class StreamParser {
                         id: systemMessage.id,
                     },
                     data: {
+                        planning: true,
                         generatingCode: true,
                     },
                 });
