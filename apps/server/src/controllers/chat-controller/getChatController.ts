@@ -1,5 +1,6 @@
 import { prisma } from '@repo/database';
 import { Request, Response } from 'express';
+import env from '../../configs/env';
 
 export default async function (req: Request, res: Response) {
     try {
@@ -52,7 +53,7 @@ export default async function (req: Request, res: Response) {
                         createdAt: true,
                     },
                     orderBy: {
-                        createdAt: 'desc',
+                        createdAt: 'asc',
                     },
                 },
             },
@@ -66,18 +67,56 @@ export default async function (req: Request, res: Response) {
             return;
         }
 
-        const latestMessage = contract.messages[0];
-        const code = contract.code;
-        console.error({ latestMessage });
-        console.error({ code });
-        // call s3 client to get the code base and return that code to the user
-        // update the code to the fetched code base, and don't send the s3 url
+        console.log("all messages: ", contract.messages);
 
-        // const codeBase = s3client.getCode(contractId);
-        // chat.contract.code = codeBase;
+        const sortedMessages = [...contract.messages].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+
+        console.log("sorted messages: ", sortedMessages);
+
+        // this is the latest system message
+        const latestMessage = sortedMessages.find(m => m.role === 'SYSTEM');
+
+
+        if (!latestMessage) {
+            throw new Error('system message not found');
+        }
+
+        if (latestMessage.error) {
+            res.status(200).json({
+                success: true,
+                message: 'contract generation threw an error',
+                latestMessage: latestMessage,
+                messages: contract.messages,
+                contract: contract,
+            });
+            return;
+        }
+
+
+        if (latestMessage.finalzing) {
+            const contract_url = `${env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/resource`;
+            let response = await fetch(contract_url);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch contract: ${response.statusText}`);
+            }
+
+            const contractFiles = await response.text();
+
+            res.status(200).json({
+                success: true,
+                latestMessage: latestMessage,
+                message: 'fetched contract files',
+                messages: contract.messages,
+                contract: contract,
+                contractFiles: contractFiles,
+            });
+            return;
+        }
 
         res.status(200).json({
             success: true,
+            latestMessage: latestMessage,
             message: 'chat fetched successfully',
             messages: contract.messages,
             contract: contract,

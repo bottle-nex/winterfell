@@ -17,7 +17,6 @@ import {
 } from '../../types/stream_event_types';
 import { FileContent, STAGE } from '../../types/content_types';
 import { mergeWithLLMFiles, prepareBaseTemplate } from '../../class/test';
-import re_stating_prompt from '../../prompt/re-stating-prompt';
 // import re_stating_prompt from '../../prompt/re-stating-prompt';
 
 type LLMProvider = 'gemini' | 'claude';
@@ -158,7 +157,6 @@ export default class ContentGenerator {
         public_key: string,
         isFirstMessage: boolean,
         code_base: string,
-        userInstruction: string,
     ): Promise<string> {
         logger.info('gemini llm used');
         const contents: GeminiMessage[] = [];
@@ -247,9 +245,6 @@ export default class ContentGenerator {
         contractId: string,
         parser: StreamParser,
         public_key: string,
-        isFirstMessage: boolean,
-        code_base: string,
-        userInstruction: string,
     ): Promise<string> {
         logger.info('claude llm used');
         const contents: ClaudeMessage[] = [];
@@ -309,6 +304,7 @@ export default class ContentGenerator {
                     parser.feed(text, systemMessage);
                 }
             }
+
             return fullResponse;
         } catch (llmError) {
             const systemMessage = await prisma.message.findFirst({
