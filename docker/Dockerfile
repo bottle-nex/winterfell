@@ -1,13 +1,13 @@
-# run this command : docker build -t winterfellhub/winterfell-base:latest .
-
-FROM rust:1.78-slim-bookworm
+# Build command: docker build -t winterfellhub/winterfell-base:latest .
+# Run command: docker run -it --rm -v $(pwd):/workspace winterfellhub/winterfell-base:latest
+FROM rust:1.79-slim-bookworm
 
 # ----------------------------
 # Environment variables
 # ----------------------------
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SOLANA_VERSION=v1.18.22
-ENV ANCHOR_CLI_TAG=v0.29.0
+ENV ANCHOR_CLI_VERSION=0.30.1
 ENV ANCHOR_WALLET=/root/.config/solana/id.json
 ENV PATH="/root/.local/share/solana/install/active_release/bin:/usr/local/solana/bin:${PATH}"
 
@@ -37,22 +37,17 @@ RUN sh -c "$(curl -sSfL https://release.anza.xyz/${SOLANA_VERSION}/install)" && 
     solana --version
 
 # ----------------------------
-# 4. Install Anchor CLI
+# 4. Lock Rust to 1.79
 # ----------------------------
-RUN cargo install --git https://github.com/coral-xyz/anchor \
-    --tag ${ANCHOR_CLI_TAG} anchor-cli --locked && \
-    anchor --version
+RUN rustup default 1.79 && \
+    rustup component add rustfmt clippy && \
+    rustc --version
 
 # ----------------------------
-# 5. Preinstall BPF Tools
+# 5. Install Anchor CLI
 # ----------------------------
-WORKDIR /tmp/bpf-init
-RUN cargo init --name bpf_dummy --lib && \
-    echo '[lib]' >> Cargo.toml && \
-    echo 'crate-type = ["cdylib", "lib"]' >> Cargo.toml && \
-    echo 'pub fn process_instruction() {}' > src/lib.rs && \
-    cargo build-bpf --verbose && \
-    cd / && rm -rf /tmp/bpf-init
+RUN cargo install --version ${ANCHOR_CLI_VERSION} anchor-cli --locked && \
+    anchor --version
 
 # ----------------------------
 # 6. Setup Solana wallet + config
@@ -69,12 +64,15 @@ RUN solana --version && \
     anchor --version && \
     rustc --version && \
     node --version && \
-    yarn --version && \
-    echo "Architecture: $(uname -m)" && \
-    echo "BPF toolchain check:" && \
-    ls -la /root/.local/share/solana/install/active_release/bin/sdk/bpf/dependencies/ || true
+    yarn --version
 
 CMD ["/bin/bash"]
+
+
+
+
+
+
 
 
 
