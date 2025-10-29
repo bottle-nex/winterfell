@@ -40,6 +40,7 @@ export default function BuilderChats() {
         );
         if (initialMessage) {
             startChat(initialMessage.content);
+            setContractId(contractId);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contractId]);

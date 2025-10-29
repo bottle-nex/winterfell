@@ -23,6 +23,8 @@ const envScehma = z.object({
     SERVER_RAZORPAY_KEY_ID: z.string().transform((val) => val.trim()),
     SERVER_RAZORPAY_KEY_SECRET: z.string().transform((val) => val.trim()),
     SERVER_REDIS_URL: z.string().transform((val) => val.trim()),
+    GITHUB_CLIENT_ID: z.string().transform((val) => val.trim()),
+    GITHUB_CLIENT_SECRET: z.string().transform((val) => val.trim()),
 });
 
 function parseScehma() {
