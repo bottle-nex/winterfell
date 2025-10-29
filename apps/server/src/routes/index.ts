@@ -11,6 +11,7 @@ import syncFilesController from '../controllers/files/syncFilesController';
 import runCommandController from '../controllers/contract-controller/runCommandController';
 import githubCodePushController from '../controllers/github-deploy-controller/githubCodePushController';
 import githubJobStatusController from '../controllers/github-deploy-controller/githubJobStatusController';
+import githubConnectController from '../controllers/github-deploy-controller/githubSignInController';
 
 const router: Router = Router();
 
@@ -19,6 +20,7 @@ router.post('/sign-in', signInController);
 router.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ message: 'Server is running' });
 });
+router.post('/github/connect', authMiddleware, githubConnectController);
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);
