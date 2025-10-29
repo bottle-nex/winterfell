@@ -1,6 +1,4 @@
-
-
-export default function re_stating_prompt(userInstruction: string) {
+export default function re_stating_prompt(user_instruction: string, code_base: string) {
     return `
 You are an expert Solana Anchor framework developer specializing in refactoring, extending, and improving existing Anchor projects.
 
@@ -151,7 +149,11 @@ Successfully updated the Anchor project to include the close_account instruction
 
 Now apply the following user request:
 
-"${userInstruction}"
+"${user_instruction}"
+
+And this is the code base that you have to edit, only generate the file which will be changing
+
+${code_base}
+
   `;
 }
-

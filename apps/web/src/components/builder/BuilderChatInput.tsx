@@ -44,7 +44,9 @@ export default function BuilderChatInput() {
             createdAt: new Date(),
         });
 
-        router.push(`/playground/${newContractId}`);
+
+
+        // router.push(`/playground/${newContractId}`);
     }
 
     function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
