@@ -49,7 +49,7 @@ model Contract {
 
 model Deployment {
   id          String   @id @default(cuid())
-  contract    Contract @relation(fields: [contractId], references: [id])
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
   contractId  String
   network     String // devnet/testnet/mainnet
   deployedAt  DateTime @default(now())
@@ -62,7 +62,7 @@ model Deployment {
 model Message {
   id         String   @id @default(cuid())
   contractId String
-  contract   Contract @relation(fields: [contractId], references: [id])
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
 
   role    ChatRole
   content String   @db.Text
@@ -86,7 +86,7 @@ model Subscription {
   id String @id @default(cuid())
 
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   plan   PlanType           @default(FREE)
   status SubscriptionStatus @default(ACTIVE)
