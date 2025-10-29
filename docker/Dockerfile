@@ -1,78 +1,49 @@
-# Build command: docker build -t winterfellhub/winterfell-base:latest .
-# Run command: docker run -it --rm -v $(pwd):/workspace winterfellhub/winterfell-base:latest
-FROM rust:1.79-slim-bookworm
+FROM ubuntu:24.04
 
-# ----------------------------
-# Environment variables
-# ----------------------------
+# Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
-ENV SOLANA_VERSION=v1.18.22
-ENV ANCHOR_CLI_VERSION=0.30.1
-ENV ANCHOR_WALLET=/root/.config/solana/id.json
-ENV PATH="/root/.local/share/solana/install/active_release/bin:/usr/local/solana/bin:${PATH}"
 
-# ----------------------------
-# 1. Install system dependencies
-# ----------------------------
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates gnupg2 \
-    build-essential pkg-config libssl-dev libudev-dev \
-    clang llvm cmake lld \
-    git jq tree bzip2 vim-tiny python3 python3-pip \
-    && update-ca-certificates \
+# Update and install necessary packages
+RUN apt-get update && apt-get install -y \
+    vim \
+    curl \
+    wget \
+    ca-certificates \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libudev-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# ----------------------------
-# 2. Install Node.js + Yarn
-# ----------------------------
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Node.js 20.x LTS
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get update && apt-get install -y --no-install-recommends nodejs && \
-    npm install -g yarn@1.22.19 && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-# ----------------------------
-# 3. Install Solana CLI
-# ----------------------------
-RUN sh -c "$(curl -sSfL https://release.anza.xyz/${SOLANA_VERSION}/install)" && \
-    solana --version
+# Install Yarn
+RUN npm install -g yarn
 
-# ----------------------------
-# 4. Lock Rust to 1.79
-# ----------------------------
-RUN rustup default 1.79 && \
-    rustup component add rustfmt clippy && \
-    rustc --version
+# Install Solana CLI only (skip Anchor for now)
+ENV SOLANA_INSTALL_INIT_SKIP_ANCHOR=true
+RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
 
-# ----------------------------
-# 5. Install Anchor CLI
-# ----------------------------
-RUN cargo install --version ${ANCHOR_CLI_VERSION} anchor-cli --locked && \
-    anchor --version
+# Add Solana to PATH
+ENV PATH="/root/.local/share/solana/install/active_release/bin:${PATH}"
 
-# ----------------------------
-# 6. Setup Solana wallet + config
-# ----------------------------
+# Install Anchor CLI using cargo (builds from source, avoids GLIBC issues)
+RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+RUN avm install latest && avm use latest
+
+# Add AVM to PATH
+ENV PATH="/root/.avm/bin:${PATH}"
+
+# Set working directory
 WORKDIR /workspace
-RUN mkdir -p /root/.config/solana && \
-    solana-keygen new --no-bip39-passphrase -o /root/.config/solana/id.json && \
-    solana config set --url localhost
 
-# ----------------------------
-# 7. Final verification
-# ----------------------------
-RUN solana --version && \
-    anchor --version && \
-    rustc --version && \
-    node --version && \
-    yarn --version
-
+# Default command
 CMD ["/bin/bash"]
-
-
-
-
-
-
-
-
-
