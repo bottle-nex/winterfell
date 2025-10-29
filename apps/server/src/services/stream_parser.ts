@@ -4,6 +4,7 @@ import {
     BuildingData,
     CompleteData,
     CreatingFilesData,
+    DeletingData,
     EditingFileData,
     ErrorData,
     FILE_STRUCTURE_TYPES,
@@ -329,6 +330,11 @@ export default class StreamParser {
                 const data: BuildingData = { phase: 'building' };
                 this.emit(PHASE_TYPES.BUILDING, data, systemMessage);
                 break;
+            }
+            case 'deleting': {
+                this.currentPhase = phase;
+                const data: DeletingData = { phase: 'deleting' };
+                this.emit(PHASE_TYPES.DELETING, data, systemMessage);
             }
             case 'creating_files': {
                 this.currentPhase = phase;

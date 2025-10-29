@@ -17,6 +17,7 @@ import {
 } from '../../types/stream_event_types';
 import { FileContent, STAGE } from '../../types/content_types';
 import { mergeWithLLMFiles, prepareBaseTemplate } from '../../class/test';
+import re_stating_prompt from '../../prompt/re-stating-prompt';
 // import re_stating_prompt from '../../prompt/re-stating-prompt';
 
 type LLMProvider = 'gemini' | 'claude';
@@ -56,18 +57,10 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         public_key: string,
-        llmProvider: LLMProvider = 'gemini',
-        // userInstruction?: string,
+        llmProvider: LLMProvider = 'claude',
+        userInstruction?: string,
     ): Promise<void> {
-        //const isFirstMessage = await this.isFirstMessage(contractId);
-        //isFirstMessage.bool && isFirstMessage.fetched_contract && userInstruction
-        //? (this.systemPrompt = SYSTEM_PROMPT)
-        //: (this.systemPrompt = re_stating_prompt(
-        //   userInstruction!,
-        //     isFirstMessage.fetched_contract,
-        //   ));
-
-        // console.log('is first message: ', isFirstMessage.bool);
+        const isFirstMessage = await this.isFirstMessage(contractId);
 
         const parser = this.getParser(contractId, res);
         this.createStream(res);
@@ -80,6 +73,9 @@ export default class ContentGenerator {
                 contractId,
                 parser,
                 public_key,
+                isFirstMessage.bool,
+                isFirstMessage.fetched_contract,
+                userInstruction || '',
                 llmProvider,
             );
             const llmGeneratedFiles: FileContent[] = parser.getGeneratedFiles();
@@ -121,6 +117,9 @@ export default class ContentGenerator {
         contractId: string,
         parser: StreamParser,
         public_key: string,
+        isFirstMessage: boolean,
+        code_base: string,
+        userInstruction: string,
         llmProvider: LLMProvider = 'claude',
     ): Promise<string> {
         if (llmProvider === 'claude') {
@@ -131,6 +130,9 @@ export default class ContentGenerator {
                 contractId,
                 parser,
                 public_key,
+                isFirstMessage,
+                code_base,
+                userInstruction,
             );
         } else {
             return await this.generateGeminiStreamingResponse(
@@ -140,6 +142,9 @@ export default class ContentGenerator {
                 contractId,
                 parser,
                 public_key,
+                isFirstMessage,
+                code_base,
+                userInstruction,
             );
         }
     }
@@ -151,15 +156,27 @@ export default class ContentGenerator {
         contractId: string,
         parser: StreamParser,
         public_key: string,
+        isFirstMessage: boolean,
+        code_base: string,
+        userInstruction: string,
     ): Promise<string> {
         logger.info('gemini llm used');
         const contents: GeminiMessage[] = [];
         let fullResponse = '';
 
+        let systemPrompt;
+        if(isFirstMessage) {
+            console.log("indeed a first msg");
+            systemPrompt = SYSTEM_PROMPT(public_key);
+        } else {
+            console.log("not a first msg");
+            systemPrompt = re_stating_prompt(userInstruction, code_base);
+        }
+
         try {
             contents.push({
                 role: 'user',
-                parts: [{ text: SYSTEM_PROMPT(public_key) }],
+                parts: [{ text: systemPrompt }],
             });
 
             const startingData: StartingData = {
@@ -230,10 +247,22 @@ export default class ContentGenerator {
         contractId: string,
         parser: StreamParser,
         public_key: string,
+        isFirstMessage: boolean,
+        code_base: string,
+        userInstruction: string,
     ): Promise<string> {
         logger.info('claude llm used');
         const contents: ClaudeMessage[] = [];
         let fullResponse = '';
+
+        let systemPrompt;
+        if(isFirstMessage) {
+            console.log("indeed a first msg");
+            systemPrompt = SYSTEM_PROMPT(public_key);
+        } else {
+            console.log("not a first msg");
+            systemPrompt = re_stating_prompt(userInstruction, code_base);
+        }
 
         try {
             const startingData: StartingData = {
@@ -269,7 +298,7 @@ export default class ContentGenerator {
             const stream = await this.claudeAI.messages.stream({
                 model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 8096,
-                system: SYSTEM_PROMPT(public_key),
+                system: systemPrompt,
                 messages: contents,
             });
 
