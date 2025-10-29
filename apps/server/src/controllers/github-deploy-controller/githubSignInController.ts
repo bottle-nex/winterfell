@@ -2,10 +2,7 @@ import { Request, Response } from 'express';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@repo/database';
-
-const SERVER_JWT_SECRET = process.env.SERVER_JWT_SECRET;
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+import env from '../../configs/env';
 
 export default async function githubConnectController(req: Request, res: Response) {
     const userId = req.user?.id;
@@ -26,12 +23,11 @@ export default async function githubConnectController(req: Request, res: Respons
     }
 
     try {
-        // Exchange code for access token
         const tokenResponse = await axios.post(
             'https://github.com/login/oauth/access_token',
             {
-                client_id: GITHUB_CLIENT_ID,
-                client_secret: GITHUB_CLIENT_SECRET,
+                client_id: env.GITHUB_CLIENT_ID,
+                client_secret: env.GITHUB_CLIENT_SECRET,
                 code: code,
             },
             {
@@ -48,7 +44,6 @@ export default async function githubConnectController(req: Request, res: Respons
             });
         }
 
-        // Get GitHub user info
         const githubUserResponse = await axios.get('https://api.github.com/user', {
             headers: { Authorization: `Bearer ${githubAccessToken}` },
         });
@@ -67,7 +62,6 @@ export default async function githubConnectController(req: Request, res: Respons
             });
         }
 
-        // Append "github" to provider if not already there
         const providers = user.provider?.split(',') || [];
         if (!providers.includes('github')) {
             providers.push('github');
@@ -82,7 +76,6 @@ export default async function githubConnectController(req: Request, res: Respons
             },
         });
 
-        // Generate new JWT with GitHub token
         const jwtPayload = {
             id: updatedUser.id,
             email: updatedUser.email,
@@ -90,14 +83,14 @@ export default async function githubConnectController(req: Request, res: Respons
             githubAccessToken: updatedUser.githubAccessToken,
         };
 
-        if (!SERVER_JWT_SECRET) {
+        if (!env.SERVER_JWT_SECRET) {
             return res.status(500).json({
                 success: false,
                 message: 'Server error',
             });
         }
 
-        const newToken = jwt.sign(jwtPayload, SERVER_JWT_SECRET, { expiresIn: '30d' });
+        const newToken = jwt.sign(jwtPayload, env.SERVER_JWT_SECRET, { expiresIn: '30d' });
 
         return res.status(200).json({
             success: true,
