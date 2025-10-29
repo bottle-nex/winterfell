@@ -32,16 +32,22 @@ export default function BuilderNavbar() {
 
     async function handleCodePushToGithub() {
         try {
-            const response = await axios.post(`${EXPORT_CONTRACT_URL}`, {
+            const response = await axios.post('http://localhost:8787/api/v1/contract/export', {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${session?.user.token}`,
                 },
                 body: JSON.stringify({
-                    contractId: contractId,
+                    repo_name: "push_check",
+                    contract_id: contractId,
                 }),
             });
-        } catch (error) {}
+
+            console.log('response is -------------->', response.data);
+        } catch (error) {
+            console.error('failed to push to github', error);
+            return;
+        }
     }
 
     return (
@@ -104,11 +110,11 @@ export default function BuilderNavbar() {
 
                     <ToolTipComponent content="Publish the code snippet to GitHub" side="bottom">
                         <Button
-                            // onClick={handleCodePushToGithub}
+                            onClick={handleCodePushToGithub}
                             size={'sm'}
                             className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
                         >
-                            <span className="text-xs">Publish</span>
+                            <span className="text-xs">Export</span>
                         </Button>
                     </ToolTipComponent>
 
