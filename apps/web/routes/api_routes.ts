@@ -3,7 +3,8 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export const API_URL = BACKEND_URL + '/api/v1';
 export const SIGNIN_URL = API_URL + '/sign-in';
 
-export const CHAT_URL = API_URL + '/new';
+export const NEW_CHAT_URL = API_URL + '/new';
+export const CONTINUE_CHAT_URL = API_URL + '/continue';
 
 // subscription
 export const SUBSCRIPTION_URL = API_URL + '/subscription';
