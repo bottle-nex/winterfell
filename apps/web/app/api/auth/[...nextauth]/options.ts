@@ -12,6 +12,8 @@ export interface UserType {
     image?: string | null;
     provider?: string | null;
     token?: string | null;
+    hasGithub?: boolean;
+    githubUsername?: string | null;
 }
 
 export interface CustomSession {
@@ -39,12 +41,14 @@ export const authOption: AuthOptions = {
                     if (result?.success) {
                         user.id = result.user.id.toString();
                         user.token = result.token;
+                        user.hasGithub = result.user.hasGithub;
+                        user.githubUsername = result.user.githubUsername;
                         return true;
                     }
                 }
                 return false;
             } catch (err) {
-                console.error(err);
+                console.error('SignIn error:', err);
                 return false;
             }
         },
