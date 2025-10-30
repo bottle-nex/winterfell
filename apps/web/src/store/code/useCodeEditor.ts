@@ -41,8 +41,8 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                            ? { ...n, children: updateNode(n.children) }
-                            : n,
+                          ? { ...n, children: updateNode(n.children) }
+                          : n,
                 );
 
             const newTree = updateNode(state.fileTree);
@@ -68,7 +68,7 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
             function removeNodeById(nodes: FileNode[]): FileNode[] {
                 return nodes
                     .filter((n) => n.id !== id)
-                        .map((n) => ({
+                    .map((n) => ({
                         ...n,
                         children: n.children ? removeNodeById(n.children) : undefined,
                     }));
@@ -85,7 +85,6 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
             });
         },
 
-
         selectFile: (node: FileNode) => {
             if (node.type === NODE.FILE) {
                 set({
@@ -97,12 +96,14 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
 
         parseFileStructure: (files: FileContent[]) => {
             const state = get();
-            const existingTree = state.fileTree.length ? state.fileTree[0] : {
-                id: 'root',
-                name: 'root',
-                type: NODE.FOLDER,
-                children: [],
-            };
+            const existingTree = state.fileTree.length
+                ? state.fileTree[0]
+                : {
+                      id: 'root',
+                      name: 'root',
+                      type: NODE.FOLDER,
+                      children: [],
+                  };
 
             // Helper: recursively find folder by path
             function findOrCreateFolder(root: FileNode, parts: string[]): FileNode {
@@ -111,7 +112,9 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
 
                 for (const part of parts) {
                     currentPath = currentPath ? `${currentPath}/${part}` : part;
-                    let child = current.children?.find((c) => c.name === part && c.type === NODE.FOLDER);
+                    let child = current.children?.find(
+                        (c) => c.name === part && c.type === NODE.FOLDER,
+                    );
                     if (!child) {
                         child = {
                             id: currentPath,
@@ -164,7 +167,6 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
 
             return existingTree;
         },
-
 
         syncFiles: async () => {
             const { editedFiles } = get();

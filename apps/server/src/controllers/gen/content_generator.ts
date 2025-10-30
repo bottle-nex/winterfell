@@ -79,7 +79,7 @@ export default class ContentGenerator {
                 llmProvider,
             );
             const llmGeneratedFiles: FileContent[] = parser.getGeneratedFiles();
-            const contractName: string = parser.getContractName();
+            const contractName: string = parser.getContractName() || isFirstMessage.name;
             const base_files: FileContent[] = prepareBaseTemplate(contractName);
             const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
 
@@ -165,11 +165,9 @@ export default class ContentGenerator {
         let fullResponse = '';
 
         let systemPrompt;
-        if(isFirstMessage) {
-            console.log("indeed a first msg");
+        if (isFirstMessage) {
             systemPrompt = SYSTEM_PROMPT(public_key);
         } else {
-            console.log("not a first msg");
             systemPrompt = re_stating_prompt(userInstruction, code_base);
         }
 
@@ -256,11 +254,9 @@ export default class ContentGenerator {
         let fullResponse = '';
 
         let systemPrompt;
-        if(isFirstMessage) {
-            console.log("indeed a first msg");
+        if (isFirstMessage) {
             systemPrompt = SYSTEM_PROMPT(public_key);
         } else {
-            console.log("not a first msg");
             systemPrompt = re_stating_prompt(userInstruction, code_base);
         }
 
@@ -433,15 +429,17 @@ export default class ContentGenerator {
     private async isFirstMessage(contractId: string): Promise<{
         bool: boolean;
         fetched_contract: string;
+        name: string;
     }> {
         const contract = await prisma.contract.findUnique({
             where: { id: contractId },
-            select: { messages: true },
+            select: {
+                messages: true,
+                title: true,
+            },
         });
-        console.log('contract: ', contract);
 
         const system_messages = contract?.messages.filter((m) => m.role === 'SYSTEM');
-        console.log('system messages: ', system_messages);
 
         // If no messages found → it's the first message
         if (
@@ -454,6 +452,7 @@ export default class ContentGenerator {
             return {
                 bool: true,
                 fetched_contract: '',
+                name: '',
             };
         }
 
@@ -470,6 +469,7 @@ export default class ContentGenerator {
         return {
             bool: false,
             fetched_contract,
+            name: contract.title,
         };
     }
 

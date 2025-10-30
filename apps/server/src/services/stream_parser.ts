@@ -336,6 +336,7 @@ export default class StreamParser {
                 this.currentPhase = phase;
                 const data: DeletingData = { phase: 'deleting' };
                 this.emit(PHASE_TYPES.DELETING, data, systemMessage);
+                break;
             }
             case 'creating_files': {
                 this.currentPhase = phase;

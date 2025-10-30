@@ -147,11 +147,19 @@ export function ConnectedWalletInfoCard() {
                             )}
                         </div>
                     </div>
+                    <div className="flex items-center justify-center px-4 py-1.5 rounded-md bg-[#fb2c3656] border border-red-400 text-[#D8CFBC] text-xs font-mono ">
+                        This feature will be available in the next version.
+                    </div>
                 </>
             ) : (
-                <div className="w-full flex flex-col justify-center items-center">
-                    <LiaServicestack className="text-primary h-18 w-18 transition-all duration-500" />
-                    <span className="text-sm tracking-[0.1rem] ">WINTERFELL</span>
+                <div className="w-full flex flex-col justify-center items-center gap-y-6">
+                    <div>
+                        <LiaServicestack className="text-primary h-18 w-18 transition-all duration-500" />
+                        <span className="text-sm tracking-[0.1rem] ">WINTERFELL</span>
+                    </div>
+                    <div className="flex items-center justify-center px-4 py-1.5 rounded-md bg-[#fb2c3656] border border-red-400 text-[#D8CFBC] text-xs font-mono ">
+                        This feature will be available in the next version.
+                    </div>
                 </div>
             )}
         </div>

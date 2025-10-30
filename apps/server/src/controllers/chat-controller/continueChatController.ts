@@ -1,14 +1,12 @@
-import { Request, Response } from "express";
-import { continueChatSchema } from "../../schemas/continue_chat_schema";
-import { ChatRole, prisma } from "@repo/database";
-import { contentGenerator } from "../../services/init";
-
+import { Request, Response } from 'express';
+import { continueChatSchema } from '../../schemas/continue_chat_schema';
+import { ChatRole, prisma } from '@repo/database';
+import { contentGenerator } from '../../services/init';
 
 export default async function continueChatController(req: Request, res: Response) {
     try {
-
         const user = req.user;
-        if(!user) {
+        if (!user) {
             res.status(401).json({
                 success: false,
                 message: 'Unauthorized',
@@ -17,7 +15,7 @@ export default async function continueChatController(req: Request, res: Response
         }
 
         const data = continueChatSchema.safeParse(req.body);
-        if(!data.success) {
+        if (!data.success) {
             res.status(400).json({
                 success: false,
                 message: 'Invalid data',
@@ -40,10 +38,20 @@ export default async function continueChatController(req: Request, res: Response
             },
         });
 
-        if(!existingContract) {
+        if (!existingContract) {
             res.status(400).json({
                 success: false,
                 message: 'contract not found',
+            });
+            return;
+        }
+
+        const userMessages = existingContract.messages.filter((m) => m.role === 'USER');
+
+        if (userMessages.length >= 5) {
+            res.status(403).json({
+                success: false,
+                message: 'message limit reached!',
             });
             return;
         }
@@ -63,7 +71,6 @@ export default async function continueChatController(req: Request, res: Response
             contractId,
             instruction,
         );
-        
     } catch (error) {
         console.error('continue chat controller error:', error);
         if (!res.headersSent) {

@@ -67,16 +67,14 @@ export default async function (req: Request, res: Response) {
             return;
         }
 
-        console.log("all messages: ", contract.messages);
-
-        const sortedMessages = [...contract.messages].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-
-        console.log("sorted messages: ", sortedMessages);
+        const sortedMessages = [...contract.messages].sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+        );
 
         // this is the latest system message
-        const latestMessage = sortedMessages.find(m => m.role === 'SYSTEM');
-
+        const latestMessage = sortedMessages.find(
+            (m) => m.role === 'SYSTEM' && m.finalzing && !m.error,
+        );
 
         if (!latestMessage) {
             throw new Error('system message not found');
@@ -93,10 +91,9 @@ export default async function (req: Request, res: Response) {
             return;
         }
 
-
         if (latestMessage.finalzing) {
             const contract_url = `${env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/resource`;
-            let response = await fetch(contract_url);
+            const response = await fetch(contract_url);
             if (!response.ok) {
                 throw new Error(`Failed to fetch contract: ${response.statusText}`);
             }
