@@ -62,9 +62,29 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
             });
         },
 
-        deleteFile: (path: string) => {
-            
+        deleteFile: (id: string) => {
+            const state = get();
+
+            function removeNodeById(nodes: FileNode[]): FileNode[] {
+                return nodes
+                    .filter((n) => n.id !== id)
+                        .map((n) => ({
+                        ...n,
+                        children: n.children ? removeNodeById(n.children) : undefined,
+                    }));
+            }
+
+            const newTree = removeNodeById(state.fileTree);
+
+            const isCurrentDeleted = state.currentFile?.id === id;
+
+            set({
+                fileTree: newTree,
+                currentFile: isCurrentDeleted ? null : state.currentFile,
+                currentCode: isCurrentDeleted ? '' : state.currentCode,
+            });
         },
+
 
         selectFile: (node: FileNode) => {
             if (node.type === NODE.FILE) {

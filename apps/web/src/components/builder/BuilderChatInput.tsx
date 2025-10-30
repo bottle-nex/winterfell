@@ -98,6 +98,7 @@ export default function BuilderChatInput() {
             console.error('Chat stream error: ', error);
         } finally {
             setLoading(false);
+            setInputValue('');
         }
 
         // router.push(`/playground/${newContractId}`);
