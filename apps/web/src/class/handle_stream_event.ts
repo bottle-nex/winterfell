@@ -11,7 +11,7 @@ import {
 
 export default class StreamEventProcessor {
     public static process(event: StreamEvent) {
-        const { parseFileStructure } = useCodeEditor.getState();
+        const { parseFileStructure, deleteFile } = useCodeEditor.getState();
         const { upsertMessage, setPhase, setCurrentFileEditing } = useBuilderChatStore.getState();
 
         switch (event.type) {
@@ -48,13 +48,18 @@ export default class StreamEventProcessor {
             case PHASE_TYPES.DELETING:
                 // delete the specific file
                 setPhase(event.type);
-                
                 break;
 
             case FILE_STRUCTURE_TYPES.EDITING_FILE:
+                // add -> delete file logic here
                 setPhase(event.type);
                 if ('file' in event.data) {
-                    setCurrentFileEditing(event.data.file as string);
+                    if('phase' in event.data && event.data.phase === 'deleting') {
+                        alert('deleting file: ' + event.data.file);
+                        deleteFile(event.data.file as string);
+                    } else {
+                        setCurrentFileEditing(event.data.file as string);
+                    }
                 }
                 break;
 
