@@ -1,12 +1,13 @@
 import { Redis } from 'ioredis';
 import { wsserver } from './init_services';
 import { ParsedMessage } from '../ws/WebsocketServer';
+import { env } from '../configs/env.config';
 
 export default class RedisSubscriber {
     private subscriber: Redis;
 
     constructor() {
-        this.subscriber = new Redis('redis://localhost:6379');
+        this.subscriber = new Redis(env.SOCKET_REDIS_URL);
         this.setup_subscription();
     }
 

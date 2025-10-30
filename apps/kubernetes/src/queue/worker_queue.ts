@@ -4,13 +4,14 @@ import { pod_service, publisher } from '../services/init_services';
 import { logger } from '../utils/logger';
 import { get_files } from '../services/client_services';
 import { FileContent } from '../types/file_type';
+import { env } from '../configs/env.config';
 
 export default class ServerToOrchestratorQueue {
    private client: Bull.Queue;
 
    constructor(queue_name: string) {
       this.client = new Bull(queue_name, {
-         redis: 'redis://localhost:6379',
+         redis: env.KUBERNETES_REDIS_URL,
          defaultJobOptions: {
             attempts: 1,
             removeOnComplete: true,

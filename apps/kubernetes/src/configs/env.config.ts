@@ -1,13 +1,17 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config({ path: '../../.env' });
+dotenv.config({
+   path: path.resolve(__dirname, '../../../.env'),
+});
 
 const envSchema = z.object({
    KUBERNETES_NODE_ENV: z.enum(['development', 'production']),
    KUBERNETES_PORT: z.string().transform((val) => parseInt(val, 10)),
    KUBERNETES_NAMESPACE: z.string().default('default'),
    SERVER_CLOUDFRONT_DOMAIN: z.url(),
+   KUBERNETES_REDIS_URL: z.url(),
 });
 
 function parseEnv() {
