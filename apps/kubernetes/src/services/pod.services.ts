@@ -12,7 +12,14 @@ export default class PodService {
    public namespace: string = env.KUBERNETES_NAMESPACE;
    private container_name: string = 'anchor-dev';
 
-   public async create_pod(req: CreatePodRequest) {
+   public async create_pod(req: CreatePodRequest): Promise<string> {
+      logger.info('Creating pod', {
+         userId: req.userId,
+         contractId: req.contractId,
+         projectName: req.projectName,
+         namespace: this.namespace,
+      });
+
       try {
          const pod_template: V1Pod = PodTemplate.get_anchor_pod_template(
             req.userId,
@@ -20,30 +27,33 @@ export default class PodService {
             req.projectName,
          );
 
-         logger.info('Creating pod', {
-            userId: req.userId,
-            contractId: req.contractId,
-            projectName: req.projectName,
-            namespace: this.namespace,
-         });
-
          const response = await k8s_config.core_api.createNamespacedPod({
             namespace: this.namespace,
             body: pod_template,
          });
 
-         const podName = response.metadata?.name as string;
+         const podName = response.metadata?.name;
+
+         if (!podName) {
+            throw new Error('Pod created but no name returned');
+         }
+
+         logger.info('Pod created, waiting for Running state', { podName });
+
          await waitForPodRunning(podName, this.namespace, 60);
          await this.waitForContainerReady(podName);
+
+         logger.info('Pod is ready', { podName });
 
          return podName;
       } catch (err) {
          logger.error('Failed to create pod', {
             error: err instanceof Error ? err.message : String(err),
+            stack: err instanceof Error ? err.stack : undefined,
             userId: req.userId,
             contractId: req.contractId,
          });
-         throw err;
+         throw err; // Re-throw instead of swallowing the error
       }
    }
 
@@ -63,17 +73,16 @@ export default class PodService {
             namespace: this.namespace,
          });
 
-         logger.debug('Pod deleted successfully', {
+         logger.info('Pod deleted successfully', {
             podName: pod_name,
             userId,
             contractId,
          });
-      } catch (error) {
+      } catch (err) {
          logger.error('Failed to delete pod', {
-            error: error instanceof Error ? error.message : String(error),
+            error: err instanceof Error ? err.message : String(err),
             userId,
             contractId,
-            podName: PodTemplate.get_pod_name(userId, contractId),
          });
       }
    }
@@ -127,12 +136,14 @@ export default class PodService {
    public async execute_command(
       pod_name: string,
       command: string[],
+      onData?: (chunk: string) => void,
    ): Promise<{ stdout: string; stderr: string }> {
       return k8s_config.exec_command_in_pod({
          namespace: this.namespace,
          pod_name,
          container_name: this.container_name,
          command,
+         onData,
       });
    }
 
@@ -151,33 +162,46 @@ export default class PodService {
       files: FileContent[],
    ): Promise<void> {
       const total_files = files.length;
-
       if (!files || files.length === 0) {
          logger.warn('No files to copy', { pod_name, projectName });
          return;
       }
-
       try {
          const base_dir = `/workspace/${projectName}`;
+
+         // Ensure base directory exists FIRST
          await this.execute_command(pod_name, ['mkdir', '-p', base_dir]);
 
+         // DELETE source files but PRESERVE target/ directory for faster rebuilds
+         try {
+            await this.execute_command(pod_name, [
+               'bash',
+               '-c',
+               `cd ${base_dir} && find . -maxdepth 1 -mindepth 1 ! -name 'target' -exec rm -rf {} + 2>/dev/null || true && \
+             rm -rf programs migrations tests 2>/dev/null || true`,
+            ]);
+            logger.info('Cleaned project directory (preserved target/)', { pod_name, base_dir });
+         } catch (err) {
+            logger.info('Cleanup skipped (directory was empty or new)', { base_dir });
+         }
+
+         // Copy all files
          for (const file of files) {
             const full_path = `${base_dir}/${file.path}`;
             const dir = full_path.substring(0, full_path.lastIndexOf('/'));
 
             if (dir !== base_dir) {
                await this.execute_command(pod_name, ['mkdir', '-p', dir]);
-               logger.debug('dir created : ', dir);
             }
 
             const base_64_content = Buffer.from(file.content).toString('base64');
-
             await this.execute_command(pod_name, [
                'sh',
                '-c',
                `echo '${base_64_content}' | base64 -d > ${full_path}`,
             ]);
          }
+
          logger.info(`Successfully copied all ${total_files} files to ${pod_name}`);
       } catch (err) {
          logger.error('Failed to copy files to pod', {
@@ -210,9 +234,54 @@ export default class PodService {
                throw new Error(`Container not ready after ${maxRetries} attempts: ${errorMsg}`);
             }
 
+            logger.debug('Container not ready, retrying...', {
+               pod_name,
+               attempt: retries,
+               maxRetries,
+            });
+
             await new Promise((resolve) => setTimeout(resolve, delay));
             delay = Math.min(delay * 1.5, 8000);
          }
+      }
+   }
+
+   public async get_pod_if_running(userId: string, contractId: string): Promise<string | null> {
+      const pod_name = PodTemplate.get_pod_name(userId, contractId);
+
+      try {
+         const pod = await k8s_config.core_api.readNamespacedPod({
+            name: pod_name,
+            namespace: this.namespace,
+         });
+
+         if (pod.status?.phase === 'Running') {
+            logger.info('Found existing running pod', { pod_name });
+            return pod_name;
+         }
+
+         logger.info('Pod exists but not running, deleting', {
+            pod_name,
+            phase: pod.status?.phase,
+         });
+
+         // Pod exists but not running, delete it
+         await k8s_config.core_api.deleteNamespacedPod({
+            name: pod_name,
+            namespace: this.namespace,
+         });
+
+         return null;
+      } catch (error: any) {
+         if (error.code === 404 || error.statusCode === 404) {
+            logger.debug('Pod does not exist', { pod_name });
+            return null;
+         }
+         logger.error('Error checking pod status', {
+            error: error instanceof Error ? error.message : String(error),
+            pod_name,
+         });
+         throw error;
       }
    }
 }

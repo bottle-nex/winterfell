@@ -1,10 +1,10 @@
-import WebSocketClient from "../class/socket.client";
+import WebSocketClient from '../class/socket.client';
 
 let client: WebSocketClient | null = null;
 
 export function getWebSocketClient(token: string, contractId: string) {
     if (!token || !contractId) {
-        throw new Error('Token and contractId are required');
+        return null;
     }
 
     const base = `ws://localhost:8081`;

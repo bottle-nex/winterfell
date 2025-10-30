@@ -24,8 +24,6 @@ export default function BuilderNavbar() {
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
     }, []);
 
-    
-
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
 
     return (

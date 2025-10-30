@@ -60,10 +60,11 @@ export default function Footer() {
                     {footerLinks.map((section, index) => (
                         <div
                             key={section.title}
-                            className={`w-full h-full px-4 flex flex-col items-start text-neutral-200 gap-y-3 mb-8 md:mb-0 pb-6 md:pb-0 ${index < footerLinks.length - 1
+                            className={`w-full h-full px-4 flex flex-col items-start text-neutral-200 gap-y-3 mb-8 md:mb-0 pb-6 md:pb-0 ${
+                                index < footerLinks.length - 1
                                     ? 'md:border-r border-b md:border-b-0 border-neutral-700'
                                     : ''
-                                }`}
+                            }`}
                         >
                             <div className="md:text-3xl text-2xl font-semibold">
                                 {section.title}
