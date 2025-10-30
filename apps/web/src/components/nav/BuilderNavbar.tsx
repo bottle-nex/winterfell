@@ -18,10 +18,10 @@ import { WalletPanel } from '../base/WalletPanel';
 import axios from 'axios';
 import { EXPORT_CONTRACT_URL, GITHUB_CONNECT_URL } from '@/routes/api_routes';
 import { useChatStore } from '@/src/store/user/useChatStore';
-import { toast } from 'sonner';
-import { ArrowUp } from 'lucide-react';
 import ProfileMenu from '../utility/LogoutMenu';
 import { Input } from '../ui/input';
+import { ArrowUp } from 'lucide-react';
+import { toast } from 'sonner'
 
 export default function BuilderNavbar() {
     const { session, setSession } = useUserSessionStore();
