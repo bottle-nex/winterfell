@@ -57,7 +57,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         public_key: string,
-        llmProvider: LLMProvider = 'claude',
+        llmProvider: LLMProvider = 'gemini',
         userInstruction?: string,
     ): Promise<void> {
         const isFirstMessage = await this.isFirstMessage(contractId);
