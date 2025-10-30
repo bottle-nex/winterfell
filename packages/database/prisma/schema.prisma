@@ -16,6 +16,7 @@ model User {
   password          String? // if using credentials login
   provider          String?
   githubAccessToken String?
+  githubUsername    String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

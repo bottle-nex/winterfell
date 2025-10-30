@@ -7,6 +7,7 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
 import React, { useEffect } from 'react';
+import { useChatStore } from '@/src/store/user/useChatStore';
 
 export default function Page({ params }: { params: Promise<{ contractId: string }> }) {
     const { cleanStore } = useBuilderChatStore();
@@ -15,6 +16,7 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
     const { contractId } = unwrappedParams;
     const { addLog } = useTerminalLogStore();
     const { subscribeToHandler } = useWebSocket();
+    const { resetContractId } = useChatStore();
 
     useEffect(() => {
         function handleKeyDown(event: KeyboardEvent) {
@@ -37,6 +39,7 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
         subscribeToHandler(handleIncomingTerminalLogs);
         return () => {
             cleanStore();
+            resetContractId();
             reset();
             cleanWebSocketClient();
         };

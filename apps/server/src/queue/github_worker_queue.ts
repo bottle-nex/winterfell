@@ -5,110 +5,181 @@ import { GithubPushJobData } from '../types/github_worker_queue_types';
 import { get_s3_codebase } from '../services/git_services';
 
 export class GithubWorkerQueue {
-    private queue: Bull.Queue;
+    private queue: Bull.Queue<GithubPushJobData>;
 
-    constructor(queue_name: string) {
-        this.queue = new Bull(queue_name, { redis: 'redis://localhost:6379' });
-        this.setup_processors();
+    constructor(queue_name: string, redis_url: string = 'redis://localhost:6379') {
+        this.queue = new Bull(queue_name, { redis: redis_url });
+        this.queue.process(this.processJob.bind(this));
+
+        this.queue.on('completed', (job) => {
+            logger.info(`Job ${job.id} completed successfully`);
+        });
+
+        this.queue.on('failed', (job, err) => {
+            logger.error(`Job ${job?.id} failed with error: ${err.message}`);
+        });
+
+        logger.info(`GitHub push queue initialized: ${queue_name}`);
     }
 
-    private setup_processors() {
-        this.queue.process(this.process_job.bind(this));
-        logger.info(`github push queue initialized on ${this.queue.name}`);
-    }
-
-    private async process_job(job: Job<GithubPushJobData>) {
+    private async processJob(job: Job<GithubPushJobData>) {
         const { github_access_token, owner, repo_name, user_id, contract_id } = job.data;
         const octokit = new Octokit({ auth: github_access_token });
 
         try {
-            let repo_exists = true;
-            try {
-                await octokit.repos.get({ owner, repo: repo_name });
-            } catch (err: any) {
-                if (err.status === 404) repo_exists = false;
-            }
+            await job.progress(10);
+            logger.info(`[Job ${job.id}] Step 1: Ensuring repository exists...`);
 
-            if (!repo_exists) {
-                logger.info(`Creating repo ${repo_name} for user ${user_id}`);
-                await octokit.repos.createForAuthenticatedUser({
-                    name: repo_name,
-                    private: false,
-                });
-            }
+            await this.ensureRepository(octokit, owner, repo_name, user_id);
 
+            await job.progress(30);
+            logger.info(`[Job ${job.id}] Step 2: Fetching files from S3...`);
             const files = await get_s3_codebase(contract_id);
 
-            const blobs = await Promise.all(
-                files.map((f: any) =>
-                    octokit.git.createBlob({
-                        owner,
-                        repo: repo_name,
-                        content: f.content,
-                        encoding: 'utf-8',
-                    }),
-                ),
-            );
-
-            let base_tree_sha: string | undefined;
-            try {
-                const ref_data = await octokit.git.getRef({
-                    owner,
-                    repo: repo_name,
-                    ref: 'heads/main',
-                });
-                const commit_data = await octokit.git.getCommit({
-                    owner,
-                    repo: repo_name,
-                    commit_sha: ref_data.data.object.sha,
-                });
-                base_tree_sha = commit_data.data.tree.sha;
-            } catch {
-                base_tree_sha = undefined;
+            if (!files || files.length === 0) {
+                throw new Error('No files found in codebase');
             }
 
-            const tree = await octokit.git.createTree({
-                owner,
-                repo: repo_name,
-                tree: files.map((f: any, i: number) => ({
-                    path: f.path,
-                    mode: '100644',
-                    type: 'blob',
-                    sha: blobs[i].data.sha,
-                })),
-                base_tree: base_tree_sha,
-            });
+            logger.info(`[Job ${job.id}] Found ${files.length} files to push`);
 
-            const commit = await octokit.git.createCommit({
-                owner,
-                repo: repo_name,
-                message: `Initial commit from user ${user_id}`,
-                tree: tree.data.sha,
-                parents: base_tree_sha ? [base_tree_sha] : [],
-            });
+            await job.progress(50);
+            logger.info(`[Job ${job.id}] Step 3: Pushing files to repository...`);
 
-            await octokit.git.updateRef({
-                owner,
-                repo: repo_name,
-                ref: 'heads/main',
-                sha: commit.data.sha,
-                force: true,
-            });
+            await this.pushFilesToRepository(octokit, owner, repo_name, files, user_id);
 
-            logger.info(`Repo ${repo_name} successfully updated for user ${user_id}`);
-            return { success: true, repo_url: `https://github.com/${owner}/${repo_name}` };
+            await job.progress(100);
+            const repo_url = `https://github.com/${owner}/${repo_name}`;
+            logger.info(`[Job ${job.id}] Successfully pushed to ${repo_url}`);
+
+            return { success: true, repo_url, files_count: files.length };
         } catch (error) {
-            logger.error(`Failed pushing repo ${repo_name} for user ${user_id}`, error);
-            throw error;
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : '';
+
+            logger.error(`[Job ${job.id}] Failed:`, {
+                message: errorMessage,
+                stack: errorStack,
+            });
+
+            throw new Error(`GitHub push failed: ${errorMessage}`);
         }
     }
 
-    public async enqueue(job_data: GithubPushJobData) {
-        return this.queue.add(job_data, { attempts: 3, backoff: 5000 });
+    private async ensureRepository(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        user_id: string,
+    ): Promise<void> {
+        try {
+            await octokit.repos.get({ owner, repo: repo_name });
+            logger.info(`Repository ${repo_name} already exists`);
+        } catch (err: any) {
+            if (err.status === 404) {
+                logger.info(`Creating repository ${repo_name} with initial commit...`);
+
+                await octokit.repos.createForAuthenticatedUser({
+                    name: repo_name,
+                    private: false,
+                    auto_init: true, // This creates an initial commit with README
+                    description: `Deployed from Winterfell`,
+                });
+
+                logger.info(`Repository ${repo_name} created successfully`);
+
+                await new Promise((resolve) => setTimeout(resolve, 3000));
+            } else {
+                throw err;
+            }
+        }
     }
 
-    public async close() {
+    private async pushFilesToRepository(
+        octokit: Octokit,
+        owner: string,
+        repo_name: string,
+        files: FileContent[],
+        user_id: string,
+    ): Promise<void> {
+        logger.info(`getting main branch reference...`);
+        const { data: refData } = await octokit.git.getRef({
+            owner,
+            repo: repo_name,
+            ref: 'heads/main',
+        });
+        const baseCommitSha = refData.object.sha;
+
+        logger.info(`getting base comit`);
+        const { data: baseCommit } = await octokit.git.getCommit({
+            owner,
+            repo: repo_name,
+            commit_sha: baseCommitSha,
+        });
+
+        logger.info(`Creating ${files.length} blobs...`);
+        const blobs = await Promise.all(
+            files.map(async (file, index) => {
+                logger.info(`  Creating blob ${index + 1}/${files.length}: ${file.path}`);
+                return octokit.git.createBlob({
+                    owner,
+                    repo: repo_name,
+                    content: file.content,
+                    encoding: 'utf-8',
+                });
+            }),
+        );
+
+        logger.info(`Creating tree with ${files.length} files...`);
+        const { data: tree } = await octokit.git.createTree({
+            owner,
+            repo: repo_name,
+            tree: files.map((file, i) => ({
+                path: file.path,
+                mode: '100644' as const,
+                type: 'blob' as const,
+                sha: blobs[i].data.sha,
+            })),
+            base_tree: baseCommit.tree.sha,
+        });
+
+        logger.info(`Creating commit...`);
+        const { data: commit } = await octokit.git.createCommit({
+            owner,
+            repo: repo_name,
+            message: `Deploy from Lovable for Anchor\n\nUser: ${user_id}\nFiles: ${files.length}`,
+            tree: tree.sha,
+            parents: [baseCommitSha],
+        });
+
+        logger.info(`Updating main branch`);
+        await octokit.git.updateRef({
+            owner,
+            repo: repo_name,
+            ref: 'heads/main',
+            sha: commit.sha,
+            force: true,
+        });
+
+        logger.info(`Successfully pushed ${files.length} files to ${repo_name}`);
+    }
+
+    public async enqueue(job_data: GithubPushJobData): Promise<Bull.Job<GithubPushJobData>> {
+        const jobId = `${job_data.user_id}-${job_data.repo_name}-${Date.now()}`;
+        return this.queue.add(job_data, {
+            jobId,
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 5000 },
+            removeOnComplete: false,
+            removeOnFail: false,
+        });
+    }
+
+    public async getJob(job_id: string): Promise<Bull.Job<GithubPushJobData> | null> {
+        return this.queue.getJob(job_id);
+    }
+
+    public async close(): Promise<void> {
         await this.queue.close();
-        logger.info(`GithubPushService queue ${this.queue.name} closed`);
+        logger.info('GitHub worker queue closed');
     }
 }

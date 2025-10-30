@@ -13,6 +13,7 @@ import StreamEventProcessor from '@/src/class/handle_stream_event';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { useChatStore } from '@/src/store/user/useChatStore';
 
 export default function BuilderChats() {
     const { messages, loading, setLoading } = useBuilderChatStore();
@@ -22,6 +23,7 @@ export default function BuilderChats() {
     const hasInitialized = useRef(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
     const { setCollapseFileTree } = useCodeEditor();
+    const { setContractId } = useChatStore();
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -38,6 +40,7 @@ export default function BuilderChats() {
         );
         if (initialMessage) {
             startChat(initialMessage.content);
+            setContractId(contractId);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contractId]);
