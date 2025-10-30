@@ -36,12 +36,9 @@ interface ClaudeMessage {
 export default class ContentGenerator {
     public geminiAI: GoogleGenAI;
     public claudeAI: Anthropic;
-    public systemPrompt: string;
     private parsers: Map<string, StreamParser>;
 
     constructor() {
-        this.systemPrompt = SYSTEM_PROMPT;
-
         this.geminiAI = new GoogleGenAI({
             apiKey: env.SERVER_GEMINI_API_KEY,
         });
@@ -58,6 +55,7 @@ export default class ContentGenerator {
         currentUserMessage: Message,
         messages: Message[],
         contractId: string,
+        public_key: string,
         llmProvider: LLMProvider = 'claude',
         userInstruction?: string,
     ): Promise<void> {
@@ -81,13 +79,23 @@ export default class ContentGenerator {
                 messages,
                 contractId,
                 parser,
+                public_key,
                 llmProvider,
             );
-
             const llmGeneratedFiles: FileContent[] = parser.getGeneratedFiles();
             const contractName: string = parser.getContractName();
             const base_files: FileContent[] = prepareBaseTemplate(contractName);
             const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
+
+            await this.saveLLMResponseToDb(full_response, contractId);
+            await prisma.contract.update({
+                where: {
+                    id: contractId,
+                },
+                data: {
+                    title: contractName,
+                },
+            });
 
             this.sendSSE(res, STAGE.END, { data: final_code });
             objectStore.uploadContractFiles(contractId, final_code, full_response);
@@ -112,22 +120,17 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
-        llmProvider: LLMProvider = 'gemini',
+        public_key: string,
+        llmProvider: LLMProvider = 'claude',
     ): Promise<string> {
         if (llmProvider === 'claude') {
-            // return await this.generateClaudeStreamingResponse(
-            //     res,
-            //     currentUserMessage,
-            //     messages,
-            //     contractId,
-            //     parser,
-            // );
-            return await this.generateGeminiStreamingResponse(
+            return await this.generateClaudeStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
                 contractId,
                 parser,
+                public_key,
             );
         } else {
             return await this.generateGeminiStreamingResponse(
@@ -136,6 +139,7 @@ export default class ContentGenerator {
                 messages,
                 contractId,
                 parser,
+                public_key,
             );
         }
     }
@@ -146,6 +150,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
+        public_key: string,
     ): Promise<string> {
         logger.info('gemini llm used');
         const contents: GeminiMessage[] = [];
@@ -154,7 +159,7 @@ export default class ContentGenerator {
         try {
             contents.push({
                 role: 'user',
-                parts: [{ text: this.systemPrompt }],
+                parts: [{ text: SYSTEM_PROMPT(public_key) }],
             });
 
             const startingData: StartingData = {
@@ -198,7 +203,6 @@ export default class ContentGenerator {
                 }
             }
 
-            await this.saveLLMResponseToDb(fullResponse, contractId);
             return fullResponse;
         } catch (llmError) {
             const systemMessage = await prisma.message.update({
@@ -225,6 +229,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
+        public_key: string,
     ): Promise<string> {
         logger.info('claude llm used');
         const contents: ClaudeMessage[] = [];
@@ -264,7 +269,7 @@ export default class ContentGenerator {
             const stream = await this.claudeAI.messages.stream({
                 model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 8096,
-                system: this.systemPrompt,
+                system: SYSTEM_PROMPT(public_key),
                 messages: contents,
             });
 
@@ -275,22 +280,36 @@ export default class ContentGenerator {
                     parser.feed(text, systemMessage);
                 }
             }
-            await this.saveLLMResponseToDb(fullResponse, contractId);
+
             return fullResponse;
         } catch (llmError) {
-            const systemMessage = await prisma.message.update({
+            const systemMessage = await prisma.message.findFirst({
                 where: {
-                    id: contractId,
+                    contractId,
+                    role: ChatRole.SYSTEM,
                 },
-                data: {
-                    error: true,
+                orderBy: {
+                    createdAt: 'desc',
                 },
             });
+
+            if (systemMessage) {
+                await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        error: true,
+                    },
+                });
+            }
+
             const errorData: ErrorData = {
                 message: 'Communication failed with the secure model API.',
                 error: 'Internal server error',
             };
-            this.sendSSE(res, STAGE.ERROR, errorData, systemMessage);
+
+            this.sendSSE(res, STAGE.ERROR, errorData, systemMessage || undefined);
             console.error('Claude LLM Error:', llmError);
             throw llmError;
         }

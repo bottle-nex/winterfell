@@ -127,7 +127,6 @@ export default class WebSocketClient {
             this.reconnect_delay = 1000;
         }
 
-
         this.reconnect_timeout = setTimeout(() => {
             if (!this.is_manually_closed) {
                 this.initialize_connection();

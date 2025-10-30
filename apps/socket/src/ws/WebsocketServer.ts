@@ -5,6 +5,7 @@ import { AuthUser } from '../types/auth_user';
 import { IncomingMessage } from 'http';
 import { env } from '../configs/env.config';
 import { CustomWebSocket } from '../types/socket_types';
+import { subscriber } from '../services/init_services';
 
 export default class WebSocketServer {
     private wss: WSServer;
@@ -25,7 +26,7 @@ export default class WebSocketServer {
         });
     }
 
-    private handle_connection(ws: CustomWebSocket, req: IncomingMessage) {
+    private async handle_connection(ws: CustomWebSocket, req: IncomingMessage) {
         try {
             const url = new URL(req.url || '', `ws://${req.headers.host}`);
             const contractId = url.searchParams.get('contractId');
@@ -37,18 +38,18 @@ export default class WebSocketServer {
             }
 
             const pod_key = this.get_pod_name(ws.user.id, contractId);
-
+            console.log('pod key is : ', pod_key);
             this.connection_mapping.set(pod_key, ws);
-            ws.send("connected");
+            ws.send('connected');
+            await subscriber.subscribe(pod_key);
 
-            ws.on('close', (code: number, reason: Buffer) => {
+            ws.on('close', () => {
                 this.connection_mapping.delete(pod_key);
             });
 
-            ws.on('error', (error: Error) => {
+            ws.on('error', () => {
                 this.connection_mapping.delete(pod_key);
             });
-
         } catch (err) {
             logger.error('Error in handle_connection:', err);
             ws.close(4000, 'Internal server error');
@@ -82,19 +83,27 @@ export default class WebSocketServer {
         }
     }
 
-    private get_pod_name(userId: string, contractId: string) {
-        return `anchor-pod-template-${userId}-${contractId}`.toLowerCase().substring(0, 63);
+    public get_pod_name(userId: string, contractId: string): string {
+        let name = `anchor-pod-template-${userId}-${contractId}`.toLowerCase();
+        if (name.length > 63) {
+            name = name.substring(0, 63);
+        }
+        name = name.replace(/-+$/, '');
+
+        if (name.length === 0) {
+            throw new Error('Generated pod name is empty');
+        }
+
+        return name;
     }
 
-    public send_to_connection(userId: string, contractId: string, message: any): boolean {
-        const key = this.get_pod_name(userId, contractId);
-        const ws = this.connection_mapping.get(key);
+    public send_to_connection(pod_key: string, message: unknown): boolean {
+        const ws = this.connection_mapping.get(pod_key);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify(message));
             return true;
         }
-
         return false;
     }
 }

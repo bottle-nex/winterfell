@@ -46,12 +46,12 @@ export default class PodTemplate {
                   ],
                   resources: {
                      requests: {
-                        memory: '1Gi',
-                        cpu: '500m',
+                        memory: '2Gi', // Increased from 1Gi
+                        cpu: '1000m', // Increased from 500m (1 core)
                      },
                      limits: {
-                        memory: '2Gi',
-                        cpu: '1000m',
+                        memory: '4Gi', // Increased from 2Gi
+                        cpu: '2000m', // Increased from 1000m (2 cores)
                      },
                   },
                   volumeMounts: [
@@ -73,7 +73,17 @@ export default class PodTemplate {
       return template;
    }
 
-   public static get_pod_name(userId: string, contractId: string) {
-      return `anchor-pod-template-${userId}-${contractId}`.toLowerCase().substring(0, 63);
+   public static get_pod_name(userId: string, contractId: string): string {
+      let name = `anchor-pod-template-${userId}-${contractId}`.toLowerCase();
+      if (name.length > 63) {
+         name = name.substring(0, 63);
+      }
+      name = name.replace(/-+$/, '');
+
+      if (name.length === 0) {
+         throw new Error('Generated pod name is empty');
+      }
+
+      return name;
    }
 }

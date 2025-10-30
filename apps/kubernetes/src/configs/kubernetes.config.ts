@@ -22,8 +22,9 @@ export default class KubernetesConfig {
       pod_name: string;
       container_name: string;
       command: string[];
+      onData?: (chunk: string) => void;
    }): Promise<{ stdout: string; stderr: string }> {
-      const { namespace, pod_name, command, container_name } = params;
+      const { namespace, pod_name, command, container_name, onData } = params;
 
       if (!pod_name || !namespace) {
          throw new Error('pod name / namespace is required');
@@ -35,14 +36,18 @@ export default class KubernetesConfig {
 
          const stdout_stream = new Writable({
             write(chunk, _encoding, callback) {
-               stdout_data += chunk.toString();
+               const str_chunk = chunk.toString();
+               stdout_data += str_chunk;
+               if (onData) onData(str_chunk);
                callback();
             },
          });
 
          const stderr_stream = new Writable({
             write(chunk, _encoding, callback) {
-               stderr_data += chunk.toString();
+               const str_chunk = chunk.toString();
+               stderr_data += str_chunk;
+               if (onData) onData(str_chunk);
                callback();
             },
          });
@@ -77,26 +82,40 @@ export default class KubernetesConfig {
       pod_name: string;
       container_name?: string;
       onData: (chunk: string) => void;
-   }) {
-      const { namespace, pod_name, container_name, onData } = params;
+      onError?: (err: any) => void;
+      tailLines?: number;
+   }): Promise<void> {
+      const { namespace, pod_name, container_name, onData, onError, tailLines } = params;
+
+      const logStream = new Writable({
+         write(chunk, _encoding, callback) {
+            onData(chunk.toString());
+            callback();
+         },
+      });
+
+      const logOptions: k8s.LogOptions = {
+         follow: true,
+         tailLines: tailLines,
+         timestamps: false,
+      };
+
+      // Add container name if provided
+      if (container_name) {
+         (logOptions as any).container = container_name;
+      }
 
       return new Promise<void>((resolve, reject) => {
-         const stdout_stream = new Writable({
-            write(chunk, _encoding, callback) {
-               onData(chunk.toString());
-               callback();
-            },
-         });
-
-         const logOptions: k8s.LogOptions = {
-            follow: true,
-            tailLines: 100,
-         };
-
          this.log
-            .log(namespace, pod_name, container_name || '', stdout_stream, logOptions)
-            .then(() => resolve())
-            .catch((err: any) => reject(err));
+            .log(namespace, pod_name, container_name || '', logStream, logOptions)
+            .then(() => {
+               // The log method resolves when stream ends
+               resolve();
+            })
+            .catch((err) => {
+               if (onError) onError(err);
+               reject(err);
+            });
       });
    }
 }

@@ -1,6 +1,7 @@
 'use client';
 import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
+import { cleanWebSocketClient } from '@/src/lib/singletonWebSocket';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import React, { useEffect } from 'react';
@@ -28,6 +29,7 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
         return () => {
             cleanStore();
             reset();
+            cleanWebSocketClient();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contractId]);

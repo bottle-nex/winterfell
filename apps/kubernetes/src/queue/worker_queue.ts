@@ -1,6 +1,6 @@
 import Bull, { Job } from 'bull';
 import { WORKER_QUEUE_TYPES } from '../types/worker_queue_types';
-import { pod_service } from '../services/init_services';
+import { pod_service, publisher } from '../services/init_services';
 import { logger } from '../utils/logger';
 import { get_files } from '../services/client_services';
 import { FileContent } from '../types/file_type';
@@ -9,7 +9,14 @@ export default class ServerToOrchestratorQueue {
    private client: Bull.Queue;
 
    constructor(queue_name: string) {
-      this.client = new Bull(queue_name, { redis: 'redis://localhost:6379' });
+      this.client = new Bull(queue_name, {
+         redis: 'redis://localhost:6379',
+         defaultJobOptions: {
+            attempts: 1,
+            removeOnComplete: true,
+            removeOnFail: true,
+         },
+      });
       this.setup_queue_processors();
    }
 
@@ -18,12 +25,10 @@ export default class ServerToOrchestratorQueue {
          WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND,
          this.run_command_on_pod.bind(this, ['anchor', 'build']),
       );
-
       this.client.process(
          WORKER_QUEUE_TYPES.ANCHOR_TEST_COMMAND,
          this.run_command_on_pod.bind(this, ['anchor', 'test']),
       );
-
       this.client.process(
          WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND,
          this.run_command_on_pod.bind(this, ['anchor', 'deploy']),
@@ -36,18 +41,54 @@ export default class ServerToOrchestratorQueue {
       job: Job,
    ): Promise<{ success: boolean; stdout: string; stderr: string }> {
       const { userId, contractId, projectName } = job.data;
-      const codebase: FileContent[] = await get_files(contractId);
 
       try {
-         const pod_name = await pod_service.create_pod({ userId, contractId, projectName });
+         await publisher.publish_status(userId, contractId, 'started', {
+            command: command.join(' '),
+            projectName,
+         });
+
+         const codebase: FileContent[] = (await get_files(contractId)).filter(
+            (file) => !file.path.includes('Cargo.lock'),
+         );
+
+         let pod_name: string | null = await pod_service.get_pod_if_running(userId, contractId);
+
+         if (pod_name === null) {
+            pod_name = await pod_service.create_pod({ userId, contractId, projectName });
+         }
+
          await pod_service.copy_files_to_pod(pod_name, projectName, codebase);
-         logger.info('files copied');
-         pod_service.stream_logs(pod_name, (chunk) => logger.info(`[${pod_name}] ${chunk}`));
-         const result = await pod_service.execute_command(pod_name, [
-            'sh',
+         logger.info('Files copied to pod', { pod_name });
+
+         const fullCommand = [
+            'bash',
+            '-l',
             '-c',
-            `cd /workspace/${projectName} && ${command.join(' ')}`,
-         ]);
+            `cd /workspace/${projectName} && rm -f Cargo.lock && ${command.join(' ')} 2>&1`,
+         ];
+
+         const result = await pod_service.execute_command(
+            pod_name,
+            fullCommand,
+            async (chunk: string) => {
+               console.log(chunk);
+               const lines = chunk.split('\n').filter((line) => line.trim());
+               for (const line of lines) {
+                  await publisher.publish_build_log(userId, contractId, line + '\n');
+               }
+            },
+         );
+
+         logger.info('Command completed successfully', {
+            command: command.join(' '),
+            stdoutLength: result.stdout.length,
+            stderrLength: result.stderr.length,
+         });
+
+         await publisher.publish_status(userId, contractId, 'completed', {
+            command: command.join(' '),
+         });
 
          return {
             success: true,
@@ -55,15 +96,33 @@ export default class ServerToOrchestratorQueue {
             stderr: result.stderr,
          };
       } catch (error) {
-         logger.error(`Command ${command.join(' ')} failed`, error);
-         // await pod_service.delete_pod(userId, contractId);
-         throw error;
-      } finally {
-         // await pod_service.delete_pod(userId, contractId);
+         logger.error('Command execution failed', {
+            command: command.join(' '),
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            userId,
+            contractId,
+         });
+
+         const errorMessage = error instanceof Error ? error.message : String(error);
+         await publisher.publish_build_log(
+            userId,
+            contractId,
+            `Error: ${errorMessage}\n`,
+            'stderr',
+         );
+         await publisher.publish_status(userId, contractId, 'failed', { error: errorMessage });
+
+         return {
+            success: false,
+            stdout: '',
+            stderr: errorMessage,
+         };
       }
    }
 
    public async disconnect(): Promise<void> {
+      await publisher.disconnect();
       await this.client.close();
    }
 }
