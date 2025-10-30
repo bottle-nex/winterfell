@@ -63,7 +63,6 @@
   - Auto-generate Anchor test scripts.
   - Simulate transactions in-browser or on devnet.
 - **Contract Visualization**
-
   - Graphical representation of instructions, accounts, and relationships.
 
 - **Code Snippets**
@@ -77,7 +76,6 @@
   - Deploy to Solana Devnet, Testnet, or Mainnet.
   - Auto-generate CLI commands for deployment.
 - **ID/Address Management**
-
   - Track deployed program IDs.
   - Generate client SDKs to interact with deployed contracts.
 
@@ -89,20 +87,17 @@
 ## **Client Generation & Integration**
 
 - **AI-Powered Client SDK**
-
   - Automatically generate TypeScript/JavaScript client.
   - Functions for each instruction with typed inputs/outputs.
   - Pre-configured Anchor Provider and wallet integration.
   - Helper functions for PDAs, token minting, and transactions.
 
 - **Frontend Boilerplate**
-
   - React/Next.js starter project prewired with wallet adapters.
   - Hooks for each contract instruction.
   - Example UI components (forms, buttons) linked to instructions.
 
 - **Integration AI Assist**
-
   - Suggest UI patterns based on contract type:
     - NFT → gallery + mint button
     - Token → transfer + balance display
@@ -110,7 +105,6 @@
   - Auto-generate ID to UI mapping for account balances, token states, etc.
 
 - **Testing & Simulation**
-
   - Generate frontend integration tests.
   - Simulate transactions in-browser for UX validation.
 
@@ -127,15 +121,12 @@
 - **Collaboration**
   - Share contracts with other developers for co-editing and review.
 - **Template Marketplace**
-
   - Community-curated or official contract templates ready to customize.
 
 - **Security Checklist**
-
   - AI-powered checklist: seeds, admin restrictions, rent exemption checks.
 
 - **Export Options**
-
   - Export contract + IDL + tests + deployment scripts as a complete package.
 
 - **Interactive Sandbox**

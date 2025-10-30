@@ -76,9 +76,9 @@ export const authOption: AuthOptions = {
             clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
             authorization: {
                 params: {
-                    scope: 'repo user'
-                }
-            }
+                    scope: 'repo user',
+                },
+            },
         }),
     ],
 };

@@ -43,13 +43,15 @@ const FaqItem = memo<FaqItemProps>(({ faq, index, isOpen, onToggle }) => {
                     {faq.question}
                 </span>
                 <AiOutlinePlus
-                    className={`w-6 h-6 text-primary flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-45' : ''
-                        }`}
+                    className={`w-6 h-6 text-primary flex-shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-45' : ''
+                    }`}
                 />
             </div>
             <div
-                className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96' : 'max-h-0'
-                    }`}
+                className={`overflow-hidden transition-all duration-300 ${
+                    isOpen ? 'max-h-96' : 'max-h-0'
+                }`}
             >
                 <div className="pb-6 pt-1">
                     <p className="text-dark-base/70 leading-relaxed text-left">{faq.answer}</p>
@@ -130,7 +132,15 @@ export default function Faq() {
                                 <span>Spotted an issue?</span>
                                 <span>Help us improve — open it on GitHub.</span>
                                 <div className="flex items-end justify-center gap-x-2 md:gap-x-3 mt-2">
-                                    <Button onClick={() => window.open('https://github.com/bottle-nex/winterfell', '_blank')} className="font-semibold text-xs md:text-base !px-4 md:!px-6 rounded-[4px]">
+                                    <Button
+                                        onClick={() =>
+                                            window.open(
+                                                'https://github.com/bottle-nex/winterfell',
+                                                '_blank',
+                                            )
+                                        }
+                                        className="font-semibold text-xs md:text-base !px-4 md:!px-6 rounded-[4px]"
+                                    >
                                         <FaGithub className="mr-2" />
                                         GitHub
                                     </Button>

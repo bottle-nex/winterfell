@@ -1,39 +1,46 @@
 import { k8s_config } from '../services/init_services';
-import { logger } from './logger';
 
-export async function waitForPodRunning(pod_name: string, namespace: string, timeout: number = 60) {
+export async function waitForPodRunning(
+   pod_name: string,
+   namespace: string,
+   timeout: number = 60,
+): Promise<void> {
    const start_time = Date.now();
+   const timeout_ms = timeout * 1000;
 
-   while (Date.now() - start_time < timeout * 1000) {
+   while (Date.now() - start_time < timeout_ms) {
       try {
          const response = await k8s_config.core_api.readNamespacedPodStatus({
             name: pod_name,
             namespace,
          });
-
          const phase = response.status?.phase;
+
          switch (phase) {
             case 'Running':
-               logger.debug('Pod is running', { podName: pod_name });
                return;
+
             case 'Failed':
-               logger.error('Pod failed', { podName: pod_name, phase });
-               return;
+               throw new Error(`Pod ${pod_name} failed to start`);
+
             case 'Unknown':
-               logger.warn('Pod is in unknown state', { podName: pod_name });
-               return;
+               throw new Error(`Pod ${pod_name} is in unknown state`);
+
+            case 'Pending':
+               break;
+
             default:
-               logger.debug('Pod state change', { podName: pod_name, phase });
+               break;
          }
 
          await new Promise((res) => setTimeout(res, 2000));
-      } catch (err) {
-         logger.error('Error waiting for pod to run', {
-            error: err instanceof Error ? err.message : String(err),
-            podName: pod_name,
-         });
+      } catch (err: any) {
+         if (err.code === 404 || err.statusCode === 404) {
+            await new Promise((res) => setTimeout(res, 2000));
+            continue;
+         }
+         console.error('pod not found', err);
       }
    }
-
-   logger.warn('Pod startup timeout exceeded', { podName: pod_name, timeout });
+   throw new Error(`Pod ${pod_name} did not reach Running state within ${timeout} seconds`);
 }

@@ -17,7 +17,7 @@ import {
 } from '../../types/stream_event_types';
 import { FileContent, STAGE } from '../../types/content_types';
 import { mergeWithLLMFiles, prepareBaseTemplate } from '../../class/test';
-import re_stating_prompt from '../../prompt/re-stating-prompt';
+// import re_stating_prompt from '../../prompt/re-stating-prompt';
 
 type LLMProvider = 'gemini' | 'claude';
 
@@ -36,12 +36,9 @@ interface ClaudeMessage {
 export default class ContentGenerator {
     public geminiAI: GoogleGenAI;
     public claudeAI: Anthropic;
-    public systemPrompt: string;
     private parsers: Map<string, StreamParser>;
 
     constructor() {
-        this.systemPrompt = SYSTEM_PROMPT;
-
         this.geminiAI = new GoogleGenAI({
             apiKey: env.SERVER_GEMINI_API_KEY,
         });
@@ -58,16 +55,17 @@ export default class ContentGenerator {
         currentUserMessage: Message,
         messages: Message[],
         contractId: string,
+        public_key: string,
         llmProvider: LLMProvider = 'claude',
-        userInstruction?: string,
+        // userInstruction?: string,
     ): Promise<void> {
         //const isFirstMessage = await this.isFirstMessage(contractId);
         //isFirstMessage.bool && isFirstMessage.fetched_contract && userInstruction
-            //? (this.systemPrompt = SYSTEM_PROMPT)
-            //: (this.systemPrompt = re_stating_prompt(
-               //   userInstruction!,
-             //     isFirstMessage.fetched_contract,
-           //   ));
+        //? (this.systemPrompt = SYSTEM_PROMPT)
+        //: (this.systemPrompt = re_stating_prompt(
+        //   userInstruction!,
+        //     isFirstMessage.fetched_contract,
+        //   ));
 
         // console.log('is first message: ', isFirstMessage.bool);
 
@@ -81,13 +79,23 @@ export default class ContentGenerator {
                 messages,
                 contractId,
                 parser,
+                public_key,
                 llmProvider,
             );
-
             const llmGeneratedFiles: FileContent[] = parser.getGeneratedFiles();
             const contractName: string = parser.getContractName();
             const base_files: FileContent[] = prepareBaseTemplate(contractName);
             const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
+
+            await this.saveLLMResponseToDb(full_response, contractId);
+            await prisma.contract.update({
+                where: {
+                    id: contractId,
+                },
+                data: {
+                    title: contractName,
+                },
+            });
 
             this.sendSSE(res, STAGE.END, { data: final_code });
             objectStore.uploadContractFiles(contractId, final_code, full_response);
@@ -112,22 +120,17 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
-        llmProvider: LLMProvider = 'gemini',
+        public_key: string,
+        llmProvider: LLMProvider = 'claude',
     ): Promise<string> {
         if (llmProvider === 'claude') {
-            // return await this.generateClaudeStreamingResponse(
-            //     res,
-            //     currentUserMessage,
-            //     messages,
-            //     contractId,
-            //     parser,
-            // );
-            return await this.generateGeminiStreamingResponse(
+            return await this.generateClaudeStreamingResponse(
                 res,
                 currentUserMessage,
                 messages,
                 contractId,
                 parser,
+                public_key,
             );
         } else {
             return await this.generateGeminiStreamingResponse(
@@ -136,6 +139,7 @@ export default class ContentGenerator {
                 messages,
                 contractId,
                 parser,
+                public_key,
             );
         }
     }
@@ -146,6 +150,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
+        public_key: string,
     ): Promise<string> {
         logger.info('gemini llm used');
         const contents: GeminiMessage[] = [];
@@ -154,7 +159,7 @@ export default class ContentGenerator {
         try {
             contents.push({
                 role: 'user',
-                parts: [{ text: this.systemPrompt }],
+                parts: [{ text: SYSTEM_PROMPT(public_key) }],
             });
 
             const startingData: StartingData = {
@@ -198,7 +203,6 @@ export default class ContentGenerator {
                 }
             }
 
-            await this.saveLLMResponseToDb(fullResponse, contractId);
             return fullResponse;
         } catch (llmError) {
             const systemMessage = await prisma.message.update({
@@ -225,6 +229,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         parser: StreamParser,
+        public_key: string,
     ): Promise<string> {
         logger.info('claude llm used');
         const contents: ClaudeMessage[] = [];
@@ -264,7 +269,7 @@ export default class ContentGenerator {
             const stream = await this.claudeAI.messages.stream({
                 model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 8096,
-                system: this.systemPrompt,
+                system: SYSTEM_PROMPT(public_key),
                 messages: contents,
             });
 
@@ -275,22 +280,36 @@ export default class ContentGenerator {
                     parser.feed(text, systemMessage);
                 }
             }
-            await this.saveLLMResponseToDb(fullResponse, contractId);
+
             return fullResponse;
         } catch (llmError) {
-            const systemMessage = await prisma.message.update({
+            const systemMessage = await prisma.message.findFirst({
                 where: {
-                    id: contractId,
+                    contractId,
+                    role: ChatRole.SYSTEM,
                 },
-                data: {
-                    error: true,
+                orderBy: {
+                    createdAt: 'desc',
                 },
             });
+
+            if (systemMessage) {
+                await prisma.message.update({
+                    where: {
+                        id: systemMessage.id,
+                    },
+                    data: {
+                        error: true,
+                    },
+                });
+            }
+
             const errorData: ErrorData = {
                 message: 'Communication failed with the secure model API.',
                 error: 'Internal server error',
             };
-            this.sendSSE(res, STAGE.ERROR, errorData, systemMessage);
+
+            this.sendSSE(res, STAGE.ERROR, errorData, systemMessage || undefined);
             console.error('Claude LLM Error:', llmError);
             throw llmError;
         }
@@ -383,43 +402,48 @@ export default class ContentGenerator {
         this.parsers.delete(contractId);
     }
 
-private async isFirstMessage(contractId: string): Promise<{
-    bool: boolean;
-    fetched_contract: string;
-}> {
-    const contract = await prisma.contract.findUnique({
-        where: { id: contractId },
-        select: { messages: true },
-    });
-    console.log("contract: ", contract);
+    private async isFirstMessage(contractId: string): Promise<{
+        bool: boolean;
+        fetched_contract: string;
+    }> {
+        const contract = await prisma.contract.findUnique({
+            where: { id: contractId },
+            select: { messages: true },
+        });
+        console.log('contract: ', contract);
 
-    const system_messages = contract?.messages.filter(m => m.role === 'SYSTEM');
-    console.log("system messages: ", system_messages);
+        const system_messages = contract?.messages.filter((m) => m.role === 'SYSTEM');
+        console.log('system messages: ', system_messages);
 
-    // If no messages found → it's the first message
-    if (!contract || !contract.messages || contract.messages.length === 0 || !system_messages || system_messages.length === 0) {
+        // If no messages found → it's the first message
+        if (
+            !contract ||
+            !contract.messages ||
+            contract.messages.length === 0 ||
+            !system_messages ||
+            system_messages.length === 0
+        ) {
+            return {
+                bool: true,
+                fetched_contract: '',
+            };
+        }
+
+        // Otherwise, fetch the existing contract code using Fetch API
+        const contract_url = `${env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/resource`;
+
+        const response = await fetch(contract_url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch contract: ${response.statusText}`);
+        }
+
+        const fetched_contract = await response.text();
+
         return {
-            bool: true,
-            fetched_contract: '',
+            bool: false,
+            fetched_contract,
         };
     }
-
-    // Otherwise, fetch the existing contract code using Fetch API
-    const contract_url = `${env.SERVER_CLOUDFRONT_DOMAIN}/${contractId}/resource`;
-
-    const response = await fetch(contract_url);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch contract: ${response.statusText}`);
-    }
-
-    const fetched_contract = await response.text();
-
-    return {
-        bool: false,
-        fetched_contract,
-    };
-}
-
 
     private sendSSE(
         res: Response,

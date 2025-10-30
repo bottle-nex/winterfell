@@ -25,11 +25,14 @@ incremental = false
 codegen-units = 1`,
     },
 
-    // Anchor.toml
+    // Anchor.toml - FIXED: Proper key-value format
     {
         path: 'Anchor.toml',
-        content: `[features]
-seeds = false
+        content: `[toolchain]
+package_manager = "yarn"
+
+[features]
+resolution = true
 skip-lint = false
 
 [programs.localnet]
@@ -39,35 +42,33 @@ skip-lint = false
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"`,
     },
 
-    // package.json - DOWNGRADED ANCHOR VERSION
+    // package.json
     {
         path: 'package.json',
         content: `{
-  "name": "<PROJECT_NAME>",
-  "version": "0.1.0",
-  "license": "MIT",
+  "license": "ISC",
   "scripts": {
     "lint:fix": "prettier */*.js \\"*/**/*{.js,.ts}\\" -w",
     "lint": "prettier */*.js \\"*/**/*{.js,.ts}\\" --check"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.29.0"
+    "@coral-xyz/anchor": "^0.32.1"
   },
   "devDependencies": {
-    "@types/bn.js": "^5.1.0",
-    "@types/chai": "^4.3.0",
-    "@types/mocha": "^9.0.0",
     "chai": "^4.3.4",
     "mocha": "^9.0.3",
     "ts-mocha": "^10.0.0",
-    "typescript": "^4.3.5",
+    "@types/bn.js": "^5.1.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.0.0",
+    "typescript": "^5.7.3",
     "prettier": "^2.6.2"
   }
 }`,
@@ -83,11 +84,18 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"`,
     "lib": ["es2015"],
     "module": "commonjs",
     "target": "es6",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strict": false
+    "esModuleInterop": true
   }
 }`,
+    },
+
+    // rust-toolchain.toml
+    {
+        path: 'rust-toolchain.toml',
+        content: `[toolchain]
+channel = "1.89.0"
+components = ["rustfmt","clippy"]
+profile = "minimal"`,
     },
 
     // .gitignore
@@ -118,7 +126,7 @@ test-ledger`,
     // PROGRAM CONFIGURATION
     // ============================================
 
-    // Program Cargo.toml - DOWNGRADED ANCHOR-LANG VERSION
+    // Program Cargo.toml
     {
         path: 'programs/<PROJECT_NAME>/Cargo.toml',
         content: `[package]
@@ -132,21 +140,28 @@ crate-type = ["cdylib", "lib"]
 name = "<PROJECT_NAME>"
 
 [features]
+default = []
+cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
-cpi = ["no-entrypoint"]
-default = []
+idl-build = ["anchor-lang/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
 
 [dependencies]
-anchor-lang = "0.29.0"`,
+anchor-lang = "0.32.1"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }`,
     },
 
     // ============================================
     // PROGRAM SOURCE (PLACEHOLDER - LLM OVERWRITES)
     // ============================================
 
-    // lib.rs - Minimal placeholder
+    // lib.rs
     {
         path: 'programs/<PROJECT_NAME>/src/lib.rs',
         content: `use anchor_lang::prelude::*;
@@ -158,6 +173,7 @@ pub mod <PROJECT_NAME> {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        msg!("Greetings from: {:?}", ctx.program_id);
         Ok(())
     }
 }
@@ -170,15 +186,16 @@ pub struct Initialize {}`,
     // MIGRATIONS
     // ============================================
 
+    // migrations/deploy.ts
     {
         path: 'migrations/deploy.ts',
         content: `// Migrations are an early feature. Currently, they're nothing more than this
 // single deploy script that's invoked from the CLI, injecting a provider
 // configured from the workspace's Anchor.toml.
 
-const anchor = require("@coral-xyz/anchor");
+import * as anchor from "@coral-xyz/anchor";
 
-module.exports = async function (provider) {
+module.exports = async function (provider: anchor.AnchorProvider) {
   // Configure client to use the provider.
   anchor.setProvider(provider);
 
@@ -190,6 +207,7 @@ module.exports = async function (provider) {
     // TESTS (PLACEHOLDER - LLM OVERWRITES)
     // ============================================
 
+    // tests/<PROJECT_NAME>.ts
     {
         path: 'tests/<PROJECT_NAME>.ts',
         content: `import * as anchor from "@coral-xyz/anchor";
@@ -200,7 +218,7 @@ describe("<PROJECT_NAME>", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.<PROJECT_NAME_PASCAL> as Program<<PROJECT_NAME_PASCAL>>;
+  const program = anchor.workspace.<PROJECT_NAME_CAMEL> as Program<<PROJECT_NAME_PASCAL>>;
 
   it("Is initialized!", async () => {
     // Add your test here.
@@ -222,26 +240,72 @@ export function toPascalCase(projectName: string): string {
         .join('');
 }
 
-export function prepareBaseTemplate(projectName: string, programId?: string): FileContent[] {
-    const finalProgramId = programId || generateProgramId();
-    const pascalCaseName = toPascalCase(projectName);
-
-    return ANCHOR_BASE_TEMPLATE.map((file) => ({
-        path: file.path.replace(/<PROJECT_NAME>/g, projectName),
-        content: file.content
-            .replace(/<PROJECT_NAME>/g, projectName)
-            .replace(/<PROJECT_NAME_PASCAL>/g, pascalCaseName)
-            .replace(/<PROGRAM_ID>/g, finalProgramId),
-    }));
+export function toCamelCase(projectName: string): string {
+    const pascal = toPascalCase(projectName);
+    return pascal.charAt(0).toLowerCase() + pascal.slice(1);
 }
 
+// FIXED: Added validation and better error handling
+export function prepareBaseTemplate(projectName: string, programId?: string): FileContent[] {
+    // Validate project name
+    if (!projectName || projectName.trim() === '') {
+        throw new Error('Project name cannot be empty');
+    }
+
+    // Clean project name (remove special chars, spaces)
+    const cleanProjectName = projectName
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, '_');
+
+    const finalProgramId = programId || generateProgramId();
+    const pascalCaseName = toPascalCase(cleanProjectName);
+    const camelCaseName = toCamelCase(cleanProjectName);
+
+    return ANCHOR_BASE_TEMPLATE.map((file) => {
+        const updatedPath = file.path.replace(/<PROJECT_NAME>/g, cleanProjectName);
+        const updatedContent = file.content
+            .replace(/<PROJECT_NAME>/g, cleanProjectName)
+            .replace(/<PROJECT_NAME_PASCAL>/g, pascalCaseName)
+            .replace(/<PROJECT_NAME_CAMEL>/g, camelCaseName)
+            .replace(/<PROGRAM_ID>/g, finalProgramId);
+
+        return {
+            path: updatedPath,
+            content: updatedContent,
+        };
+    });
+}
+
+// FIXED: Better merging logic with path normalization
 export function mergeWithLLMFiles(
     baseFiles: FileContent[],
     llmFiles: FileContent[],
 ): FileContent[] {
-    const llmPathSet = new Set(llmFiles.map((f) => f.path));
+    // Normalize paths (remove leading/trailing slashes, normalize separators)
+    const normalizePath = (path: string) => {
+        return path.replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+    };
 
-    const filteredBase = baseFiles.filter((f) => !llmPathSet.has(f.path));
+    // Create a map of normalized LLM file paths
+    const llmPathMap = new Map(llmFiles.map((f) => [normalizePath(f.path), f]));
 
+    // Filter base files, excluding those that LLM has generated
+    const filteredBase = baseFiles.filter((f) => {
+        const normalizedPath = normalizePath(f.path);
+        return !llmPathMap.has(normalizedPath);
+    });
+
+    // Combine: base files (without duplicates) + all LLM files
     return [...filteredBase, ...llmFiles];
+}
+
+// OPTIONAL: Add a debug function to help troubleshoot
+export function debugFileStructure(files: FileContent[]): void {
+    console.log('=== File Structure ===');
+    const sorted = [...files].sort((a, b) => a.path.localeCompare(b.path));
+    sorted.forEach((f) => {
+        console.log(`📄 ${f.path}`);
+    });
+    console.log('=====================');
 }

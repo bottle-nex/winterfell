@@ -44,8 +44,6 @@ export default function BuilderChatInput() {
             createdAt: new Date(),
         });
 
-
-
         // router.push(`/playground/${newContractId}`);
     }
 
