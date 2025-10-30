@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: Props) {
             >
                 {children}
                 <Toaster
-                    theme='dark'
+                    theme="dark"
                     closeButton
                     visibleToasts={4}
                     toastOptions={{

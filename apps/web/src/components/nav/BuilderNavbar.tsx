@@ -106,20 +106,19 @@ export default function BuilderNavbar() {
 
         handleGithubCallback();
     }, [session, setSession]);
-
-    // Connect GitHub handler
+    
     const handleConnectGithub = () => {
         const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-        console.log('client id is --------------------------->', clientId);
-        const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+
+        const currentUrl = window.location.origin + window.location.pathname;
+        const redirectUrl = encodeURIComponent(currentUrl);
         const scope = encodeURIComponent('repo user');
         const state = 'github-connect';
 
-        const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+        const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}&scope=${scope}&state=${state}`;
         window.location.href = githubAuthUrl;
     };
 
-    // Push code to GitHub handler
     async function handleCodePushToGithub() {
         if (!repoName.trim()) {
             toast.error('Please enter a repository name');
@@ -257,8 +256,7 @@ export default function BuilderNavbar() {
 
                             {showRepoPanel && (
                                 <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
-                                    {session.user.githubUsername}
-                                    <div className='flex'>
+                                    <div className="flex">
                                         <Input
                                             type="text"
                                             value={repoName}
@@ -282,7 +280,7 @@ export default function BuilderNavbar() {
 
                     {session?.user?.image && (
                         <Image
-                            onClick={() => setShowLogoutDropdown(prev => !prev)}
+                            onClick={() => setShowLogoutDropdown((prev) => !prev)}
                             src={session.user.image}
                             alt="user"
                             width={28}
