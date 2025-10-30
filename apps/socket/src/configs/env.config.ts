@@ -12,7 +12,6 @@ function parseEnv() {
         return envSchema.parse(process.env);
     } catch (err) {
         throw new Error(`Invalid environment variables: ${err}`);
-        process.exit(1);
     }
 }
 

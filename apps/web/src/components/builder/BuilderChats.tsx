@@ -5,10 +5,9 @@ import Image from 'next/image';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { CHAT_URL } from '@/routes/api_routes';
+import { NEW_CHAT_URL } from '@/routes/api_routes';
 import { StreamEvent } from '@/src/types/stream_event_types';
 import AnimtaedLoader from '../ui/animated-loader';
-
 import StreamEventProcessor from '@/src/class/handle_stream_event';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
@@ -48,7 +47,7 @@ export default function BuilderChats() {
     async function startChat(message: string) {
         try {
             setLoading(true);
-            const response = await fetch(CHAT_URL, {
+            const response = await fetch(NEW_CHAT_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

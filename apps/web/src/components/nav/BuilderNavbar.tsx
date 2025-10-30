@@ -106,7 +106,7 @@ export default function BuilderNavbar() {
 
         handleGithubCallback();
     }, [session, setSession]);
-    
+
     const handleConnectGithub = () => {
         const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
 
@@ -151,10 +151,10 @@ export default function BuilderNavbar() {
                 setShowRepoPanel(false);
                 setRepoName('');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to push to github:', error);
 
-            if (error.response?.data?.requiresGithub) {
+            if (error instanceof Error) {
                 toast.error('Please connect your GitHub first');
             } else {
                 toast.error('Failed to export to GitHub');
@@ -256,6 +256,7 @@ export default function BuilderNavbar() {
 
                             {showRepoPanel && (
                                 <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
+                                    {session.user.githubUsername}
                                     <div className="flex">
                                         <Input
                                             type="text"
