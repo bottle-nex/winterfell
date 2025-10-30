@@ -64,11 +64,26 @@ export default class StreamEventProcessor {
                 console.error('LLM Error:', event.data);
                 break;
 
-            case STAGE.END:
-                if ('data' in event.data) {
-                    parseFileStructure(event.data.data as FileContent[]);
+            case STAGE.END: {
+                let code;
+
+                if ('data' in event.data && event.data.data) {
+                    code = event.data.data;
+                } else if (Array.isArray(event.data)) {
+                    code = event.data;
+                } else {
+                    code = event.data;
+                }
+
+                console.log('STAGE.END received, code:', code);
+
+                if (code && Array.isArray(code)) {
+                    parseFileStructure(code);
+                } else {
+                    console.error('Invalid code structure:', code);
                 }
                 break;
+            }
 
             default:
                 break;
