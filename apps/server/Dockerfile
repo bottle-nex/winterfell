@@ -11,6 +11,10 @@ RUN echo '{"name": "server-docker", "private": true, "workspaces": ["apps/server
 
 RUN yarn --frozen-lockfile
 
+WORKDIR /app/packages/database
+RUN npx prisma generate
+
+
 WORKDIR /app/apps/server
 RUN yarn build
 
