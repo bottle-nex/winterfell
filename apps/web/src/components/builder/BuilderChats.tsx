@@ -6,16 +6,16 @@ import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { NEW_CHAT_URL } from '@/routes/api_routes';
-import { StreamEvent } from '@/src/types/stream_event_types';
+import { FILE_STRUCTURE_TYPES, FileContent, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
 import AnimtaedLoader from '../ui/animated-loader';
-import StreamEventProcessor from '@/src/class/handle_stream_event';
+// import StreamEventProcessor from '@/src/class/handle_stream_event';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useChatStore } from '@/src/store/user/useChatStore';
+import { Message } from '@/src/types/prisma-types';
 
 export default function BuilderChats() {
-    const { messages, loading, setLoading } = useBuilderChatStore();
     const { session } = useUserSessionStore();
     const params = useParams();
     const contractId = params.contractId as string;
@@ -23,6 +23,8 @@ export default function BuilderChats() {
     const messageEndRef = useRef<HTMLDivElement>(null);
     const { setCollapseFileTree } = useCodeEditor();
     const { setContractId } = useChatStore();
+    const { parseFileStructure, deleteFile } = useCodeEditor();
+    const { messages, loading, setLoading, upsertMessage, setPhase, setCurrentFileEditing } = useBuilderChatStore();
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -83,7 +85,67 @@ export default function BuilderChats() {
                         const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
                         const event: StreamEvent = JSON.parse(jsonString);
 
-                        StreamEventProcessor.process(event);
+                        switch (event.type) {
+                            case PHASE_TYPES.STARTING:
+                                if (event.systemMessage) {
+                                    upsertMessage(event.systemMessage);
+                                }
+                                break;
+
+                            case STAGE.CONTEXT:
+                                if ('llmMessage' in event.data) {
+                                    upsertMessage(event.data.llmMessage as Message);
+                                }
+                                break;
+
+                            case STAGE.PLANNING:
+                            case STAGE.GENERATING_CODE:
+                            case STAGE.BUILDING:
+                            case STAGE.CREATING_FILES:
+                            case STAGE.FINALIZING:
+                                if (event.systemMessage) {
+                                    upsertMessage(event.systemMessage);
+                                }
+                                break;
+
+                            case PHASE_TYPES.THINKING:
+                            case PHASE_TYPES.GENERATING:
+                            case PHASE_TYPES.BUILDING:
+                            case PHASE_TYPES.CREATING_FILES:
+                            case PHASE_TYPES.COMPLETE:
+                                setPhase(event.type);
+                                break;
+
+                            case PHASE_TYPES.DELETING:
+                                setPhase(event.type);
+                                break;
+
+                            case FILE_STRUCTURE_TYPES.EDITING_FILE:
+                                setPhase(event.type);
+                                if ('file' in event.data) {
+                                    if ('phase' in event.data && event.data.phase === 'deleting') {
+                                        deleteFile(event.data.file as string);
+                                    } else {
+                                        setCurrentFileEditing(event.data.file as string);
+                                    }
+                                }
+                                break;
+
+                            case PHASE_TYPES.ERROR:
+                                console.error('LLM Error:', event.data);
+                                break;
+
+                            case STAGE.END: {
+
+                                if ('data' in event.data && event.data.data) {
+                                    parseFileStructure(event.data.data as FileContent[]);
+                                }
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
                     } catch {
                         console.error('Failed to parse stream event');
                     }
@@ -170,3 +232,4 @@ export default function BuilderChats() {
         </div>
     );
 }
+

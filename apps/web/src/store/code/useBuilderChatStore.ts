@@ -34,20 +34,29 @@ export const useBuilderChatStore = create<BuilderChatState>((set, get) => ({
         const messages = get().messages;
         const existingIndex = messages.findIndex((msg) => msg.id === message.id);
 
+        let updatedMessages: Message[];
+
         if (existingIndex !== -1) {
-            set({
-                messages: messages.map((msg) => {
-                    if (msg.id === message.id) {
-                        return { ...msg, ...message };
-                    }
-                    return msg;
-                }),
+            // Update existing message
+            updatedMessages = messages.map((msg) => {
+                if (msg.id === message.id) {
+                    return { ...msg, ...message };
+                }
+                return msg;
             });
         } else {
-            set({
-                messages: [...messages, message as Message],
-            });
+            // Add new message
+            updatedMessages = [...messages, message as Message];
         }
+
+        // Sort by createdAt to maintain chronological order
+        updatedMessages.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateA - dateB;
+        });
+
+        set({ messages: updatedMessages });
     },
     cleanStore: () => {
         set({

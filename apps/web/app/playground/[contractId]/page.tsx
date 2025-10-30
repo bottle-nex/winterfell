@@ -57,8 +57,12 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
                 },
             );
 
-            for (let i = 0; i < data.messages.length; i++) {
-                upsertMessage(data.messages[i]);
+            const sortedMessages = [...data.messages].sort((a, b) => {
+                return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+            });
+
+            for (let i = 0; i < sortedMessages.length; i++) {
+                upsertMessage(sortedMessages[i]);
             }
 
             const parsedFiles = JSON.parse(data.contractFiles);
