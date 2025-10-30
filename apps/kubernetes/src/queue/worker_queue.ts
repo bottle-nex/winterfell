@@ -43,10 +43,7 @@ export default class ServerToOrchestratorQueue {
       const { userId, contractId, projectName } = job.data;
 
       try {
-         await publisher.publish_status(userId, contractId, 'started', {
-            command: command.join(' '),
-            projectName,
-         });
+         await publisher.publish_status(userId, contractId, 'started');
 
          const codebase: FileContent[] = (await get_files(contractId)).filter(
             (file) => !file.path.includes('Cargo.lock'),
@@ -86,9 +83,7 @@ export default class ServerToOrchestratorQueue {
             stderrLength: result.stderr.length,
          });
 
-         await publisher.publish_status(userId, contractId, 'completed', {
-            command: command.join(' '),
-         });
+         await publisher.publish_status(userId, contractId, 'completed');
 
          return {
             success: true,
@@ -105,13 +100,8 @@ export default class ServerToOrchestratorQueue {
          });
 
          const errorMessage = error instanceof Error ? error.message : String(error);
-         await publisher.publish_build_log(
-            userId,
-            contractId,
-            `Error: ${errorMessage}\n`,
-            'stderr',
-         );
-         await publisher.publish_status(userId, contractId, 'failed', { error: errorMessage });
+         await publisher.publish_build_log(userId, contractId, `Error: ${errorMessage}\n`);
+         await publisher.publish_status(userId, contractId, 'failed');
 
          return {
             success: false,
