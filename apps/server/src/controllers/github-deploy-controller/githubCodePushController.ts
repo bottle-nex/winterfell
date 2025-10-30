@@ -4,46 +4,67 @@ import { github_worker_queue } from '../../services/init';
 
 export default async function githubCodePushController(req: Request, res: Response) {
     const user_id = req.user?.id;
+    const github_access_token = req.user?.githubAccessToken;
+
     if (!user_id) {
-        res.status(401).json({ error: 'Unauthorized' });
-        return;
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        });
+    }
+
+    if (!github_access_token) {
+        return res.status(400).json({
+            success: false,
+            error: 'GitHub authentication required.',
+            requiresGithub: true,
+        });
     }
 
     const { repo_name, contract_id } = req.body;
-    const github_access_token = req.user?.githubAccessToken;
 
-    if (!github_access_token) {
-        res.status(400).json({
-            error: 'Login with github',
+    if (!repo_name || !contract_id) {
+        return res.status(400).json({
+            success: false,
+            error: 'Insufficient credentials',
         });
-        return;
+    }
+
+    if (!/^[a-zA-Z0-9_.-]+$/.test(repo_name)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid repo name.',
+        });
     }
 
     try {
         const owner = await get_github_owner(github_access_token);
-        // check owner here
 
-        const jobData = {
+        const job = await github_worker_queue.enqueue({
             github_access_token,
             owner,
             repo_name,
             user_id,
             contract_id,
-        };
+        });
 
-        await github_worker_queue.enqueue(jobData);
-
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
-            message: 'Code pushed successfully',
+            message: 'Export job queued successfully',
+            job_id: job.id,
         });
-        return;
-    } catch (error) {
-        console.error('Error in run-command-controller: ', error);
-        res.status(500).json({
+    } catch (error: any) {
+        if (error.status === 401) {
+            return res.status(401).json({
+                success: false,
+                error: 'GitHub token expired. Please reconnect your GitHub account.',
+                requiresGithub: true,
+            });
+        }
+
+        return res.status(500).json({
             success: false,
-            message: 'Internal server error',
+            message: 'Failed to queue export job',
         });
-        return;
     }
 }

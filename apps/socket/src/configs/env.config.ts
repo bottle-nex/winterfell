@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import dotenv from 'dotenv';
+import { z } from "zod";
+import dotenv from "dotenv";
 
-dotenv.config({ path: '../../.env' });
+dotenv.config({ path: "../../.env" });
 
 const envSchema = z.object({
     SOCKET_JWT_SECRET: z.string(),
