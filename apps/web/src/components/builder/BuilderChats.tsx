@@ -8,7 +8,6 @@ import { useEffect, useRef } from 'react';
 import { NEW_CHAT_URL } from '@/routes/api_routes';
 import { FILE_STRUCTURE_TYPES, FileContent, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
 import AnimtaedLoader from '../ui/animated-loader';
-// import StreamEventProcessor from '@/src/class/handle_stream_event';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';

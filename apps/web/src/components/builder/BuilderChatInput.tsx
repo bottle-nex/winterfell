@@ -9,12 +9,11 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
 import ModelSelect from '../base/ModelSelect';
-import { ChatRole } from '@/src/types/prisma-types';
+import { ChatRole, Message } from '@/src/types/prisma-types';
 import { useModelStore } from '@/src/store/model/useModelStore';
 import { CONTINUE_CHAT_URL } from '@/routes/api_routes';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import StreamEventProcessor from '@/src/class/handle_stream_event';
-import { StreamEvent } from '@/src/types/stream_event_types';
+import { FILE_STRUCTURE_TYPES, FileContent, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
 import { toast } from 'sonner';
 
 export default function BuilderChatInput() {
@@ -22,7 +21,8 @@ export default function BuilderChatInput() {
     const { selectedModel, setSelectedModel } = useModelStore();
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
-    const { setMessage, setLoading } = useBuilderChatStore();
+    const { setLoading, upsertMessage, setPhase, setMessage, setCurrentFileEditing } = useBuilderChatStore();
+    const { parseFileStructure, deleteFile } = useCodeEditor();
     const { setCollapseFileTree } = useCodeEditor();
     const params = useParams();
     const contractId = params.contractId as string;
@@ -94,7 +94,67 @@ export default function BuilderChatInput() {
                         const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
                         const event: StreamEvent = JSON.parse(jsonString);
 
-                        StreamEventProcessor.process(event);
+                        switch (event.type) {
+                            case PHASE_TYPES.STARTING:
+                                if (event.systemMessage) {
+                                    upsertMessage(event.systemMessage);
+                                }
+                                break;
+
+                            case STAGE.CONTEXT:
+                                if ('llmMessage' in event.data) {
+                                    upsertMessage(event.data.llmMessage as Message);
+                                }
+                                break;
+
+                            case STAGE.PLANNING:
+                            case STAGE.GENERATING_CODE:
+                            case STAGE.BUILDING:
+                            case STAGE.CREATING_FILES:
+                            case STAGE.FINALIZING:
+                                if (event.systemMessage) {
+                                    upsertMessage(event.systemMessage);
+                                }
+                                break;
+
+                            case PHASE_TYPES.THINKING:
+                            case PHASE_TYPES.GENERATING:
+                            case PHASE_TYPES.BUILDING:
+                            case PHASE_TYPES.CREATING_FILES:
+                            case PHASE_TYPES.COMPLETE:
+                                setPhase(event.type);
+                                break;
+
+                            case PHASE_TYPES.DELETING:
+                                setPhase(event.type);
+                                break;
+
+                            case FILE_STRUCTURE_TYPES.EDITING_FILE:
+                                setPhase(event.type);
+                                if ('file' in event.data) {
+                                    if ('phase' in event.data && event.data.phase === 'deleting') {
+                                        deleteFile(event.data.file as string);
+                                    } else {
+                                        setCurrentFileEditing(event.data.file as string);
+                                    }
+                                }
+                                break;
+
+                            case PHASE_TYPES.ERROR:
+                                console.error('LLM Error:', event.data);
+                                break;
+
+                            case STAGE.END: {
+
+                                if ('data' in event.data && event.data.data) {
+                                    parseFileStructure(event.data.data as FileContent[]);
+                                }
+                                break;
+                            }
+
+                            default:
+                                break;
+                        }
                     } catch {
                         console.error('Failed to parse stream event');
                     }
@@ -178,7 +238,7 @@ export default function BuilderChatInput() {
                                 className={cn(
                                     'w-3 h-3 transition-transform',
                                     inputValue.trim() &&
-                                        'group-hover/submit:translate-x-0.5 duration-200',
+                                    'group-hover/submit:translate-x-0.5 duration-200',
                                 )}
                             />
                         </Button>
