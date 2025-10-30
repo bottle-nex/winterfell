@@ -69,7 +69,7 @@ export default class ServerToOrchestratorQueue {
             pod_name,
             fullCommand,
             async (chunk: string) => {
-               console.log(chunk);
+               console.warn(chunk);
                const lines = chunk.split('\n').filter((line) => line.trim());
                for (const line of lines) {
                   await publisher.publish_build_log(userId, contractId, line + '\n');

@@ -47,23 +47,12 @@ type SystemMessageProps =
       };
 
 export default function SystemMessage(systemMessage: SystemMessageProps) {
-    const { currentStage, currentPhase, currentFile } = dataFetcher(systemMessage);
+    const { currentStage } = dataFetcher(systemMessage);
 
     const currentIndex =
         currentStage === STAGE.END
             ? stages.length
             : stages.findIndex((s) => s.stage === currentStage);
-
-    function truncate(str: string): string {
-        if (!str) return '';
-        if (str.length <= 10) return str;
-        const parts = str.split('/');
-        const lastPart = parts[parts.length - 1];
-        const secLastPart = parts[parts.length - 2];
-
-        if (secLastPart) return `.../${secLastPart}/${lastPart}`;
-        else return `.../${lastPart}`;
-    }
 
     // in the div tags add a tag for error showing,
 
@@ -102,9 +91,12 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                                 >
                                     {show}
                                 </div>
-                                {stage === STAGE.GENERATING_CODE && (
-                                    <div className="pl-5 opacity-50 text-xs ">editing files</div>
-                                )}
+                                {stage === STAGE.GENERATING_CODE &&
+                                    currentStage === STAGE.GENERATING_CODE && (
+                                        <div className="pl-5 opacity-50 text-xs ">
+                                            editing files
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     );

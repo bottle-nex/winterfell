@@ -2,45 +2,110 @@ import { cn } from '@/src/lib/utils';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 import { ArrowRight, FileCode } from 'lucide-react';
-import { useState, KeyboardEvent } from 'react';
+import React, { useState, KeyboardEvent } from 'react';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import { useParams } from 'next/navigation';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
 import ModelSelect from '../base/ModelSelect';
 import { ChatRole } from '@/src/types/prisma-types';
 import { useModelStore } from '@/src/store/model/useModelStore';
+import { CONTINUE_CHAT_URL } from '@/routes/api_routes';
+import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import StreamEventProcessor from '@/src/class/handle_stream_event';
+import { StreamEvent } from '@/src/types/stream_event_types';
+import { toast } from 'sonner';
 
 export default function BuilderChatInput() {
     const [inputValue, setInputValue] = useState<string>('');
     const { selectedModel, setSelectedModel } = useModelStore();
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
-    const { setMessage } = useBuilderChatStore();
+    const { setMessage, setLoading } = useBuilderChatStore();
+    const { setCollapseFileTree } = useCodeEditor();
+    const params = useParams();
+    const contractId = params.contractId as string;
 
-    function handleSubmit() {
-        if (inputValue.trim() === '') return;
+    async function handleSubmit() {
+        try {
+            setInputValue('');
+            setLoading(true);
+            if (inputValue.trim() === '') return;
 
-        if (!session?.user.id) {
-            setOpenLoginModal(true);
-            return;
+            if (!session?.user.id) {
+                setOpenLoginModal(true);
+                return;
+            }
+
+            setMessage({
+                id: uuid(),
+                contractId: contractId,
+                role: ChatRole.USER,
+                content: inputValue,
+                planning: false,
+                generatingCode: false,
+                building: false,
+                creatingFiles: false,
+                finalzing: false,
+                error: false,
+                createdAt: new Date(),
+            });
+
+            const response = await fetch(CONTINUE_CHAT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.user.token}`,
+                },
+                body: JSON.stringify({
+                    contractId: contractId,
+                    instruction: inputValue,
+                }),
+            });
+
+            console.log({ response });
+
+            if (response.status === 403) {
+                toast.error('message limit reached');
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to continue to chat');
+            }
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+
+            if (!reader) {
+                throw new Error('No response body');
+            }
+
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n').filter((line) => line.trim());
+
+                for (const line of lines) {
+                    try {
+                        const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
+                        const event: StreamEvent = JSON.parse(jsonString);
+
+                        StreamEventProcessor.process(event);
+                    } catch {
+                        console.error('Failed to parse stream event');
+                    }
+                }
+            }
+            setCollapseFileTree(true);
+        } catch (error) {
+            console.error('Chat stream error: ', error);
+        } finally {
+            setLoading(false);
         }
-
-        const newContractId = uuid();
-
-        setMessage({
-            id: uuid(),
-            contractId: newContractId,
-            role: ChatRole.USER,
-            content: inputValue,
-            planning: false,
-            generatingCode: false,
-            building: false,
-            creatingFiles: false,
-            finalzing: false,
-            error: false,
-            createdAt: new Date(),
-        });
 
         // router.push(`/playground/${newContractId}`);
     }

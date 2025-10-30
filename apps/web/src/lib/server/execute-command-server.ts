@@ -21,5 +21,7 @@ export default async function executeCommandServer(
         );
 
         return res.data;
-    } catch (error) {}
+    } catch (error) {
+        console.error('Error in execute-command-server: ', error);
+    }
 }
