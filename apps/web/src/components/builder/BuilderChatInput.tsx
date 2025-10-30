@@ -4,7 +4,6 @@ import { Button } from '../ui/button';
 import { ArrowRight, FileCode } from 'lucide-react';
 import { useState, KeyboardEvent } from 'react';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useRouter } from 'next/navigation';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { v4 as uuid } from 'uuid';
 import LoginModal from '../utility/LoginModal';
@@ -18,7 +17,6 @@ export default function BuilderChatInput() {
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
     const { setMessage } = useBuilderChatStore();
-    const router = useRouter();
 
     function handleSubmit() {
         if (inputValue.trim() === '') return;
