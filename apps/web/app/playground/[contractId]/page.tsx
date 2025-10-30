@@ -1,17 +1,21 @@
 'use client';
 import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
+import { useWebSocket } from '@/src/hooks/useWebSocket';
 import { cleanWebSocketClient } from '@/src/lib/singletonWebSocket';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import { useChatStore } from '@/src/store/user/useChatStore';
+import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
 import React, { useEffect } from 'react';
+import { useChatStore } from '@/src/store/user/useChatStore';
 
 export default function Page({ params }: { params: Promise<{ contractId: string }> }) {
     const { cleanStore } = useBuilderChatStore();
     const { reset, collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const unwrappedParams = React.use(params);
     const { contractId } = unwrappedParams;
+    const { addLog } = useTerminalLogStore();
+    const { subscribeToHandler } = useWebSocket();
     const { resetContractId } = useChatStore();
 
     useEffect(() => {
@@ -27,10 +31,15 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
         };
     });
 
+    function handleIncomingTerminalLogs(logs: string) {
+        addLog(logs);
+    }
+
     useEffect(() => {
+        subscribeToHandler(handleIncomingTerminalLogs);
         return () => {
-            resetContractId();
             cleanStore();
+            resetContractId();
             reset();
             cleanWebSocketClient();
         };

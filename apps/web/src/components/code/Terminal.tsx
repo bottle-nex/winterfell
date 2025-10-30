@@ -8,11 +8,11 @@ import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useParams } from 'next/navigation';
 import executeCommandServer from '@/src/lib/server/execute-command-server';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useWebSocket } from '@/src/hooks/useWebSocket';
+import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
 
 enum TerminalTabOptions {
-    SHELL = 'shell',
-    HELP = 'help',
+    OUTPUT = 'output',
+    ACTIONS = 'actions',
 }
 
 interface Line {
@@ -24,17 +24,17 @@ export default function Terminal() {
     const [showTerminal, setShowTerminal] = useState<boolean>(false);
     const [height, setHeight] = useState<number>(220);
     const [isResizing, setIsResizing] = useState<boolean>(false);
-    const [activeTab, setActiveTab] = useState<TerminalTabOptions>(TerminalTabOptions.SHELL);
-    const [logs, setLogs] = useState<Line[]>([]);
-    const [helpLogs, setHelpLogs] = useState<Line[]>([]);
+    const [activeTab, setActiveTab] = useState<TerminalTabOptions>(TerminalTabOptions.OUTPUT);
+    const [actionLogs, setActionLogs] = useState<Line[]>([]);
     const [input, setInput] = useState<string>('');
+    const { logs } = useTerminalLogStore();
     const { currentFile } = useCodeEditor();
     const outputRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const params = useParams();
     const contractId = params.contractId as string;
     const { session } = useUserSessionStore();
-    useWebSocket();
+
     const Prompt = () => (
         <span className="text-green-500 select-none">
             ➜ <span className="text-blue-400">~</span>
@@ -42,7 +42,9 @@ export default function Terminal() {
     );
 
     useEffect(() => {
-        inputRef.current?.focus();
+        if (activeTab === TerminalTabOptions.ACTIONS) {
+            inputRef.current?.focus();
+        }
     }, [showTerminal, activeTab]);
 
     useEffect(() => {
@@ -50,7 +52,7 @@ export default function Terminal() {
             top: outputRef.current.scrollHeight,
             behavior: 'smooth',
         });
-    }, [logs, helpLogs, input]);
+    }, [actionLogs, input]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,9 +72,9 @@ export default function Terminal() {
             if (switchTabKey && showTerminal) {
                 e.preventDefault();
                 setActiveTab((prev) =>
-                    prev === TerminalTabOptions.SHELL
-                        ? TerminalTabOptions.HELP
-                        : TerminalTabOptions.SHELL,
+                    prev === TerminalTabOptions.OUTPUT
+                        ? TerminalTabOptions.ACTIONS
+                        : TerminalTabOptions.OUTPUT,
                 );
             }
         };
@@ -115,8 +117,7 @@ export default function Terminal() {
         let output = '';
         switch (trimmed) {
             case COMMAND.CLEAR:
-                if (activeTab === TerminalTabOptions.SHELL) setLogs([]);
-                else setHelpLogs([]);
+                setActionLogs([]);
                 return;
             case COMMAND.HELP:
                 output = CommandResponse[trimmed];
@@ -152,11 +153,8 @@ export default function Terminal() {
                 break;
         }
 
-        const targetLogs = activeTab === TerminalTabOptions.SHELL ? logs : helpLogs;
-        const setTargetLogs = activeTab === TerminalTabOptions.SHELL ? setLogs : setHelpLogs;
-
-        setTargetLogs([
-            ...targetLogs,
+        setActionLogs([
+            ...actionLogs,
             { type: 'command', text: trimmed },
             { type: 'output', text: output },
         ]);
@@ -210,8 +208,6 @@ export default function Terminal() {
             </div>
         ));
 
-    const activeLogs = activeTab === TerminalTabOptions.SHELL ? logs : helpLogs;
-
     return (
         <>
             {showTerminal && (
@@ -228,19 +224,19 @@ export default function Terminal() {
                         className="cursor-ns-resize bg-dark-base text-light/50 py-1 px-4 border-b border-neutral-800 flex space-x-3 select-none"
                     >
                         <Button
-                            onClick={() => setActiveTab(TerminalTabOptions.SHELL)}
+                            onClick={() => setActiveTab(TerminalTabOptions.OUTPUT)}
                             className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] cursor-pointer ${
-                                activeTab === TerminalTabOptions.SHELL
+                                activeTab === TerminalTabOptions.OUTPUT
                                     ? 'text-light/70 border-b border-light/70'
                                     : 'text-light/50'
                             }`}
                         >
-                            SHELL
+                            OUTPUT
                         </Button>
                         <Button
-                            onClick={() => setActiveTab(TerminalTabOptions.HELP)}
+                            onClick={() => setActiveTab(TerminalTabOptions.ACTIONS)}
                             className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none cursor-pointer ${
-                                activeTab === TerminalTabOptions.HELP
+                                activeTab === TerminalTabOptions.ACTIONS
                                     ? 'text-light/70 border-b border-light/70'
                                     : 'text-light/50'
                             }`}
@@ -249,26 +245,35 @@ export default function Terminal() {
                         </Button>
                     </div>
 
-                    <div
-                        ref={outputRef}
-                        className="flex-1 overflow-y-auto px-3 py-2 text-light/80 flex flex-col"
-                    >
-                        {renderLines(activeLogs)}
-
-                        <div className="flex mt-1">
-                            <Prompt />
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={handleEnter}
-                                className="bg-transparent outline-none flex-1 text-light/80 caret-green-400 ml-2"
-                                placeholder="type a command or use --help"
-                                autoFocus
-                            />
+                    {activeTab === TerminalTabOptions.OUTPUT ? (
+                        <div
+                            ref={outputRef}
+                            className="flex-1 overflow-y-auto px-3 py-2 text-light/80 flex flex-col"
+                        >
+                            {renderLines(logs.map((log) => ({ type: 'output', text: log })))}
                         </div>
-                    </div>
+                    ) : (
+                        <div
+                            ref={outputRef}
+                            className="flex-1 overflow-y-auto px-3 py-2 text-light/80 flex flex-col"
+                        >
+                            {renderLines(actionLogs)}
+
+                            <div className="flex mt-1 group">
+                                <Prompt />
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={handleEnter}
+                                    className="bg-transparent outline-none flex-1 text-light/80 caret-green-400 ml-2 group-click:focus"
+                                    placeholder="type a command or use --help"
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
