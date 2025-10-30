@@ -10,8 +10,8 @@ const envSchema = z.object({
 function parseEnv() {
     try {
         return envSchema.parse(process.env);
-    } catch (err) {
-        throw new Error(`Invalid environment variables: ${err}`);
+    } catch {
+        process.exit(1);
     }
 }
 

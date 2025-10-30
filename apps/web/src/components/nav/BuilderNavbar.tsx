@@ -21,7 +21,7 @@ import { useChatStore } from '@/src/store/user/useChatStore';
 import ProfileMenu from '../utility/LogoutMenu';
 import { Input } from '../ui/input';
 import { ArrowUp } from 'lucide-react';
-import { toast } from 'sonner'
+import { toast } from 'sonner';
 
 export default function BuilderNavbar() {
     const { session, setSession } = useUserSessionStore();
@@ -256,8 +256,7 @@ export default function BuilderNavbar() {
 
                             {showRepoPanel && (
                                 <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
-                                    {session.user.githubUsername}
-                                    <div className="flex">
+                                    <div className='flex'>
                                         <Input
                                             type="text"
                                             value={repoName}
