@@ -14,7 +14,7 @@ export default function ProfileMenu() {
     }
 
     return (
-        <div className="w-[9rem] bg-[#141414] border border-neutral-700 shadow-lg rounded-[8px] overflow-hidden">
+        <div className="w-[9rem] bg-dark-base border border-neutral-700 shadow-lg rounded-[8px] overflow-hidden">
             <Card className="p-0 bg-transparent border-0 shadow-none">
                 <div>
                     <div className="px-4 py-[11px] text-xs font-light text-light hover:bg-dark dark:text-light-base border-b border-neutral-700 flex justify-between cursor-pointer tracking-wide">

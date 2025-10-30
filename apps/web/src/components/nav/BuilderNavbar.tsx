@@ -19,7 +19,9 @@ import axios from 'axios';
 import { EXPORT_CONTRACT_URL, GITHUB_CONNECT_URL } from '@/routes/api_routes';
 import { useChatStore } from '@/src/store/user/useChatStore';
 import { toast } from 'sonner';
-import { ArrowUp, ChevronUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
+import ProfileMenu from '../utility/LogoutMenu';
+import { Input } from '../ui/input';
 
 export default function BuilderNavbar() {
     const { session, setSession } = useUserSessionStore();
@@ -28,7 +30,7 @@ export default function BuilderNavbar() {
     const [isMac, setIsMac] = useState<boolean>(false);
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
     const { contractId } = useChatStore();
-
+    const [showLogoutDropdown, setShowLogoutDropdown] = useState<boolean>(false);
     const [isExporting, setIsExporting] = useState<boolean>(false);
     const [isConnectingGithub, setIsConnectingGithub] = useState<boolean>(false);
     const [repoName, setRepoName] = useState<string>('');
@@ -108,6 +110,7 @@ export default function BuilderNavbar() {
     // Connect GitHub handler
     const handleConnectGithub = () => {
         const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+        console.log('client id is --------------------------->', clientId);
         const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
         const scope = encodeURIComponent('repo user');
         const state = 'github-connect';
@@ -241,39 +244,37 @@ export default function BuilderNavbar() {
                         </ToolTipComponent>
                     ) : (
                         <div className="relative" ref={panelRef}>
-                            <ToolTipComponent
-                                content="export the codebase to GitHub"
-                                side="bottom"
-                            >
+                            <ToolTipComponent content="export the codebase to GitHub" side="bottom">
                                 <Button
                                     onClick={() => setShowRepoPanel((prev) => !prev)}
                                     disabled={isExporting}
                                     size={'sm'}
                                     className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
                                 >
-                                    <span className="text-xs">
-                                        Export
-                                    </span>
+                                    <span className="text-xs">Export</span>
                                 </Button>
                             </ToolTipComponent>
 
                             {showRepoPanel && (
-                                <div className="absolute top-full mt-3 right-0 bg-dark border border-neutral-700 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
-                                    <input
-                                        type="text"
-                                        value={repoName}
-                                        onChange={(e) => setRepoName(e.target.value)}
-                                        placeholder="Enter repo name"
-                                        className="w-full rounded-sm bg-neutral-800 border border-neutral-600 text-light text-sm px-3 py-1 focus:outline-none focus:border-primary"
-                                    />
-                                    <Button
-                                        onClick={handleCodePushToGithub}
-                                        disabled={isExporting}
-                                        size="sm"
-                                        className="bg-primary text-light hover:bg-primary/90 text-xs font-semibold rounded-[4px]"
-                                    >
-                                        {isExporting ? 'Exporting...' : <ArrowUp/>}
-                                    </Button>
+                                <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
+                                    {session.user.githubUsername}
+                                    <div className='flex'>
+                                        <Input
+                                            type="text"
+                                            value={repoName}
+                                            onChange={(e) => setRepoName(e.target.value)}
+                                            placeholder="Enter repo name"
+                                            className="w-full rounded-sm border border-neutral-800 text-light text-sm px-3 py-1 focus:outline-none focus:border-primary"
+                                        />
+                                        <Button
+                                            onClick={handleCodePushToGithub}
+                                            disabled={isExporting}
+                                            size="sm"
+                                            className="bg-primary text-light hover:bg-primary/90 text-xs font-semibold rounded-[4px]"
+                                        >
+                                            {isExporting ? 'Exporting...' : <ArrowUp />}
+                                        </Button>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -281,12 +282,18 @@ export default function BuilderNavbar() {
 
                     {session?.user?.image && (
                         <Image
+                            onClick={() => setShowLogoutDropdown(prev => !prev)}
                             src={session.user.image}
                             alt="user"
                             width={28}
                             height={28}
-                            className="rounded-full"
+                            className="rounded-full cursor-pointer"
                         />
+                    )}
+                    {showLogoutDropdown && (
+                        <div className="absolute top-full right-2 mt-2 z-[9999]">
+                            <ProfileMenu />
+                        </div>
                     )}
                 </div>
             </div>
