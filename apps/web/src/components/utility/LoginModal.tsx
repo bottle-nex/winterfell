@@ -3,11 +3,11 @@ import { signIn } from 'next-auth/react';
 import { Dispatch, SetStateAction } from 'react';
 import OpacityBackground from '../utility/OpacityBackground';
 import { Button } from '../ui/button';
-import Image from 'next/image';
+// import Image from 'next/image';
 import { FaGithub } from 'react-icons/fa';
 import Card from '../ui/Card';
-import { Input } from '../ui/input';
-import { GoArrowRight } from 'react-icons/go';
+// import { Input } from '../ui/input';
+// import { GoArrowRight } from 'react-icons/go';
 
 interface LoginModalProps {
     opensignInModal: boolean;
@@ -36,7 +36,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                     Sign in to your account
                                 </p>
                             </div>
-                            <div className="relative w-full">
+                            {/* <div className="relative w-full">
                                 <Input
                                     type="email"
                                     placeholder="username@gmail.com"
@@ -68,7 +68,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                 <span className="text-[#d4d8de] text-sm tracking-wide">
                                     Continue with Google
                                 </span>
-                            </Button>
+                            </Button> */}
 
                             <Button
                                 onClick={() => signinHandler('GITHUB')}

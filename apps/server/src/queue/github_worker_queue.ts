@@ -30,7 +30,7 @@ export class GithubWorkerQueue {
             await job.progress(10);
             logger.info(`[Job ${job.id}] Step 1: Ensuring repository exists...`);
 
-            await this.ensureRepository(octokit, owner, repo_name, user_id);
+            await this.ensureRepository(octokit, owner, repo_name);
 
             await job.progress(30);
             logger.info(`[Job ${job.id}] Step 2: Fetching files from S3...`);
@@ -69,7 +69,6 @@ export class GithubWorkerQueue {
         octokit: Octokit,
         owner: string,
         repo_name: string,
-        user_id: string,
     ): Promise<void> {
         try {
             await octokit.repos.get({ owner, repo: repo_name });
