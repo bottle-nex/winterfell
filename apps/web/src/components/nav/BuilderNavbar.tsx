@@ -106,7 +106,7 @@ export default function BuilderNavbar() {
 
         handleGithubCallback();
     }, [session, setSession]);
-    
+
     const handleConnectGithub = () => {
         const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
 
