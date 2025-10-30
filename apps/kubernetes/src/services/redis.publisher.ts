@@ -2,6 +2,11 @@ import { Redis } from 'ioredis';
 import { logger } from '../utils/logger';
 import PodTemplate from '../utils/pod-templates';
 
+export interface ParsedMessage {
+   type: 'TERMINAL_STREAM';
+   payload: string;
+}
+
 export default class RedisPublisher {
    private redis: Redis;
 
@@ -14,7 +19,6 @@ export default class RedisPublisher {
       try {
          const messageStr = JSON.stringify(message);
          await this.redis.publish(channel, messageStr);
-         console.warn('Published message to channel', { channel });
       } catch (error) {
          logger.error('Error publishing message', { channel, error });
          throw error;
@@ -26,34 +30,27 @@ export default class RedisPublisher {
       logger.info('Redis publisher disconnected');
    }
 
-   public async publish_build_log(
-      userId: string,
-      contractId: string,
-      log: string,
-      type: 'stdout' | 'stderr' = 'stdout',
-   ): Promise<void> {
+   public async publish_build_log(userId: string, contractId: string, log: string): Promise<void> {
       const channel = PodTemplate.get_pod_name(userId, contractId);
 
-      await this.publish(channel, {
-         type: 'log',
-         data: log,
-         stream: type,
-         timestamp: new Date().toISOString(),
-      });
+      const data: ParsedMessage = {
+         type: 'TERMINAL_STREAM',
+         payload: log,
+      };
+
+      await this.publish(channel, data);
    }
 
    public async publish_status(
       userId: string,
       contractId: string,
       status: 'started' | 'completed' | 'failed',
-      metadata?: any,
    ): Promise<void> {
       const channel = PodTemplate.get_pod_name(userId, contractId);
-      await this.publish(channel, {
-         type: 'status',
-         status,
-         metadata,
-         timestamp: new Date().toISOString(),
-      });
+      const data: ParsedMessage = {
+         type: 'TERMINAL_STREAM',
+         payload: status,
+      };
+      await this.publish(channel, data);
    }
 }

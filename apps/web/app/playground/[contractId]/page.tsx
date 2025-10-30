@@ -1,9 +1,11 @@
 'use client';
 import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
+import { useWebSocket } from '@/src/hooks/useWebSocket';
 import { cleanWebSocketClient } from '@/src/lib/singletonWebSocket';
 import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
 import React, { useEffect } from 'react';
 
 export default function Page({ params }: { params: Promise<{ contractId: string }> }) {
@@ -11,6 +13,8 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
     const { reset, collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const unwrappedParams = React.use(params);
     const { contractId } = unwrappedParams;
+    const { addLog } = useTerminalLogStore();
+    const { subscribeToHandler } = useWebSocket();
 
     useEffect(() => {
         function handleKeyDown(event: KeyboardEvent) {
@@ -25,7 +29,12 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
         };
     });
 
+    function handleIncomingTerminalLogs(logs: string) {
+        addLog(logs);
+    }
+
     useEffect(() => {
+        subscribeToHandler(handleIncomingTerminalLogs);
         return () => {
             cleanStore();
             reset();

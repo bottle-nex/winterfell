@@ -7,6 +7,11 @@ import { env } from '../configs/env.config';
 import { CustomWebSocket } from '../types/socket_types';
 import { subscriber } from '../services/init_services';
 
+export interface ParsedMessage {
+    type: 'TERMINAL_STREAM';
+    payload: string;
+}
+
 export default class WebSocketServer {
     private wss: WSServer;
     private connection_mapping: Map<string, CustomWebSocket> = new Map();
@@ -97,7 +102,7 @@ export default class WebSocketServer {
         return name;
     }
 
-    public send_to_connection(pod_key: string, message: unknown): boolean {
+    public send_to_connection(pod_key: string, message: ParsedMessage): boolean {
         const ws = this.connection_mapping.get(pod_key);
 
         if (ws && ws.readyState === WebSocket.OPEN) {
