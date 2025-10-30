@@ -32,7 +32,7 @@ export default async function githubConnectController(req: Request, res: Respons
             },
             {
                 headers: { Accept: 'application/json' },
-            }
+            },
         );
 
         const githubAccessToken = tokenResponse.data.access_token;

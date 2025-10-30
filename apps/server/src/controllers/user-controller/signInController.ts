@@ -6,7 +6,7 @@ const SERVER_JWT_SECRET = process.env.SERVER_JWT_SECRET;
 
 export default async function signInController(req: Request, res: Response) {
     const { user, account } = req.body;
-    
+
     try {
         const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
@@ -14,7 +14,7 @@ export default async function signInController(req: Request, res: Response) {
 
         let myUser;
         const isGithub = account.provider === 'github';
-        
+
         if (existingUser) {
             const updateData: any = {
                 name: user.name,

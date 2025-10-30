@@ -105,11 +105,6 @@ export function ConnectedWalletInfoCard() {
 
     const deployContract = async () => {
         if (!publicKey) return alert('Wallet not connected!');
-
-        try {
-        } catch (err) {
-            console.error(err);
-        }
     };
 
     return (

@@ -10,15 +10,15 @@ export class GithubWorkerQueue {
     constructor(queue_name: string, redis_url: string = 'redis://localhost:6379') {
         this.queue = new Bull(queue_name, { redis: redis_url });
         this.queue.process(this.processJob.bind(this));
-        
+
         this.queue.on('completed', (job) => {
             logger.info(`Job ${job.id} completed successfully`);
         });
-        
+
         this.queue.on('failed', (job, err) => {
             logger.error(`Job ${job?.id} failed with error: ${err.message}`);
         });
-        
+
         logger.info(`GitHub push queue initialized: ${queue_name}`);
     }
 
@@ -29,38 +29,38 @@ export class GithubWorkerQueue {
         try {
             await job.progress(10);
             logger.info(`[Job ${job.id}] Step 1: Ensuring repository exists...`);
-            
+
             await this.ensureRepository(octokit, owner, repo_name, user_id);
 
             await job.progress(30);
             logger.info(`[Job ${job.id}] Step 2: Fetching files from S3...`);
             const files = await get_s3_codebase(contract_id);
-            
+
             if (!files || files.length === 0) {
                 throw new Error('No files found in codebase');
             }
-            
+
             logger.info(`[Job ${job.id}] Found ${files.length} files to push`);
 
             await job.progress(50);
             logger.info(`[Job ${job.id}] Step 3: Pushing files to repository...`);
-            
+
             await this.pushFilesToRepository(octokit, owner, repo_name, files, user_id);
 
             await job.progress(100);
             const repo_url = `https://github.com/${owner}/${repo_name}`;
             logger.info(`[Job ${job.id}] Successfully pushed to ${repo_url}`);
-            
+
             return { success: true, repo_url, files_count: files.length };
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             const errorStack = error instanceof Error ? error.stack : '';
-            
+
             logger.error(`[Job ${job.id}] Failed:`, {
                 message: errorMessage,
                 stack: errorStack,
             });
-            
+
             throw new Error(`GitHub push failed: ${errorMessage}`);
         }
     }
@@ -77,17 +77,17 @@ export class GithubWorkerQueue {
         } catch (err: any) {
             if (err.status === 404) {
                 logger.info(`Creating repository ${repo_name} with initial commit...`);
-                
+
                 await octokit.repos.createForAuthenticatedUser({
                     name: repo_name,
                     private: false,
                     auto_init: true, // This creates an initial commit with README
                     description: `Deployed from Winterfell`,
                 });
-                
+
                 logger.info(`Repository ${repo_name} created successfully`);
-                
-                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                await new Promise((resolve) => setTimeout(resolve, 3000));
             } else {
                 throw err;
             }

@@ -25,7 +25,7 @@ export default async function githubJobStatusController(req: Request, res: Respo
         const failedReason = job.failedReason;
         const returnvalue = job.returnvalue;
 
-        let status = {
+        const status = {
             jobId: job.id,
             state: state,
             progress: progress,

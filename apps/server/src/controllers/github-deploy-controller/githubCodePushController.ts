@@ -7,9 +7,9 @@ export default async function githubCodePushController(req: Request, res: Respon
     const github_access_token = req.user?.githubAccessToken;
 
     if (!user_id) {
-        return res.status(401).json({ 
+        return res.status(401).json({
             success: false,
-            error: 'Unauthorized' 
+            error: 'Unauthorized',
         });
     }
 

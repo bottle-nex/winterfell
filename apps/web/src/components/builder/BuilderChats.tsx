@@ -60,9 +60,6 @@ export default function BuilderChats() {
                 }),
             });
 
-            console.log('--------------------------------------->');
-            console.log(response.body);
-
             if (!response.ok) {
                 throw new Error('Failed to start chat');
             }
