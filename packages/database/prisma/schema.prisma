@@ -152,27 +152,6 @@ enum SystemMessageType {
   BUILD_ERROR
 }
 
-// user message - prompt
-// ai message - start context
-// system message - card content
-// ai message -> llm_response
-
-// user message - prompt
-// ai message - start context
-// system message - card content
-// ai message -> llm_response
-
-// user message - prompt
-// ai message - start context
-// system message - card content
-// ai message -> llm_response
-
-// user message - prompt
-// user message - prompt
-// user message - prompt
-// ai message - ai generated response FileContent[]
-// user message - prompt
-
 enum ContractGenerationPhase {
   PLANNING
   GENERATING_CODE

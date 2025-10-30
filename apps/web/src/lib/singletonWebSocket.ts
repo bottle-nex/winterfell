@@ -7,7 +7,7 @@ export function getWebSocketClient(token: string, contractId: string) {
         return null;
     }
 
-    const base = `ws://localhost:8081`;
+    const base = `${process.env.SOCKET_URL}/socket`;
     const url = `${base}?contractId=${encodeURIComponent(contractId)}&token=${encodeURIComponent(token)}`;
 
     if (client) {

@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
 import { logger } from '../utils/logger';
 import PodTemplate from '../utils/pod-templates';
+import { env } from '../configs/env.config';
 
 export interface ParsedMessage {
    type: 'TERMINAL_STREAM';
@@ -11,7 +12,7 @@ export default class RedisPublisher {
    private redis: Redis;
 
    constructor() {
-      this.redis = new Redis('redis://localhost:6379');
+      this.redis = new Redis(env.KUBERNETES_REDIS_URL);
       logger.info('Redis publisher initialized');
    }
 
