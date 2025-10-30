@@ -4,17 +4,22 @@ import { FaGithub } from 'react-icons/fa';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import BuilderSettingsPanel from '../builder/BuilderSettingsPanel';
 import NetworkTicker from '../tickers/NetworkTicker';
 import { LiaServicestack } from 'react-icons/lia';
-import { TbLayoutSidebarRightCollapseFilled, TbLayoutSidebarLeftCollapseFilled } from 'react-icons/tb';
+import {
+    TbLayoutSidebarRightCollapseFilled,
+    TbLayoutSidebarLeftCollapseFilled,
+} from 'react-icons/tb';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { WalletPanel } from '../base/WalletPanel';
 import axios from 'axios';
 import { EXPORT_CONTRACT_URL, GITHUB_CONNECT_URL } from '@/routes/api_routes';
 import { useChatStore } from '@/src/store/user/useChatStore';
+import { toast } from 'sonner';
+import { ArrowUp, ChevronUp } from 'lucide-react';
 
 export default function BuilderNavbar() {
     const { session, setSession } = useUserSessionStore();
@@ -23,15 +28,40 @@ export default function BuilderNavbar() {
     const [isMac, setIsMac] = useState<boolean>(false);
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
     const { contractId } = useChatStore();
+
     const [isExporting, setIsExporting] = useState<boolean>(false);
     const [isConnectingGithub, setIsConnectingGithub] = useState<boolean>(false);
+    const [repoName, setRepoName] = useState<string>('');
+    const [showRepoPanel, setShowRepoPanel] = useState<boolean>(false);
 
     const hasGithub = session?.user?.hasGithub;
+    const panelRef = useRef<HTMLDivElement | null>(null);
 
+    // Detect platform
     useEffect(() => {
         setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
     }, []);
 
+    // Handle outside click to close the repo panel
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+                setShowRepoPanel(false);
+            }
+        }
+
+        if (showRepoPanel) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showRepoPanel]);
+
+    // Handle GitHub OAuth callback
     useEffect(() => {
         const handleGithubCallback = async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -48,7 +78,7 @@ export default function BuilderNavbar() {
                             headers: {
                                 Authorization: `Bearer ${session?.user?.token}`,
                             },
-                        }
+                        },
                     );
 
                     if (response.data.success) {
@@ -61,7 +91,7 @@ export default function BuilderNavbar() {
                                 githubUsername: response.data.githubUsername,
                             },
                         });
-                        
+
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 } catch (error) {
@@ -73,21 +103,28 @@ export default function BuilderNavbar() {
         };
 
         handleGithubCallback();
-    }, []);
+    }, [session, setSession]);
 
+    // Connect GitHub handler
     const handleConnectGithub = () => {
         const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
         const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
         const scope = encodeURIComponent('repo user');
         const state = 'github-connect';
-        
+
         const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
-        
         window.location.href = githubAuthUrl;
     };
 
+    // Push code to GitHub handler
     async function handleCodePushToGithub() {
+        if (!repoName.trim()) {
+            toast.error('Please enter a repository name');
+            return;
+        }
+
         if (!contractId) {
+            toast.error('No contract found');
             return;
         }
 
@@ -96,7 +133,7 @@ export default function BuilderNavbar() {
             const response = await axios.post(
                 EXPORT_CONTRACT_URL,
                 {
-                    repo_name: 'push_check',
+                    repo_name: repoName,
                     contract_id: contractId,
                 },
                 {
@@ -104,19 +141,21 @@ export default function BuilderNavbar() {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${session?.user?.token}`,
                     },
-                }
+                },
             );
 
             if (response.data.success) {
-                console.log(`Export queued! Job ID: ${response.data.job_id}`);
+                toast.success(`Export to "${repoName}" queued!`);
+                setShowRepoPanel(false);
+                setRepoName('');
             }
         } catch (error: any) {
             console.error('Failed to push to github:', error);
-            
+
             if (error.response?.data?.requiresGithub) {
-                console.log('Please connect your GitHub account first');
+                toast.error('Please connect your GitHub first');
             } else {
-                console.log(error.response?.data?.error || 'Failed to export to GitHub');
+                toast.error('Failed to export to GitHub');
             }
         } finally {
             setIsExporting(false);
@@ -126,11 +165,12 @@ export default function BuilderNavbar() {
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
 
     return (
-        <div className="min-h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none">
+        <div className="min-h-[3.5rem] bg-dark-base grid grid-cols-[30%_70%] text-light/70 px-6 select-none relative">
             <div className="text-[#C3C3C3] text-[17px] tracking-[0.5rem] flex justify-start items-center gap-x-3 cursor-pointer group">
                 <LiaServicestack size={28} className="text-primary" />
                 WINTERFELL
             </div>
+
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-center gap-x-2">
                     <ToolTipComponent duration={300} content={`collapse | ${shortcutKey} + E`}>
@@ -154,8 +194,10 @@ export default function BuilderNavbar() {
                         />
                     </ToolTipComponent>
                 </div>
-                <div className="flex items-center justify-between gap-x-5">
+
+                <div className="flex items-center justify-between gap-x-5 relative">
                     <NetworkTicker />
+
                     <div className="relative">
                         <ToolTipComponent content="Settings" side="bottom">
                             <IoMdOptions
@@ -169,7 +211,10 @@ export default function BuilderNavbar() {
                         />
                     </div>
 
-                    <ToolTipComponent content="deploy your contract to the solana blockchain" side="bottom">
+                    <ToolTipComponent
+                        content="deploy your contract to the solana blockchain"
+                        side="bottom"
+                    >
                         <Button
                             onClick={() => setOpenWalletPanel(true)}
                             size={'sm'}
@@ -195,18 +240,43 @@ export default function BuilderNavbar() {
                             </Button>
                         </ToolTipComponent>
                     ) : (
-                        <ToolTipComponent content="Publish the code snippet to GitHub" side="bottom">
-                            <Button
-                                onClick={handleCodePushToGithub}
-                                disabled={isExporting}
-                                size={'sm'}
-                                className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                        <div className="relative" ref={panelRef}>
+                            <ToolTipComponent
+                                content="export the codebase to GitHub"
+                                side="bottom"
                             >
-                                <span className="text-xs">
-                                    {isExporting ? 'Exporting...' : 'Export'}
-                                </span>
-                            </Button>
-                        </ToolTipComponent>
+                                <Button
+                                    onClick={() => setShowRepoPanel((prev) => !prev)}
+                                    disabled={isExporting}
+                                    size={'sm'}
+                                    className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                                >
+                                    <span className="text-xs">
+                                        Export
+                                    </span>
+                                </Button>
+                            </ToolTipComponent>
+
+                            {showRepoPanel && (
+                                <div className="absolute top-full mt-3 right-0 bg-dark border border-neutral-700 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
+                                    <input
+                                        type="text"
+                                        value={repoName}
+                                        onChange={(e) => setRepoName(e.target.value)}
+                                        placeholder="Enter repo name"
+                                        className="w-full rounded-sm bg-neutral-800 border border-neutral-600 text-light text-sm px-3 py-1 focus:outline-none focus:border-primary"
+                                    />
+                                    <Button
+                                        onClick={handleCodePushToGithub}
+                                        disabled={isExporting}
+                                        size="sm"
+                                        className="bg-primary text-light hover:bg-primary/90 text-xs font-semibold rounded-[4px]"
+                                    >
+                                        {isExporting ? 'Exporting...' : <ArrowUp/>}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                     )}
 
                     {session?.user?.image && (
@@ -220,6 +290,7 @@ export default function BuilderNavbar() {
                     )}
                 </div>
             </div>
+
             {openWalletPanel && <WalletPanel close={() => setOpenWalletPanel(false)} />}
         </div>
     );

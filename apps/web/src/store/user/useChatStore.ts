@@ -6,7 +6,7 @@ interface ChatState {
     resetContractId: () => void;
 }
 
-export const useChatStore = create<ChatState>((set, get) => ({
+export const useChatStore = create<ChatState>((set) => ({
     contractId: null,
     setContractId: (chatId: string | null) => set({ contractId: chatId }),
     resetContractId: () => set({ contractId: null }),

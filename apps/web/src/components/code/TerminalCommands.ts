@@ -31,7 +31,7 @@ winterfell deploy --devnet      to deploy the contract on devnet
 winterfell deploy --mainnet     to deploy the contract on mainnet
 `;
 
-const winterfellBuildResponse = ``;
+// const winterfellBuildResponse = ``;
 
 export enum COMMAND {
     CLEAR = 'clear',
