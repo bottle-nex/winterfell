@@ -1,7 +1,7 @@
 import Bull, { Job } from 'bull';
 import { Octokit } from '@octokit/rest';
 import { logger } from '../utils/logger';
-import { GithubPushJobData } from '../types/github_worker_queue_types';
+import { FileContent, GithubPushJobData } from '../types/github_worker_queue_types';
 import { get_s3_codebase } from '../services/git_services';
 
 export class GithubWorkerQueue {
