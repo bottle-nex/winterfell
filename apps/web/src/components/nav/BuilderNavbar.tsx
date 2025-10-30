@@ -147,7 +147,7 @@ export default function BuilderNavbar() {
             );
 
             if (response.data.success) {
-                toast.success(`Export to "${repoName}" queued!`);
+                toast.success(`pushed `);
                 setShowRepoPanel(false);
                 setRepoName('');
             }
