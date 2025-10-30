@@ -9,8 +9,8 @@ import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import axios from 'axios';
-import React, { useEffect } from 'react';
 import { useChatStore } from '@/src/store/user/useChatStore';
+import React, { useEffect } from 'react';
 
 export default function Page({ params }: { params: Promise<{ contractId: string }> }) {
     const { cleanStore, loading } = useBuilderChatStore();
