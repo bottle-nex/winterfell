@@ -75,7 +75,7 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
     useEffect(() => {
         if (loading) return;
         get_chat();
-        // 
+        //
     }, [contractId, session]);
 
     useEffect(() => {
