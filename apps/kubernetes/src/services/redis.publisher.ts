@@ -33,7 +33,7 @@ export default class RedisPublisher {
       type: 'stdout' | 'stderr' = 'stdout',
    ): Promise<void> {
       const channel = PodTemplate.get_pod_name(userId, contractId);
-      console.log('channel is : ', channel);
+
       await this.publish(channel, {
          type: 'log',
          data: log,

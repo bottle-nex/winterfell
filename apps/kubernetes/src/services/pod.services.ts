@@ -182,7 +182,7 @@ export default class PodService {
             ]);
             logger.info('Cleaned project directory (preserved target/)', { pod_name, base_dir });
          } catch (err) {
-            logger.info('Cleanup skipped (directory was empty or new)', { base_dir });
+            console.error('Error cleaning project directory: ', err);
          }
 
          // Copy all files
