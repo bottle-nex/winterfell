@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '../../.env' });
 
 const envSchema = z.object({
-    SOCKET_JWT_SECkRET: z.string(),
+    SOCKET_JWT_SECRET: z.string(),
 });
 
 function parseEnv() {
