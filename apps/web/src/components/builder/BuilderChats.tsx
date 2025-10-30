@@ -71,17 +71,23 @@ export default function BuilderChats() {
                 throw new Error('No response body');
             }
 
+            // ✅ Fixed: Buffer partial chunks to handle split JSONs
+            let buffer = '';
+
             while (true) {
                 const { done, value } = await reader.read();
-
                 if (done) break;
 
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split('\n').filter((line) => line.trim());
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() ?? ''; // keep the last incomplete chunk
 
                 for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+
                     try {
-                        const jsonString = line.startsWith('data: ') ? line.slice(6) : line;
+                        const jsonString = trimmed.startsWith('data: ') ? trimmed.slice(6) : trimmed;
                         const event: StreamEvent = JSON.parse(jsonString);
 
                         switch (event.type) {
@@ -112,9 +118,6 @@ export default function BuilderChats() {
                             case PHASE_TYPES.BUILDING:
                             case PHASE_TYPES.CREATING_FILES:
                             case PHASE_TYPES.COMPLETE:
-                                setPhase(event.type);
-                                break;
-
                             case PHASE_TYPES.DELETING:
                                 setPhase(event.type);
                                 break;
@@ -134,22 +137,35 @@ export default function BuilderChats() {
                                 console.error('LLM Error:', event.data);
                                 break;
 
-                            case STAGE.END: {
-
+                            case STAGE.END:
                                 if ('data' in event.data && event.data.data) {
                                     parseFileStructure(event.data.data as FileContent[]);
                                 }
                                 break;
-                            }
 
                             default:
                                 break;
                         }
-                    } catch {
-                        console.error('Failed to parse stream event');
+                    } catch (err) {
+                        // Don’t spam logs for partial JSON
+                        console.warn('Skipping incomplete stream event chunk');
                     }
                 }
             }
+
+            // ✅ Final parse if leftover data exists
+            if (buffer.trim()) {
+                try {
+                    const jsonString = buffer.startsWith('data: ') ? buffer.slice(6) : buffer;
+                    const event: StreamEvent = JSON.parse(jsonString);
+                    if (event.type === STAGE.END && 'data' in event.data && event.data.data) {
+                        parseFileStructure(event.data.data as FileContent[]);
+                    }
+                } catch {
+                    console.warn('Failed to parse final buffered chunk');
+                }
+            }
+
             setCollapseFileTree(true);
         } catch (error) {
             console.error('Chat stream error:', error);
@@ -231,4 +247,3 @@ export default function BuilderChats() {
         </div>
     );
 }
-
