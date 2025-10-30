@@ -3,10 +3,10 @@ export interface MessagePayload {
     payload: unknown;
 }
 
-export type MessageHandler = (payload: MessagePayload) => void;
+export type MessageHandler = (payload: string) => void;
 export type ParsedMessage = {
-    type: string;
-    payload: MessagePayload;
+    type: 'TERMINAL_STREAM';
+    payload: string;
 };
 
 export default class WebSocketClient {
@@ -20,7 +20,6 @@ export default class WebSocketClient {
     private reconnect_delay: number = 1000;
     private max_reconnect_delay: number = 30000;
     private persistent_reconnect_delay: number = 5000;
-    private message_queue: MessagePayload[] = [];
     private handlers: Map<string, MessageHandler[]> = new Map();
     private is_manually_closed: boolean = false;
 
@@ -103,9 +102,6 @@ export default class WebSocketClient {
     public send_message(message: MessagePayload) {
         if (this.is_connected && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(message));
-            this.flush_message_queue();
-        } else {
-            this.message_queue.push(message);
         }
     }
 
@@ -134,15 +130,6 @@ export default class WebSocketClient {
         }, delay);
     }
 
-    private flush_message_queue() {
-        while (this.message_queue.length > 0) {
-            const message = this.message_queue.shift();
-            if (message) {
-                this.send_message(message);
-            }
-        }
-    }
-
     public close(code: number = 1000, reason: string = 'Client disconnect') {
         this.is_manually_closed = true;
 
@@ -160,6 +147,5 @@ export default class WebSocketClient {
 
         this.is_connected = false;
         this.handlers.clear();
-        this.message_queue = [];
     }
 }
