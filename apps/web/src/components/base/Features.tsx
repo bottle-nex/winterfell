@@ -174,7 +174,7 @@ const AnimatedFeatureCard = React.memo(
                 className="
                 h-[10rem] w-[7rem] sm:h-[12rem] sm:w-[9rem]
                 md:h-[22rem] md:w-[16rem]
-                rounded-2xl flex flex-col justify-between
+                rounded-[8px] flex flex-col justify-between
                 bg-gradient-to-br from-light to-neutral-50
                 border border-neutral-200/50
                 shadow-2xl shadow-black/30
@@ -187,7 +187,7 @@ const AnimatedFeatureCard = React.memo(
                 <div className="absolute bottom-0 left-0 w-16 h-16 md:w-24 md:h-24 bg-white/15 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" />
 
                 <div className="relative z-10 flex justify-between items-start">
-                    <div className="text-[7px] sm:text-[9px] md:text-xs font-bold text-neutral-600 tracking-[0.15em] bg-white/70 backdrop-blur-sm px-2 py-1 rounded-md shadow-sm">
+                    <div className="text-[7px] sm:text-[9px] md:text-xs font-bold text-neutral-600 tracking-[0.15em] bg-white/70 backdrop-blur-sm px-2 py-1 rounded-[4px] shadow-sm">
                         {topTitle}
                     </div>
                     <div
@@ -201,7 +201,7 @@ const AnimatedFeatureCard = React.memo(
 
                 <div className="relative z-10 flex flex-col items-center justify-center flex-1 gap-y-2 md:gap-y-3">
                     <div
-                        className="p-3 md:p-5 rounded-2xl bg-white/90 backdrop-blur-sm shadow-xl"
+                        className="p-3 md:p-5 rounded-[8px] bg-white/90 backdrop-blur-sm shadow-xl"
                         style={{ boxShadow: `0 8px 24px ${color}25` }}
                     >
                         <Icon className="text-2xl sm:text-3xl md:text-5xl" style={{ color }} />

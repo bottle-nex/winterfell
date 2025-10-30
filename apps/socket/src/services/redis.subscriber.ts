@@ -1,24 +1,27 @@
-import { Redis } from "ioredis";
+import { Redis } from 'ioredis';
+import { wsserver } from './init_services';
 
 export default class RedisSubscriber {
-    private redis: Redis;
+    private subscriber: Redis;
 
     constructor() {
-        this.redis = new Redis('redis://localhost:6379');
+        this.subscriber = new Redis('redis://localhost:6379');
         this.setup_subscription();
     }
 
-    public subscribe(channel: string) {
+    public async subscribe(channel: string) {
         if (!channel) {
             throw new Error('Channel is required');
         }
-        this.redis.subscribe(channel);
+        console.log('channel is : ', channel);
+        await this.subscriber.subscribe(channel);
     }
 
     public setup_subscription() {
-        this.redis.on('message', (channel: string, message: string) => {
+        this.subscriber.on('message', (channel: string, message: string) => {
             const message_json = JSON.parse(message);
             console.log('Received message on channel', channel, message_json);
-        })
+            wsserver.send_to_connection(channel, message_json);
+        });
     }
 }

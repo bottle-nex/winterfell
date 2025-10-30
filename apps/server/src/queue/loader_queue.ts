@@ -10,7 +10,7 @@ export default class ServerToOrchestratorQueue {
             redis: env.SERVER_REDIS_URL,
             defaultJobOptions: {
                 removeOnComplete: 100,
-                removeOnFail: false,
+                removeOnFail: true,
                 attempts: 1,
                 timeout: 300000,
                 backoff: {

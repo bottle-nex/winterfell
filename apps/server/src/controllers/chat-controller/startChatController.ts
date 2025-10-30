@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ChatRole, prisma } from '@repo/database';
 import { contentGenerator } from '../../services/init';
 import { startChatSchema } from '../../schemas/start_chat_schema';
+import { Keypair } from '@solana/web3.js';
 
 export default async function startChatController(req: Request, res: Response) {
     const userId = req.user?.id;
@@ -52,11 +53,14 @@ export default async function startChatController(req: Request, res: Response) {
             },
         });
 
+        const key_pair = Keypair.generate();
+
         await contentGenerator.generateInitialResponse(
             res,
             currentUserMessage,
             contract.messages,
             contract.id,
+            key_pair.publicKey.toBase58(),
         );
     } catch (err) {
         console.error('Controller Error:', err);
