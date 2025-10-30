@@ -1,5 +1,5 @@
 'use client';
-import { CONTINUE_CHAT_URL, GET_CHAT_URL } from '@/routes/api_routes';
+import { GET_CHAT_URL } from '@/routes/api_routes';
 import BuilderDashboard from '@/src/components/builder/BuilderDashboard';
 import BuilderNavbar from '@/src/components/nav/BuilderNavbar';
 import { useWebSocket } from '@/src/hooks/useWebSocket';
@@ -43,7 +43,6 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
 
     async function get_chat() {
         try {
-
             if (!session?.user.token) return;
 
             const { data } = await axios.post(
@@ -58,18 +57,16 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
                 },
             );
 
-
-            for(let i=0; i < data.messages.length; i++) {
+            for (let i = 0; i < data.messages.length; i++) {
                 upsertMessage(data.messages[i]);
             }
 
             const parsedFiles = JSON.parse(data.contractFiles);
 
-            if(parsedFiles) {
-                parseFileStructure(parsedFiles);                
+            if (parsedFiles) {
+                parseFileStructure(parsedFiles);
             }
             setCollapseFileTree(true);
-
         } catch (error) {
             console.error('Error while fetching chats from server: ', error);
         }
@@ -78,6 +75,7 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
     useEffect(() => {
         if (loading) return;
         get_chat();
+        // 
     }, [contractId, session]);
 
     useEffect(() => {

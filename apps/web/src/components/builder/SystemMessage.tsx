@@ -91,11 +91,12 @@ export default function SystemMessage(systemMessage: SystemMessageProps) {
                                 >
                                     {show}
                                 </div>
-                                {stage === STAGE.GENERATING_CODE &&  currentStage === STAGE.GENERATING_CODE && (
-                                    <div className="pl-5 opacity-50 text-xs ">
-                                        editing files
-                                    </div>
-                                )}
+                                {stage === STAGE.GENERATING_CODE &&
+                                    currentStage === STAGE.GENERATING_CODE && (
+                                        <div className="pl-5 opacity-50 text-xs ">
+                                            editing files
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     );

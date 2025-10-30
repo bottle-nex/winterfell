@@ -46,16 +46,13 @@ export default class StreamEventProcessor {
                 break;
 
             case PHASE_TYPES.DELETING:
-                // delete the specific file
                 setPhase(event.type);
                 break;
 
             case FILE_STRUCTURE_TYPES.EDITING_FILE:
-                // add -> delete file logic here
                 setPhase(event.type);
                 if ('file' in event.data) {
-                    if('phase' in event.data && event.data.phase === 'deleting') {
-                        alert('deleting file: ' + event.data.file);
+                    if ('phase' in event.data && event.data.phase === 'deleting') {
                         deleteFile(event.data.file as string);
                     } else {
                         setCurrentFileEditing(event.data.file as string);

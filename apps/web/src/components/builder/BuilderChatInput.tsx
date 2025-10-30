@@ -15,6 +15,7 @@ import { CONTINUE_CHAT_URL } from '@/routes/api_routes';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import StreamEventProcessor from '@/src/class/handle_stream_event';
 import { StreamEvent } from '@/src/types/stream_event_types';
+import { toast } from 'sonner';
 
 export default function BuilderChatInput() {
     const [inputValue, setInputValue] = useState<string>('');
@@ -28,7 +29,7 @@ export default function BuilderChatInput() {
 
     async function handleSubmit() {
         try {
-
+            setInputValue('');
             setLoading(true);
             if (inputValue.trim() === '') return;
 
@@ -62,6 +63,12 @@ export default function BuilderChatInput() {
                     instruction: inputValue,
                 }),
             });
+
+            console.log({ response });
+
+            if (response.status === 403) {
+                toast.error('message limit reached');
+            }
 
             if (!response.ok) {
                 throw new Error('Failed to continue to chat');
@@ -98,7 +105,6 @@ export default function BuilderChatInput() {
             console.error('Chat stream error: ', error);
         } finally {
             setLoading(false);
-            setInputValue('');
         }
 
         // router.push(`/playground/${newContractId}`);
@@ -172,7 +178,7 @@ export default function BuilderChatInput() {
                                 className={cn(
                                     'w-3 h-3 transition-transform',
                                     inputValue.trim() &&
-                                    'group-hover/submit:translate-x-0.5 duration-200',
+                                        'group-hover/submit:translate-x-0.5 duration-200',
                                 )}
                             />
                         </Button>

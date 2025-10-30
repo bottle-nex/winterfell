@@ -1,5 +1,5 @@
 export default function re_stating_prompt(user_instruction: string, code_base: string) {
-  return `
+    return `
 
 You are an expert Solana Anchor framework developer specializing in refactoring, extending, and improving existing Anchor projects.
 
