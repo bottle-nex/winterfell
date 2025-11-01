@@ -1,5 +1,4 @@
 import WebSocketClient from '../class/socket.client';
-
 let client: WebSocketClient | null = null;
 
 export function getWebSocketClient(token: string, contractId: string) {
