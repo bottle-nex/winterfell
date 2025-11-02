@@ -13,7 +13,13 @@ import { ChatRole, Message } from '@/src/types/prisma-types';
 import { useModelStore } from '@/src/store/model/useModelStore';
 import { CONTINUE_CHAT_URL } from '@/routes/api_routes';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import { FILE_STRUCTURE_TYPES, FileContent, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
+import {
+    FILE_STRUCTURE_TYPES,
+    FileContent,
+    PHASE_TYPES,
+    STAGE,
+    StreamEvent,
+} from '@/src/types/stream_event_types';
 import { toast } from 'sonner';
 
 export default function BuilderChatInput() {
@@ -21,7 +27,8 @@ export default function BuilderChatInput() {
     const { selectedModel, setSelectedModel } = useModelStore();
     const [openLoginModal, setOpenLoginModal] = useState<boolean>(false);
     const { session } = useUserSessionStore();
-    const { setLoading, upsertMessage, setPhase, setMessage, setCurrentFileEditing } = useBuilderChatStore();
+    const { setLoading, upsertMessage, setPhase, setMessage, setCurrentFileEditing } =
+        useBuilderChatStore();
     const { parseFileStructure, deleteFile } = useCodeEditor();
     const { setCollapseFileTree } = useCodeEditor();
     const params = useParams();
@@ -145,7 +152,6 @@ export default function BuilderChatInput() {
                                 break;
 
                             case STAGE.END: {
-
                                 if ('data' in event.data && event.data.data) {
                                     parseFileStructure(event.data.data as FileContent[]);
                                 }
@@ -238,7 +244,7 @@ export default function BuilderChatInput() {
                                 className={cn(
                                     'w-3 h-3 transition-transform',
                                     inputValue.trim() &&
-                                    'group-hover/submit:translate-x-0.5 duration-200',
+                                        'group-hover/submit:translate-x-0.5 duration-200',
                                 )}
                             />
                         </Button>

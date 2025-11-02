@@ -41,8 +41,8 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                            ? { ...n, children: updateNode(n.children) }
-                            : n,
+                          ? { ...n, children: updateNode(n.children) }
+                          : n,
                 );
 
             const newTree = updateNode(state.fileTree);
@@ -99,11 +99,11 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
             const existingTree = state.fileTree.length
                 ? state.fileTree[0]
                 : {
-                    id: 'root',
-                    name: 'root',
-                    type: NODE.FOLDER,
-                    children: [],
-                };
+                      id: 'root',
+                      name: 'root',
+                      type: NODE.FOLDER,
+                      children: [],
+                  };
 
             // Helper: recursively find folder by path
             function findOrCreateFolder(root: FileNode, parts: string[]): FileNode {

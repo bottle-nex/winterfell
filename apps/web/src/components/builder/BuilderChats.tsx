@@ -6,7 +6,13 @@ import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { NEW_CHAT_URL } from '@/routes/api_routes';
-import { FILE_STRUCTURE_TYPES, FileContent, PHASE_TYPES, STAGE, StreamEvent } from '@/src/types/stream_event_types';
+import {
+    FILE_STRUCTURE_TYPES,
+    FileContent,
+    PHASE_TYPES,
+    STAGE,
+    StreamEvent,
+} from '@/src/types/stream_event_types';
 import AnimtaedLoader from '../ui/animated-loader';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
@@ -23,7 +29,8 @@ export default function BuilderChats() {
     const { setCollapseFileTree } = useCodeEditor();
     const { setContractId } = useChatStore();
     const { parseFileStructure, deleteFile } = useCodeEditor();
-    const { messages, loading, setLoading, upsertMessage, setPhase, setCurrentFileEditing } = useBuilderChatStore();
+    const { messages, loading, setLoading, upsertMessage, setPhase, setCurrentFileEditing } =
+        useBuilderChatStore();
 
     useEffect(() => {
         if (messageEndRef.current) {
@@ -87,7 +94,9 @@ export default function BuilderChats() {
                     if (!trimmed) continue;
 
                     try {
-                        const jsonString = trimmed.startsWith('data: ') ? trimmed.slice(6) : trimmed;
+                        const jsonString = trimmed.startsWith('data: ')
+                            ? trimmed.slice(6)
+                            : trimmed;
                         const event: StreamEvent = JSON.parse(jsonString);
 
                         switch (event.type) {

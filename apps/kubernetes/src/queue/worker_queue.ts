@@ -42,7 +42,7 @@ export default class ServerToOrchestratorQueue {
       job: Job,
    ): Promise<{ success: boolean; stdout: string; stderr: string }> {
       const { userId, contractId, projectName } = job.data;
-      console.log("data came from the queue");
+      console.log('data came from the queue');
       try {
          await publisher.publish_status(userId, contractId, 'started');
 

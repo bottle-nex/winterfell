@@ -30,14 +30,18 @@ model Contract {
   description  String?
   contractType ContractType
   code         String?
+  codeHash     String?
 
-  idl       Json? // auto-generated IDL
-  clientSdk Json? // auto-generated client (TS/JS)
+  lastBuildStatus BuildStatus
+  lastBuildId     String
 
-  summary String? // AI-generated human-readable summary
+  idl       Json?
+  clientSdk Json?
+
+  summary String?
 
   deployed  Boolean  @default(false)
-  programId String? // Solana program ID after deployment
+  programId String?
   version   Int      @default(1)
   user      User     @relation(fields: [userId], references: [id])
   userId    String
@@ -45,7 +49,53 @@ model Contract {
   updatedAt DateTime @updatedAt
 
   deployments Deployment[]
+  buildJob    BuildJob[]
   messages    Message[]
+}
+
+model BuildJob {
+  id         String   @id @default(cuid())
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  contractId String
+
+  jobId   String
+  status  BuildStatus
+  podName String?
+  command Command
+
+  startedAt   DateTime?
+  completedAt DateTime?
+  duration    Int?
+  output      Json?
+  error       String?   @db.Text
+
+  retryCount Int @default(0)
+  maxRetry   Int @default(3)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([contractId, status])
+  @@index([jobId])
+  @@index([status, createdAt])
+}
+
+enum Command {
+  WINTERFELL_BUILD
+  WINTERFELL_TEST
+  WINTERFELL_DEPLOY_DEVNET
+  WINTERFELL_DEPLOY_MAINNET
+  WINTERFELL_VERIFY
+}
+
+enum BuildStatus {
+  NEVER_BUILT
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  CANCELLED
+  QUEUED
 }
 
 model Deployment {

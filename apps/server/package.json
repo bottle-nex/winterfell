@@ -22,6 +22,7 @@
     "@google/genai": "^1.23.0",
     "@octokit/rest": "^22.0.0",
     "@repo/database": "*",
+    "@repo/types": "*",
     "@solana/web3.js": "^1.98.4",
     "axios": "^1.12.2",
     "bull": "^4.16.5",

@@ -256,7 +256,7 @@ export default function BuilderNavbar() {
 
                             {showRepoPanel && (
                                 <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
-                                    <div className='flex'>
+                                    <div className="flex">
                                         <Input
                                             type="text"
                                             value={repoName}

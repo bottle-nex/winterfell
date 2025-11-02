@@ -1,7 +1,6 @@
 import Bull, { JobOptions } from 'bull';
 import env from '../configs/env';
 import { AnchorBuildQueueData, WORKER_QUEUE_TYPES } from '../types/worker_queue_types';
-import { logger } from '../utils/logger';
 
 export default class ServerToOrchestratorQueue {
     private queue: Bull.Queue;
@@ -19,7 +18,6 @@ export default class ServerToOrchestratorQueue {
                 },
             },
         });
-        this.setup_listeners();
     }
 
     public async run_anchor_build_command(
@@ -41,7 +39,7 @@ export default class ServerToOrchestratorQueue {
             };
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND, data, job_options);
         } catch (err) {
-            logger.error('failed to run anchor build command', err);
+            console.error('failed to run anchor build command', err);
         }
     }
 
@@ -68,7 +66,7 @@ export default class ServerToOrchestratorQueue {
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND, data, job_options);
             console.log('after stallling data');
         } catch (err) {
-            logger.error('failed to run anchor deploy command', err);
+            console.error('failed to run anchor deploy command', err);
         }
     }
 
@@ -90,23 +88,7 @@ export default class ServerToOrchestratorQueue {
             };
             await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_TEST_COMMAND, data, job_options);
         } catch (err) {
-            logger.error('failed to run anchor test command', err);
+            console.error('failed to run anchor test command', err);
         }
-    }
-
-    private setup_listeners() {
-        this.queue.on('completed', (job) => {
-            logger.info('job completed', job.data);
-        });
-        this.queue.on('failed', (job) => {
-            logger.error('job failed', job.data);
-        });
-        this.queue.on('stalled', (job) => {
-            logger.error('job stalled', job.data);
-        });
-        this.queue.on('active', (job) => {
-            logger.info('job active', job.data);
-        });
-        logger.info('server-orchestrator queue started');
     }
 }
