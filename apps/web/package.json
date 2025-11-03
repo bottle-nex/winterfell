@@ -27,6 +27,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cn": "^0.1.1",
+        "date-fns": "^4.1.0",
         "eslint-config-prettier": "^10.1.8",
         "eventsource-parser": "^3.0.6",
         "gsap": "^3.13.0",
