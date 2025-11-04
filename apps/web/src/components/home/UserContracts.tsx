@@ -117,7 +117,12 @@ export default function UserContracts() {
                     <ChevronRight className="size-3.5 group-hover:translate-x-0.5 ease-in duration-100 transform" />
                 </span>
             </div>
-            <div className={cn("relative h-full", showRightButton ? "shadow-inset-right" : "shadow-inset-left")}>
+            <div
+                className={cn(
+                    'relative h-full',
+                    showRightButton ? 'shadow-inset-right' : 'shadow-inset-left',
+                )}
+            >
                 {showLeftButton && (
                     <Button
                         onClick={() => scroll('left')}

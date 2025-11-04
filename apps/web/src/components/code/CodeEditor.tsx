@@ -5,11 +5,11 @@ import { Editor, Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import Filetree from './Filetree';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import StatusBar from './Terminal';
+import Terminal from './Terminal';
 
 export default function CodeEditor(): JSX.Element {
     const { collapseFileTree, currentCode } = useCodeEditor();
-    console.log(currentCode);
+
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
             base: 'vs-dark',
@@ -111,7 +111,7 @@ export default function CodeEditor(): JSX.Element {
     );
 
     return (
-        <div className="flex min-h-0 h-full">
+        <div className="flex min-h-0 h-full w-full">
             {collapseFileTree && (
                 <div className="w-[18rem]">
                     <Filetree />
@@ -130,7 +130,7 @@ export default function CodeEditor(): JSX.Element {
                 value={currentCode}
             />
 
-            <StatusBar />
+            <Terminal />
         </div>
     );
 }
