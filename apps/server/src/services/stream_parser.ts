@@ -157,7 +157,7 @@ export default class StreamParser {
             }
         }
 
-        // After processing lines, check again if buffer contains context start
+        // After processing lines, check again if buffer contains context startlastBuildStatus
         if (this.buffer.includes('<')) {
             this.handleContext(systemMessage);
         }

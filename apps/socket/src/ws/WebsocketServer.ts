@@ -22,7 +22,7 @@ export default class WebSocketServer {
     }
 
     private init_connection() {
-        logger.info('websocket server init');
+        console.log('websocket server init');
         this.wss.on('connection', (ws: CustomWebSocket, req: IncomingMessage) => {
             const authUser = this.handle_authorization(ws, req);
             if (authUser) {

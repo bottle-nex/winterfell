@@ -12,14 +12,14 @@ export class GithubWorkerQueue {
         this.queue.process(this.processJob.bind(this));
 
         this.queue.on('completed', (job) => {
-            logger.info(`Job ${job.id} completed successfully`);
+            console.log(`Job ${job.id} completed successfully`);
         });
 
         this.queue.on('failed', (job, err) => {
             logger.error(`Job ${job?.id} failed with error: ${err.message}`);
         });
 
-        logger.info(`GitHub push queue initialized: ${queue_name}`);
+        console.log(`GitHub push queue initialized: ${queue_name}`);
     }
 
     private async processJob(job: Job<GithubPushJobData>) {
@@ -28,28 +28,28 @@ export class GithubWorkerQueue {
 
         try {
             await job.progress(10);
-            logger.info(`[Job ${job.id}] Step 1: Ensuring repository exists...`);
+            console.log(`[Job ${job.id}] Step 1: Ensuring repository exists...`);
 
             await this.ensureRepository(octokit, owner, repo_name);
 
             await job.progress(30);
-            logger.info(`[Job ${job.id}] Step 2: Fetching files from S3...`);
+            console.log(`[Job ${job.id}] Step 2: Fetching files from S3...`);
             const files = await get_s3_codebase(contract_id);
 
             if (!files || files.length === 0) {
                 throw new Error('No files found in codebase');
             }
 
-            logger.info(`[Job ${job.id}] Found ${files.length} files to push`);
+            console.log(`[Job ${job.id}] Found ${files.length} files to push`);
 
             await job.progress(50);
-            logger.info(`[Job ${job.id}] Step 3: Pushing files to repository...`);
+            console.log(`[Job ${job.id}] Step 3: Pushing files to repository...`);
 
             await this.pushFilesToRepository(octokit, owner, repo_name, files, user_id);
 
             await job.progress(100);
             const repo_url = `https://github.com/${owner}/${repo_name}`;
-            logger.info(`[Job ${job.id}] Successfully pushed to ${repo_url}`);
+            console.log(`[Job ${job.id}] Successfully pushed to ${repo_url}`);
 
             return { success: true, repo_url, files_count: files.length };
         } catch (error) {
@@ -72,10 +72,10 @@ export class GithubWorkerQueue {
     ): Promise<void> {
         try {
             await octokit.repos.get({ owner, repo: repo_name });
-            logger.info(`Repository ${repo_name} already exists`);
+            console.log(`Repository ${repo_name} already exists`);
         } catch (err: any) {
             if (err.status === 404) {
-                logger.info(`Creating repository ${repo_name} with initial commit...`);
+                console.log(`Creating repository ${repo_name} with initial commit...`);
 
                 await octokit.repos.createForAuthenticatedUser({
                     name: repo_name,
@@ -84,7 +84,7 @@ export class GithubWorkerQueue {
                     description: `Deployed from Winterfell`,
                 });
 
-                logger.info(`Repository ${repo_name} created successfully`);
+                console.log(`Repository ${repo_name} created successfully`);
 
                 await new Promise((resolve) => setTimeout(resolve, 3000));
             } else {
@@ -100,7 +100,7 @@ export class GithubWorkerQueue {
         files: FileContent[],
         user_id: string,
     ): Promise<void> {
-        logger.info(`getting main branch reference...`);
+        console.log(`getting main branch reference...`);
         const { data: refData } = await octokit.git.getRef({
             owner,
             repo: repo_name,
@@ -108,17 +108,17 @@ export class GithubWorkerQueue {
         });
         const baseCommitSha = refData.object.sha;
 
-        logger.info(`getting base comit`);
+        console.log(`getting base comit`);
         const { data: baseCommit } = await octokit.git.getCommit({
             owner,
             repo: repo_name,
             commit_sha: baseCommitSha,
         });
 
-        logger.info(`Creating ${files.length} blobs...`);
+        console.log(`Creating ${files.length} blobs...`);
         const blobs = await Promise.all(
             files.map(async (file, index) => {
-                logger.info(`  Creating blob ${index + 1}/${files.length}: ${file.path}`);
+                console.log(`  Creating blob ${index + 1}/${files.length}: ${file.path}`);
                 return octokit.git.createBlob({
                     owner,
                     repo: repo_name,
@@ -128,7 +128,7 @@ export class GithubWorkerQueue {
             }),
         );
 
-        logger.info(`Creating tree with ${files.length} files...`);
+        console.log(`Creating tree with ${files.length} files...`);
         const { data: tree } = await octokit.git.createTree({
             owner,
             repo: repo_name,
@@ -141,7 +141,7 @@ export class GithubWorkerQueue {
             base_tree: baseCommit.tree.sha,
         });
 
-        logger.info(`Creating commit...`);
+        console.log(`Creating commit...`);
         const { data: commit } = await octokit.git.createCommit({
             owner,
             repo: repo_name,
@@ -150,7 +150,7 @@ export class GithubWorkerQueue {
             parents: [baseCommitSha],
         });
 
-        logger.info(`Updating main branch`);
+        console.log(`Updating main branch`);
         await octokit.git.updateRef({
             owner,
             repo: repo_name,
@@ -159,7 +159,7 @@ export class GithubWorkerQueue {
             force: true,
         });
 
-        logger.info(`Successfully pushed ${files.length} files to ${repo_name}`);
+        console.log(`Successfully pushed ${files.length} files to ${repo_name}`);
     }
 
     public async enqueue(job_data: GithubPushJobData): Promise<Bull.Job<GithubPushJobData>> {
@@ -179,6 +179,6 @@ export class GithubWorkerQueue {
 
     public async close(): Promise<void> {
         await this.queue.close();
-        logger.info('GitHub worker queue closed');
+        console.log('GitHub worker queue closed');
     }
 }

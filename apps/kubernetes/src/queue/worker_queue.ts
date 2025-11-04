@@ -1,7 +1,12 @@
 import { Job, JobScheduler, Queue, Worker } from 'bullmq';
-import { BuildJobPayload, CommandResult, JOB_STATUS, WORKER_QUEUE_TYPES } from '../types/worker_queue_types';
+import {
+   BuildJobPayload,
+   COMMAND,
+   CommandResult,
+   JOB_STATUS,
+   WORKER_QUEUE_TYPES,
+} from '../types/worker_queue_types';
 import { job_tracker, pod_service, publisher } from '../services/init_services';
-import { logger } from '../utils/logger';
 import { get_files } from '../services/client_services';
 import { FileContent } from '../types/file_type';
 import queue_config from '../configs/queue.config';
@@ -12,46 +17,23 @@ export default class ServerToOrchestratorQueue {
 
    constructor(queue_name: string) {
       this.client = new Queue(queue_name, queue_config);
-      this.worker = new Worker(
-         queue_name,
-         this.process_job.bind(this),
-         queue_config
-      );
-      
-      this.setup_event_handlers();
-      logger.info('kubernetes server orchestrator queue started');
-   }
-
-   private setup_event_handlers() {
-      this.worker.on('completed', (job) => {
-         logger.info('Job completed', {
-            jobId: job.id,
-            jobName: job.name,
-         });
-      });
-
-      this.worker.on('failed', (job, err) => {
-         logger.error('Job failed', {
-            jobId: job?.id,
-            jobName: job?.name,
-            error: err.message,
-         });
-      });
-
-      this.worker.on('error', (err) => {
-         logger.error('Worker error', { error: err.message });
-      });
+      this.worker = new Worker(queue_name, this.process_job.bind(this), queue_config);
    }
 
    private async process_job(job: Job<BuildJobPayload>): Promise<CommandResult> {
-      const command_map: Record<WORKER_QUEUE_TYPES, string[]> = {
-         [WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND]: ['anchor', 'build'],
-         [WORKER_QUEUE_TYPES.ANCHOR_TEST_COMMAND]: ['anchor', 'test'],
-         [WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND]: ['anchor', 'deploy'],
+      const command_map: Record<COMMAND, string[]> = {
+         [COMMAND.WINTERFELL_BUILD]: ['anchor', 'build'],
+         [COMMAND.WINTERFELL_TEST]: ['anchor', 'test'],
+         [COMMAND.WINTERFELL_DEPLOY_DEVNET]: ['anchor', 'deploy'],
+         [COMMAND.WINTERFELL_DEPLOY_MAINNET]: ['anchor', 'mainnet'],
       };
 
-      const command = command_map[job.name as WORKER_QUEUE_TYPES];
-      
+      const command = command_map[job.name as COMMAND];
+
+      // console.log('command received: ', command);
+
+      // console.log('job received: ', job.name);
+
       if (!command) {
          throw new Error(`unknown command ${job.name}`);
       }
@@ -64,13 +46,6 @@ export default class ServerToOrchestratorQueue {
       job: Job<BuildJobPayload>,
    ): Promise<CommandResult> {
       const { userId, contractId, projectName } = job.data;
-      
-      logger.info('Processing job from queue', {
-         jobId: job.id,
-         command: command.join(' '),
-         userId,
-         contractId,
-      });
 
       let pod_name: string | null = null;
 
@@ -83,7 +58,7 @@ export default class ServerToOrchestratorQueue {
          );
 
          // let pod_name: string | null = await pod_service.get_pod_if_running(userId, contractId);
-         
+
          // if (pod_name === null) {
          //    pod_name = await pod_service.create_pod({ userId, contractId, projectName });
          // }
@@ -97,7 +72,6 @@ export default class ServerToOrchestratorQueue {
          await publisher.publish_status(userId, contractId, JOB_STATUS.POD_RUNNING);
 
          await pod_service.copy_files_to_pod(pod_name, projectName, codebase);
-         logger.info('Files copied to pod', { pod_name });
 
          await job_tracker.update_status(contractId, JOB_STATUS.COMMAND_EXECUTING);
          await publisher.publish_status(userId, contractId, JOB_STATUS.COMMAND_EXECUTING);
@@ -120,13 +94,6 @@ export default class ServerToOrchestratorQueue {
             },
          );
 
-         logger.info('Command completed successfully', {
-            jobId: job.id,
-            command: command.join(' '),
-            stdoutLength: result.stdout.length,
-            stderrLength: result.stderr.length,
-         });
-
          await job_tracker.update_status(contractId, JOB_STATUS.COMPLETED);
          await publisher.publish_status(userId, contractId, JOB_STATUS.COMPLETED);
 
@@ -136,15 +103,6 @@ export default class ServerToOrchestratorQueue {
             stderr: result.stderr,
          };
       } catch (error) {
-         logger.error('Command execution failed', {
-            jobId: job.id,
-            command: command.join(' '),
-            error: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined,
-            userId,
-            contractId,
-         });
-
          const errorMessage = error instanceof Error ? error.message : String(error);
          await publisher.publish_build_log(userId, contractId, `Error: ${errorMessage}\n`);
          await publisher.publish_status(userId, contractId, JOB_STATUS.FAILED);
@@ -158,12 +116,8 @@ export default class ServerToOrchestratorQueue {
                await publisher.publish_status(userId, contractId, JOB_STATUS.POD_TERMINATING);
 
                await pod_service.delete_pod(userId, contractId);
-               logger.info(`Pod delted successfully`, { pod_name, contractId });
             } catch (error) {
-               logger.error('Failed to delete pod in finally block', {
-                  pod_name,
-                  error: error instanceof Error ? error.message : String(error),
-               });
+               throw new Error();
             }
          }
 

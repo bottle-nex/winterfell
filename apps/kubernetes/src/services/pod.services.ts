@@ -13,12 +13,6 @@ export default class PodService {
    private container_name: string = 'anchor-dev';
 
    public async create_pod(req: CreatePodRequest): Promise<string> {
-      logger.info('Creating pod', {
-         userId: req.userId,
-         contractId: req.contractId,
-         projectName: req.projectName,
-         namespace: this.namespace,
-      });
 
       try {
          const pod_template: V1Pod = PodTemplate.get_anchor_pod_template(
@@ -38,12 +32,12 @@ export default class PodService {
             throw new Error('Pod created but no name returned');
          }
 
-         logger.info('Pod created, waiting for Running state', { podName });
+         console.log('Pod created, waiting for Running state', { podName });
 
          await waitForPodRunning(podName, this.namespace, 60);
          await this.waitForContainerReady(podName);
 
-         logger.info('Pod is ready', { podName });
+         console.log('Pod is ready', { podName });
 
          return podName;
       } catch (err) {
@@ -53,7 +47,7 @@ export default class PodService {
             userId: req.userId,
             contractId: req.contractId,
          });
-         throw err; // Re-throw instead of swallowing the error
+         throw err;
       }
    }
 
@@ -61,7 +55,7 @@ export default class PodService {
       try {
          const pod_name = PodTemplate.get_pod_name(userId, contractId);
 
-         logger.info('Deleting pod', {
+         console.log('Deleting pod', {
             podName: pod_name,
             userId,
             contractId,
@@ -73,7 +67,7 @@ export default class PodService {
             namespace: this.namespace,
          });
 
-         logger.info('Pod deleted successfully', {
+         console.log('Pod deleted successfully', {
             podName: pod_name,
             userId,
             contractId,
@@ -107,7 +101,7 @@ export default class PodService {
             contractId,
          };
 
-         logger.info('Retrieved pod status', pod_data);
+         console.log('Retrieved pod status', pod_data);
          return pod_data;
       } catch (error) {
          const err = error as { code?: number; error: string };
@@ -180,7 +174,7 @@ export default class PodService {
                `cd ${base_dir} && find . -maxdepth 1 -mindepth 1 ! -name 'target' -exec rm -rf {} + 2>/dev/null || true && \
              rm -rf programs migrations tests 2>/dev/null || true`,
             ]);
-            logger.info('Cleaned project directory (preserved target/)', { pod_name, base_dir });
+            console.log('Cleaned project directory (preserved target/)', { pod_name, base_dir });
          } catch (err) {
             console.error('Error cleaning project directory: ', err);
          }
@@ -202,7 +196,7 @@ export default class PodService {
             ]);
          }
 
-         logger.info(`Successfully copied all ${total_files} files to ${pod_name}`);
+         console.log(`Successfully copied all ${total_files} files to ${pod_name}`);
       } catch (err) {
          logger.error('Failed to copy files to pod', {
             error: err instanceof Error ? err.message : String(err),
@@ -224,7 +218,7 @@ export default class PodService {
       while (retries < maxRetries) {
          try {
             await this.execute_command(pod_name, ['echo', 'ready']);
-            logger.info('Container ready to accept commands', { pod_name });
+            console.log('Container ready to accept commands', { pod_name });
             return;
          } catch (error) {
             retries++;
@@ -256,11 +250,11 @@ export default class PodService {
    //       });
 
    //       if (pod.status?.phase === 'Running') {
-   //          logger.info('Found existing running pod', { pod_name });
+   //          console.log('Found existing running pod', { pod_name });
    //          return pod_name;
    //       }
 
-   //       logger.info('Pod exists but not running, deleting', {
+   //       console.log('Pod exists but not running, deleting', {
    //          pod_name,
    //          phase: pod.status?.phase,
    //       });

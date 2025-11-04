@@ -10,10 +10,10 @@ export interface TerminalStreamMessage {
 }
 
 export interface StatusUpdateMessage {
-   type: 'STATUS_UPDATE',
+   type: 'STATUS_UPDATE';
    payload: {
-      status: JOB_STATUS,
-   }
+      status: JOB_STATUS;
+   };
 }
 
 export type ParsedMessage = TerminalStreamMessage | StatusUpdateMessage;
@@ -23,7 +23,7 @@ export default class RedisPublisher {
 
    constructor() {
       this.redis = new Redis(env.KUBERNETES_REDIS_URL);
-      logger.info('Redis publisher initialized');
+      console.log('Redis publisher initialized');
    }
 
    private async publish(channel: string, message: any): Promise<void> {
@@ -38,7 +38,7 @@ export default class RedisPublisher {
 
    public async disconnect(): Promise<void> {
       await this.redis.quit();
-      logger.info('Redis publisher disconnected');
+      console.log('Redis publisher disconnected');
    }
 
    public async publish_build_log(userId: string, contractId: string, log: string): Promise<void> {
