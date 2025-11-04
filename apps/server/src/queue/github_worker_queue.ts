@@ -80,7 +80,7 @@ export class GithubWorkerQueue {
                 await octokit.repos.createForAuthenticatedUser({
                     name: repo_name,
                     private: false,
-                    auto_init: true, // This creates an initial commit with README
+                    auto_init: true,
                     description: `Deployed from Winterfell`,
                 });
 

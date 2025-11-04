@@ -210,7 +210,7 @@ const AnimatedFeatureCard = React.memo(
                         <h3 className="text-xs sm:text-sm md:text-xl font-bold text-dark-base tracking-wide">
                             {centerTitle}
                         </h3>
-                        <p className="text-[8px] sm:text-[10px] md:text-xs text-neutral-600 font-medium hidden md:block px-2 leading-tight">
+                        <p className="text-[8px] sm:text-[10px] md:text-xs tracking-wide text-neutral-600 font-medium hidden md:block px-2 leading-tight">
                             {description}
                         </p>
                     </div>
