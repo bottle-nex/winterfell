@@ -9,7 +9,7 @@ import Terminal from './Terminal';
 
 export default function CodeEditor(): JSX.Element {
     const { collapseFileTree, currentCode } = useCodeEditor();
-    
+
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
             base: 'vs-dark',
