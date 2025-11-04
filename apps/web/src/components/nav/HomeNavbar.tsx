@@ -1,12 +1,11 @@
-'use client'
-import { useUserSessionStore } from "@/src/store/user/useUserSessionStore"
-import Image from "next/image";
-import ProfileMenu from "../utility/LogoutMenu";
-import { useState } from "react";
-import { LiaServicestack } from "react-icons/lia";
+'use client';
+import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import Image from 'next/image';
+import ProfileMenu from '../utility/LogoutMenu';
+import { useState } from 'react';
+import { LiaServicestack } from 'react-icons/lia';
 
 export default function HomeNavbar() {
-
     const [showLogoutDropdown, setShowLogoutDropdown] = useState<boolean>(false);
     const { session } = useUserSessionStore();
 
@@ -33,7 +32,6 @@ export default function HomeNavbar() {
                     </div>
                 )}
             </div>
-
         </div>
-    )
+    );
 }
