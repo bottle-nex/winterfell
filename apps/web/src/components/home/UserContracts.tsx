@@ -5,6 +5,7 @@ import DeployedTicker from '../tickers/DeployedTicket';
 import { formatDistance, subDays } from 'date-fns';
 import { FaCalendar } from 'react-icons/fa';
 import { Button } from '../ui/button';
+import { cn } from '@/src/lib/utils';
 
 const userContracts = [
     {
@@ -116,7 +117,7 @@ export default function UserContracts() {
                     <ChevronRight className="size-3.5 group-hover:translate-x-0.5 ease-in duration-100 transform" />
                 </span>
             </div>
-            <div className="relative h-full">
+            <div className={cn("relative h-full", showRightButton ? "shadow-inset-right" : "shadow-inset-left")}>
                 {showLeftButton && (
                     <Button
                         onClick={() => scroll('left')}
@@ -129,7 +130,7 @@ export default function UserContracts() {
                 <div
                     ref={scrollContainerRef}
                     onScroll={handleScroll}
-                    className="h-full flex gap-x-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2 shadow-inset-right"
+                    className="h-full flex gap-x-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2"
                 >
                     {userContracts.map((contract) => (
                         <div

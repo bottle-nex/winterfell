@@ -88,7 +88,7 @@ export default function ContractTemplates() {
                         key={contract.id}
                         className="h-full min-w-[calc(30%-12px)] grid grid-rows-[85%_15%] overflow-hidden group"
                     >
-                        <div className="bg-[#0A0C0D70]  shadow-sm border border-neutral-800 rounded-[8px]">
+                        <div className="bg-neutral-900/50 border border-neutral-800 rounded-[8px]  shadow-xl">
                             {/* image */}
                         </div>
 

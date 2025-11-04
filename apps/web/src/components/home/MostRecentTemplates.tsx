@@ -86,13 +86,13 @@ export default function MostRecentTemplates() {
                 <span className="text-light">Most Recent Builds</span>
             </div>
 
-            <div className="h-full flex gap-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2">
+            <div className="h-full flex gap-x-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2 ">
                 {mostRecentTemplates.map((contract) => (
                     <div
                         key={contract.id}
                         className="h-full min-w-[calc(30%-12px)] grid grid-rows-[85%_15%] overflow-hidden group"
                     >
-                        <div className="bg-[#0A0C0D70]  shadow-sm border border-neutral-800 rounded-[8px]">
+                        <div className="bg-neutral-900/50  shadow-sm border border-neutral-800 rounded-[8px]">
                             {/* image */}
                         </div>
 
