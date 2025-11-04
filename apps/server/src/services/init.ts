@@ -3,14 +3,12 @@ import ContentGenerator from '../controllers/gen/content_generator';
 import RazorpayGateway from '../payments/razorpay';
 import { GithubWorkerQueue } from '../queue/github_worker_queue';
 import ServerToOrchestratorQueue from '../queue/loader_queue';
-import RedisStream from './redis_sreams';
 
 export let contentGenerator: ContentGenerator;
 export let objectStore: ObjectStore;
 export let razorpay: RazorpayGateway;
 export let server_orchestrator_queue: ServerToOrchestratorQueue;
 export let github_worker_queue: GithubWorkerQueue;
-export let redis_streams: RedisStream;
 
 export default function init_services() {
     contentGenerator = new ContentGenerator();
@@ -18,5 +16,4 @@ export default function init_services() {
     razorpay = new RazorpayGateway();
     server_orchestrator_queue = new ServerToOrchestratorQueue('server-to-orchestrator');
     github_worker_queue = new GithubWorkerQueue('github-push');
-    redis_streams = new RedisStream();
 }

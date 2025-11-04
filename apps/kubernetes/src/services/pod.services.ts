@@ -246,42 +246,42 @@ export default class PodService {
       }
    }
 
-   public async get_pod_if_running(userId: string, contractId: string): Promise<string | null> {
-      const pod_name = PodTemplate.get_pod_name(userId, contractId);
+   // public async get_pod_if_running(userId: string, contractId: string): Promise<string | null> {
+   //    const pod_name = PodTemplate.get_pod_name(userId, contractId);
 
-      try {
-         const pod = await k8s_config.core_api.readNamespacedPod({
-            name: pod_name,
-            namespace: this.namespace,
-         });
+   //    try {
+   //       const pod = await k8s_config.core_api.readNamespacedPod({
+   //          name: pod_name,
+   //          namespace: this.namespace,
+   //       });
 
-         if (pod.status?.phase === 'Running') {
-            logger.info('Found existing running pod', { pod_name });
-            return pod_name;
-         }
+   //       if (pod.status?.phase === 'Running') {
+   //          logger.info('Found existing running pod', { pod_name });
+   //          return pod_name;
+   //       }
 
-         logger.info('Pod exists but not running, deleting', {
-            pod_name,
-            phase: pod.status?.phase,
-         });
+   //       logger.info('Pod exists but not running, deleting', {
+   //          pod_name,
+   //          phase: pod.status?.phase,
+   //       });
 
-         // Pod exists but not running, delete it
-         await k8s_config.core_api.deleteNamespacedPod({
-            name: pod_name,
-            namespace: this.namespace,
-         });
+   //       // Pod exists but not running, delete it
+   //       await k8s_config.core_api.deleteNamespacedPod({
+   //          name: pod_name,
+   //          namespace: this.namespace,
+   //       });
 
-         return null;
-      } catch (error: any) {
-         if (error.code === 404 || error.statusCode === 404) {
-            logger.debug('Pod does not exist', { pod_name });
-            return null;
-         }
-         logger.error('Error checking pod status', {
-            error: error instanceof Error ? error.message : String(error),
-            pod_name,
-         });
-         throw error;
-      }
-   }
+   //       return null;
+   //    } catch (error: any) {
+   //       if (error.code === 404 || error.statusCode === 404) {
+   //          logger.debug('Pod does not exist', { pod_name });
+   //          return null;
+   //       }
+   //       logger.error('Error checking pod status', {
+   //          error: error instanceof Error ? error.message : String(error),
+   //          pod_name,
+   //       });
+   //       throw error;
+   //    }
+   // }
 }
