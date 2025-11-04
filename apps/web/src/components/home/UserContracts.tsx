@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import DeployedTicker from '../tickers/DeployedTicket';
 import { formatDistance, subDays } from 'date-fns';
 import { FaCalendar } from 'react-icons/fa';
+import { Button } from '../ui/button';
 
 const userContracts = [
     {
@@ -110,30 +111,30 @@ export default function UserContracts() {
         <div className="w-full h-full tracking-wider flex flex-col px-2">
             <div className="w-full flex justify-between py-1 text-sm px-1">
                 <span className="text-light">User contracts</span>
-                <span className="text-light/60 flex items-center gap-x-1">
+                <span className="text-light/60 flex items-center gap-x-1 cursor-pointer group">
                     view all
-                    <ChevronRight className="size-3.5" />
+                    <ChevronRight className="size-3.5 group-hover:translate-x-0.5 ease-in duration-100 transform" />
                 </span>
             </div>
             <div className="relative h-full">
                 {showLeftButton && (
-                    <button
+                    <Button
                         onClick={() => scroll('left')}
                         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#0A0C0D] hover:bg-[#0c0e0f] rounded-full p-2 transition-all shadow-2xl"
                     >
                         <ChevronLeft className="size-4 text-light" />
-                    </button>
+                    </Button>
                 )}
 
                 <div
                     ref={scrollContainerRef}
                     onScroll={handleScroll}
-                    className="h-full flex gap-x-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2"
+                    className="h-full flex gap-x-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2 shadow-inset-right"
                 >
                     {userContracts.map((contract) => (
                         <div
                             key={contract.id}
-                            className="h-full border border-neutral-800 bg-[#0A0C0D70] min-w-[calc(25%-12px)] rounded-[4px] grid grid-rows-[80%_20%] overflow-hidden group shadow-sm"
+                            className="h-full border border-neutral-800 bg-[#0A0C0D70] min-w-[calc(25%-12px)] rounded-[4px] grid grid-rows-[78%_22%] overflow-hidden group shadow-sm"
                         >
                             <div className="bg-gradient-to-br from-dark-base via-dark to-dark-base p-3 flex flex-col rounded-b-[4px]">
                                 <div className="flex justify-between h-fit items-center">
@@ -149,11 +150,11 @@ export default function UserContracts() {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex-1 text-left flex items-end text-sm tracking-wider text-light/80">
+                                <div className="flex-1 text-left flex items-end text-[12px] tracking-wider text-light/80">
                                     {contract.description}
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between px-3 text-sm tracking-wider bg-[#0A0C0D70]">
+                            <div className="flex items-center justify-between px-3 text-[13px] tracking-wider bg-[#0A0C0D70]">
                                 {contract.title}
                                 <ArrowRight className="size-4 opacity-0 group-hover:opacity-100 group-hover:transition-transform group-hover:translate-x-1 duration-200" />
                             </div>
@@ -162,12 +163,12 @@ export default function UserContracts() {
                 </div>
 
                 {showRightButton && (
-                    <button
+                    <Button
                         onClick={() => scroll('right')}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#0A0C0D] hover:bg-[#0c0e0f] rounded-full p-2 transition-all shadow-2xl"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#0A0C0D] hover:bg-[#0c0e0f] rounded-full p-2 transition-all shadow-2xl h-6 w-6"
                     >
-                        <ChevronRight className="size-4 text-light" />
-                    </button>
+                        <ChevronRight className=" text-light" />
+                    </Button>
                 )}
             </div>
         </div>

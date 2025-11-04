@@ -1,94 +1,32 @@
-import Bull, { JobOptions } from 'bull';
-import env from '../configs/env';
-import { AnchorBuildQueueData, WORKER_QUEUE_TYPES } from '../types/worker_queue_types';
+import { Queue } from 'bullmq';
+import queue_config from '../configs/queue.config';
+import { BuildJobPayload, COMMAND } from '@repo/types';
 
 export default class ServerToOrchestratorQueue {
-    private queue: Bull.Queue;
+    private queue: Queue;
     constructor(queue_name: string) {
-        this.queue = new Bull(queue_name, {
-            redis: env.SERVER_REDIS_URL,
-            defaultJobOptions: {
-                removeOnComplete: 100,
-                removeOnFail: true,
-                attempts: 1,
-                timeout: 300000,
-                backoff: {
-                    type: 'exponential',
-                    delay: 2000,
-                },
-            },
-        });
+        this.queue = new Queue(queue_name, queue_config);
     }
 
-    public async run_anchor_build_command(
-        userId: string,
-        contractId: string,
-        projectName: string,
-        options?: Partial<JobOptions>,
-    ): Promise<void> {
+    /**
+     * queues the users command to the server kubernetes queue
+     * @param command
+     * @param payload
+     * @returns job id of the job which is been queued
+     */
+    public async queue_command(
+        command: COMMAND,
+        payload: BuildJobPayload,
+    ): Promise<string | undefined> {
         try {
-            const data: AnchorBuildQueueData = {
-                userId,
-                contractId,
-                projectName,
-            };
-            console.log('data is : ', data);
-            const job_options: JobOptions = {
-                ...options,
+            const job = await this.queue.add(command, payload, {
                 priority: 2,
-            };
-            await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_BUILD_COMMAND, data, job_options);
+                jobId: `anchor-command-${payload.contractId}-${Date.now()}`,
+            });
+            return job.id;
         } catch (err) {
             console.error('failed to run anchor build command', err);
-        }
-    }
-
-    public async run_anchor_deploy_command(
-        userId: string,
-        contractId: string,
-        projectName: string,
-        network: 'devnet' | 'mainnet' = 'devnet',
-        options?: Partial<JobOptions>,
-    ): Promise<void> {
-        try {
-            const data: AnchorBuildQueueData = {
-                userId,
-                contractId,
-                projectName,
-            };
-            // add this in cmd for network switching
-            console.error({ network });
-            const job_options: JobOptions = {
-                ...options,
-                priority: 2,
-            };
-
-            await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_DEPLOY_COMMAND, data, job_options);
-            console.log('after stallling data');
-        } catch (err) {
-            console.error('failed to run anchor deploy command', err);
-        }
-    }
-
-    public async run_anchor_test_command(
-        userId: string,
-        contractId: string,
-        projectName: string,
-        options?: Partial<JobOptions>,
-    ): Promise<void> {
-        try {
-            const data: AnchorBuildQueueData = {
-                userId,
-                contractId,
-                projectName,
-            };
-            const job_options: JobOptions = {
-                ...options,
-                priority: 2,
-            };
-            await this.queue.add(WORKER_QUEUE_TYPES.ANCHOR_TEST_COMMAND, data, job_options);
-        } catch (err) {
-            console.error('failed to run anchor test command', err);
+            return undefined;
         }
     }
 }
