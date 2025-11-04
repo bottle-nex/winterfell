@@ -1,5 +1,5 @@
+import { COMMAND } from '@repo/types';
 import z from 'zod';
-import { COMMAND } from '../types/contract_types';
 
 export const command_schema = z.enum([
     COMMAND.WINTERFELL_BUILD,

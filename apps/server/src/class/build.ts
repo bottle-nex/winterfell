@@ -1,9 +1,9 @@
 import { BuildStatus, prisma } from '@repo/database';
 import { BuildCacheCheck, BuildJobPayload, COMMAND } from '@repo/types';
 import crypto from 'crypto';
-import { redis_streams } from '../services/init';
+import { server_orchestrator_queue } from '../services/init';
 
-export default class BuildService {
+export default class CommandService {
     /**
      * Generates a SHA-256 hash from a given code string.
      * This method trims the input code and returns a hexadecimal hash string.
@@ -67,17 +67,23 @@ export default class BuildService {
     }
 
     /**
-     * Queues a build job to Redis Stream
+     * Queues a build job to Redis Queue
+     * @param command
      * @param contractId
      * @param userId
      * @param contractName
-     * @returns Job identifiers or null if queuing fails
+     * @returns Job identifiers or undefined if queuing fails
      */
 
-    static async queue_build_job(contractId: string, userId: string, contractName: string) {
+    static async queue_anchor_commands(
+        command: COMMAND,
+        contractId: string,
+        userId: string,
+        contractName: string,
+    ) {
         try {
             const payload: BuildJobPayload = {
-                command: COMMAND.WINTERFELL_BUILD,
+                command,
                 jobId: '',
                 contractId,
                 userId,
@@ -85,17 +91,35 @@ export default class BuildService {
                 contractName,
             };
 
-            const result = await redis_streams.add_to_redis_stream(
-                COMMAND.WINTERFELL_BUILD,
-                payload,
-            );
-            await prisma.contract.update({
-                where: { id: contractId },
+            const build_job = await prisma.buildJob.create({
                 data: {
-                    lastBuildStatus: BuildStatus.QUEUED,
-                    lastBuildId: result?.buildJobId,
+                    contractId: payload.contractId,
+                    command,
+                    jobId: '',
+                    status: BuildStatus.PENDING,
                 },
             });
+
+            const job_id = await server_orchestrator_queue.queue_command(command, payload);
+
+            await prisma.$transaction([
+                prisma.contract.update({
+                    where: { id: contractId },
+                    data: {
+                        lastBuildStatus: BuildStatus.QUEUED,
+                        lastBuildId: job_id,
+                    },
+                }),
+
+                prisma.buildJob.update({
+                    where: { id: build_job.id },
+                    data: {
+                        status: BuildStatus.QUEUED,
+                        jobId: job_id,
+                    },
+                }),
+            ]);
+            return job_id;
         } catch (err) {
             console.error('error while queuing build job', err);
         }

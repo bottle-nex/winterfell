@@ -10,7 +10,7 @@ export default function HomeNavbar() {
     const { session } = useUserSessionStore();
 
     return (
-        <div className="w-full min-h-[3.5rem] text-light/70 px-6 select-none relative flex justify-between items-center">
+        <div className="w-full min-h-[3.5rem] text-light/70 px-6 select-none relative flex justify-between items-center z-10">
             <div className="text-[#C3C3C3] text-[17px] tracking-[0.5rem] flex justify-start items-center gap-x-3 cursor-pointer group">
                 <LiaServicestack size={28} className="text-primary" />
                 WINTERFELL
