@@ -31,7 +31,7 @@ export default async function runCommandsController(req: Request, res: Response)
         const contract = await prisma.contract.findUnique({
             where: { id: contractId },
         });
-
+         
         if (!contract || !contract.code) {
             ResponseWriter.not_found(res, 'contract code has not been generated');
             return;
@@ -41,6 +41,8 @@ export default async function runCommandsController(req: Request, res: Response)
             contractId,
             contract.code,
         );
+        
+        console.log('cache check: ', cache_check);
 
         if (cache_check.isCached && cache_check.canReuseBuild) {
             ResponseWriter.success(res, {}, 'the build is cached and no changes found', 200);
@@ -55,8 +57,10 @@ export default async function runCommandsController(req: Request, res: Response)
         );
 
         if (job_id) {
-            ResponseWriter.success(res, {}, 'the build is cached and no changes found', 200);
+            ResponseWriter.success(res, {}, 'Build has started', 200);
+            return;
         }
+
         throw new Error();
     } catch (err) {
         console.error('error occured in running a command', err);

@@ -57,7 +57,7 @@ export default class ContentGenerator {
         messages: Message[],
         contractId: string,
         public_key: string,
-        llmProvider: LLMProvider = 'claude',
+        llmProvider: LLMProvider = 'gemini',
         userInstruction?: string,
     ): Promise<void> {
         const isFirstMessage = await this.isFirstMessage(contractId);
@@ -83,7 +83,7 @@ export default class ContentGenerator {
             const base_files: FileContent[] = prepareBaseTemplate(contractName);
             const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
 
-            await this.saveLLMResponseToDb(full_response, contractId);
+            await this.saveLLMResponseToDb(llmGeneratedFiles, contractId);
             await prisma.contract.update({
                 where: {
                     id: contractId,
@@ -120,7 +120,7 @@ export default class ContentGenerator {
         isFirstMessage: boolean,
         code_base: string,
         userInstruction: string,
-        llmProvider: LLMProvider = 'claude',
+        llmProvider: LLMProvider = 'gemini',
     ): Promise<string> {
         if (llmProvider === 'claude') {
             return await this.generateClaudeStreamingResponse(
@@ -160,7 +160,7 @@ export default class ContentGenerator {
         code_base: string,
         userInstruction: string,
     ): Promise<string> {
-        logger.info('gemini llm used');
+        console.log('gemini llm used');
         const contents: GeminiMessage[] = [];
         let fullResponse = '';
 
@@ -249,7 +249,7 @@ export default class ContentGenerator {
         code_base: string,
         userInstruction: string,
     ): Promise<string> {
-        logger.info('claude llm used');
+        console.log('claude llm used');
         const contents: ClaudeMessage[] = [];
         let fullResponse = '';
 
@@ -339,13 +339,12 @@ export default class ContentGenerator {
         }
     }
 
-    private async saveLLMResponseToDb(fullResponse: string, contractId: string): Promise<void> {
+    private async saveLLMResponseToDb(code: FileContent[], contractId: string): Promise<void> {
         try {
-            await prisma.message.create({
+            await prisma.contract.update({
+                where: { id: contractId },
                 data: {
-                    contractId,
-                    role: ChatRole.AI,
-                    content: fullResponse,
+                    code: JSON.stringify(code),
                 },
             });
         } catch (error) {

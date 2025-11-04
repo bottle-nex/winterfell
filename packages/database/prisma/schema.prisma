@@ -32,8 +32,8 @@ model Contract {
   code         String?
   codeHash     String?
 
-  lastBuildStatus BuildStatus
-  lastBuildId     String
+  lastBuildStatus BuildStatus @default(NEVER_BUILT)
+  lastBuildId     String?
 
   idl       Json?
   clientSdk Json?

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa6';
 
@@ -88,8 +89,13 @@ export default function ContractTemplates() {
                         key={contract.id}
                         className="h-full min-w-[calc(30%-12px)] grid grid-rows-[85%_15%] overflow-hidden group"
                     >
-                        <div className="bg-neutral-900/50 border border-neutral-800 rounded-[8px]  shadow-xl">
-                            {/* image */}
+                        <div className="bg-[#0A0C0D70] overflow-hidden shadow-sm border border-neutral-800 rounded-[8px] relative">
+                            <Image
+                                src={'/Images/template/image.png'}
+                                alt=""
+                                fill
+                                className="object-cover opacity-90"
+                            />
                         </div>
 
                         <div className="text-light/40 h-full w-full flex items-center justify-between px-1">

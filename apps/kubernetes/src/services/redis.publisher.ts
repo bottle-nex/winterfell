@@ -2,18 +2,28 @@ import { Redis } from 'ioredis';
 import { logger } from '../utils/logger';
 import PodTemplate from '../utils/pod-templates';
 import { env } from '../configs/env.config';
+import { JOB_STATUS } from '../types/worker_queue_types';
 
-export interface ParsedMessage {
+export interface TerminalStreamMessage {
    type: 'TERMINAL_STREAM';
    payload: string;
 }
+
+export interface StatusUpdateMessage {
+   type: 'STATUS_UPDATE';
+   payload: {
+      status: JOB_STATUS;
+   };
+}
+
+export type ParsedMessage = TerminalStreamMessage | StatusUpdateMessage;
 
 export default class RedisPublisher {
    private redis: Redis;
 
    constructor() {
       this.redis = new Redis(env.KUBERNETES_REDIS_URL);
-      logger.info('Redis publisher initialized');
+      console.log('Redis publisher initialized');
    }
 
    private async publish(channel: string, message: any): Promise<void> {
@@ -28,13 +38,13 @@ export default class RedisPublisher {
 
    public async disconnect(): Promise<void> {
       await this.redis.quit();
-      logger.info('Redis publisher disconnected');
+      console.log('Redis publisher disconnected');
    }
 
    public async publish_build_log(userId: string, contractId: string, log: string): Promise<void> {
       const channel = PodTemplate.get_pod_name(userId, contractId);
 
-      const data: ParsedMessage = {
+      const data: TerminalStreamMessage = {
          type: 'TERMINAL_STREAM',
          payload: log,
       };
@@ -45,12 +55,14 @@ export default class RedisPublisher {
    public async publish_status(
       userId: string,
       contractId: string,
-      status: 'started' | 'completed' | 'failed',
+      status: JOB_STATUS,
    ): Promise<void> {
       const channel = PodTemplate.get_pod_name(userId, contractId);
-      const data: ParsedMessage = {
-         type: 'TERMINAL_STREAM',
-         payload: status,
+      const data: StatusUpdateMessage = {
+         type: 'STATUS_UPDATE',
+         payload: {
+            status,
+         },
       };
       await this.publish(channel, data);
    }

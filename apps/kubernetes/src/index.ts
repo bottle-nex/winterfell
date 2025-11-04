@@ -9,6 +9,4 @@ app.use(express.json());
 init_services();
 const PORT = env.KUBERNETES_PORT;
 
-app.listen(PORT, () => {
-   logger.info(`Orchestrator running on port ${PORT}`);
-});
+app.listen(PORT);
