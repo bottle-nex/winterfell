@@ -124,7 +124,7 @@ model Message {
   creatingFiles  Boolean @default(false)
   finalzing      Boolean @default(false)
   error          Boolean @default(false)
-
+  
   // isCodeBuilt Boolean? @default(false)
   // buildStatus
 

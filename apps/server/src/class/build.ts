@@ -16,7 +16,6 @@ export default class BuildService {
 
     /**
      * Checks whether the current contract build can be reused from the cache.
-     *
      * This method compares the SHA-256 hash of the current source code with the one
      * stored in the database. If both match, and the last build was successful with
      * a non-null IDL, it concludes that the build can be reused.
@@ -41,9 +40,9 @@ export default class BuildService {
             if (!contract?.codeHash) {
                 return {
                     isCached: false,
+                    canReuseBuild: false,
                     codeHash: current_code_hash,
                     lastBuildStatus: 'NEVER_BUILT',
-                    canReuseBuild: false,
                 };
             }
             const canReuse: boolean =
