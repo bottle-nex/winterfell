@@ -11,10 +11,10 @@ export default function ShortcutMenu() {
 
     return (
         <OpacityBackground onBackgroundClick={() => setOpen(prev => !prev)}>
-            <div className="fixed left-5 bottom-5 z-50 backdrop-blur-sm flex items-center justify-center">
-                <div className="bg-dark-base/80 border border-[#353535] rounded-lg w-[250px] py-4 px-6">
+            <div className="fixed left-5 bottom-5 flex items-center justify-center">
+                <div className="bg-dark-base border border-[#353535] rounded-[8px] w-[250px] py-4 px-6">
                     <div className="flex justify-between items-center mb-5">
-                        <div className="text-base tracking-wide">
+                        <div className="text-base tracking-wide font-semibold">
                             Keyboard Shortcuts
                         </div>
                         {/* <div 
@@ -22,7 +22,7 @@ export default function ShortcutMenu() {
                         onClick={() => setOpen(false)}>
                             <RxCross2 className="size-3 text-light/90"/>
                         </div> */}
-                    </div> 
+                    </div>
 
                     <div className="space-y-2.5">
                         <ShortcutItem keys="⌘ K" desc="Open Terminal" />

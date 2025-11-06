@@ -29,7 +29,7 @@ export default function OpacityBackground({
     const backgroundElement = (
         <div
             className={cn(
-                'fixed w-screen h-screen inset-0 backdrop-blur-[2px] flex items-center justify-center z-50',
+                'fixed w-screen h-screen inset-0 flex items-center justify-center z-50 bg-dark/70',
                 className,
             )}
             onClick={handleBackgroundClick}
