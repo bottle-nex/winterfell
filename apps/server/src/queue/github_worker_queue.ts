@@ -1,23 +1,20 @@
-import Bull, { Job } from 'bull';
+import { Job, Queue, Worker } from 'bullmq';
 import { Octokit } from '@octokit/rest';
-import { logger } from '../utils/logger';
 import { FileContent, GithubPushJobData } from '../types/github_worker_queue_types';
 import { get_s3_codebase } from '../services/git_services';
+import queue_config from '../configs/queue.config';
 
 export class GithubWorkerQueue {
-    private queue: Bull.Queue<GithubPushJobData>;
+    private queue: Queue<GithubPushJobData>;
+    private worker: Worker<GithubPushJobData>;
 
-    constructor(queue_name: string, redis_url: string = 'redis://localhost:6379') {
-        this.queue = new Bull(queue_name, { redis: redis_url });
-        this.queue.process(this.processJob.bind(this));
-
-        this.queue.on('completed', (job) => {
-            console.log(`Job ${job.id} completed successfully`);
-        });
-
-        this.queue.on('failed', (job, err) => {
-            logger.error(`Job ${job?.id} failed with error: ${err.message}`);
-        });
+    constructor(queue_name: string) {
+        this.queue = new Queue(queue_name, queue_config);
+        this.worker = new Worker(
+            queue_name,
+            this.processJob.bind(this),
+            queue_config,
+        );
 
         console.log(`GitHub push queue initialized: ${queue_name}`);
     }
@@ -27,41 +24,26 @@ export class GithubWorkerQueue {
         const octokit = new Octokit({ auth: github_access_token });
 
         try {
-            await job.progress(10);
-            console.log(`[Job ${job.id}] Step 1: Ensuring repository exists...`);
-
             await this.ensureRepository(octokit, owner, repo_name);
 
-            await job.progress(30);
-            console.log(`[Job ${job.id}] Step 2: Fetching files from S3...`);
             const files = await get_s3_codebase(contract_id);
-
             if (!files || files.length === 0) {
                 throw new Error('No files found in codebase');
             }
 
-            console.log(`[Job ${job.id}] Found ${files.length} files to push`);
-
-            await job.progress(50);
-            console.log(`[Job ${job.id}] Step 3: Pushing files to repository...`);
 
             await this.pushFilesToRepository(octokit, owner, repo_name, files, user_id);
-
-            await job.progress(100);
             const repo_url = `https://github.com/${owner}/${repo_name}`;
-            console.log(`[Job ${job.id}] Successfully pushed to ${repo_url}`);
 
-            return { success: true, repo_url, files_count: files.length };
+            return {
+                success: true,
+                repo_url,
+                files_count: files.length
+            };
+
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            const errorStack = error instanceof Error ? error.stack : '';
-
-            logger.error(`[Job ${job.id}] Failed:`, {
-                message: errorMessage,
-                stack: errorStack,
-            });
-
-            throw new Error(`GitHub push failed: ${errorMessage}`);
+            const err = error instanceof Error ? error.message : 'Unknown error';
+            throw new Error(`GitHub push failed: ${err}`);
         }
     }
 
@@ -141,11 +123,11 @@ export class GithubWorkerQueue {
             base_tree: baseCommit.tree.sha,
         });
 
-        console.log(`Creating commit...`);
+        console.log(`creating commit...`);
         const { data: commit } = await octokit.git.createCommit({
             owner,
             repo: repo_name,
-            message: `Deploy from Lovable for Anchor\n\nUser: ${user_id}\nFiles: ${files.length}`,
+            message: `Deployed from winterfell \n\nUser: ${user_id}\nFiles: ${files.length}`,
             tree: tree.sha,
             parents: [baseCommitSha],
         });
@@ -162,23 +144,25 @@ export class GithubWorkerQueue {
         console.log(`Successfully pushed ${files.length} files to ${repo_name}`);
     }
 
-    public async enqueue(job_data: GithubPushJobData): Promise<Bull.Job<GithubPushJobData>> {
+    public async enqueue(job_data: GithubPushJobData): Promise<Job<GithubPushJobData>> {
         const jobId = `${job_data.user_id}-${job_data.repo_name}-${Date.now()}`;
-        return this.queue.add(job_data, {
+        return this.queue.add('github-push', job_data, {
             jobId,
             attempts: 3,
-            backoff: { type: 'exponential', delay: 5000 },
+            backoff: { 
+                type: 'exponential', 
+                delay: 5000 
+            },
             removeOnComplete: false,
             removeOnFail: false,
         });
     }
 
-    public async getJob(job_id: string): Promise<Bull.Job<GithubPushJobData> | null> {
+    public async getJob(job_id: string): Promise<Job<GithubPushJobData> | null | undefined> {
         return this.queue.getJob(job_id);
     }
 
     public async close(): Promise<void> {
         await this.queue.close();
-        console.log('GitHub worker queue closed');
     }
 }
