@@ -23,11 +23,10 @@ export default function ShortcutMenu() {
                     </div>
 
                     <div className="space-y-2">
-                        <ShortcutItem keys="⌘ K" desc="Open Command Palette" />
-                        <ShortcutItem keys="⌘ /" desc="Search" />
+                        <ShortcutItem keys="⌘ K" desc="Open Terminal" />
+                        <ShortcutItem keys="⌘ /" desc="Start Chat" />
                         <ShortcutItem keys="⌘ ?" desc="Show Shortcuts" />
-                        <ShortcutItem keys="⌘ S" desc="Save" />
-                        <ShortcutItem keys="⌘ I" desc="Toggle Sidebar" />
+                        <ShortcutItem keys="⌘ E" desc="Toggle Sidebar" />
                     </div>
 
                     <p className="text-[10px] opacity-50 mt-4 text-center">

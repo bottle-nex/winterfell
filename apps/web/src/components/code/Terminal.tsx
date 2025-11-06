@@ -261,7 +261,7 @@ export default function Terminal() {
                         <div
                             ref={outputRef}
                             onClick={() => inputRef.current?.focus()}
-                            className="overflow-y-auto px-3 py-2 text-light/80 flex flex-col group"
+                            className="h-full overflow-y-auto px-3 py-2 text-light/80 flex flex-col group"
                         >
                             {renderLines(actionLogs)}
 
