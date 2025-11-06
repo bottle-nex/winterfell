@@ -11,7 +11,7 @@ const envSchema = z.object({
     KUBERNETES_PORT: z.string().transform((val) => parseInt(val, 10)),
     KUBERNETES_NAMESPACE: z.string().default('default'),
     KUBERNETES_REDIS_URL: z.url(),
-    
+    SERVER_CLOUDFRONT_DOMAIN: z.url(),
 
 });
 
