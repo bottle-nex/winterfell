@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useRef } from 'react';
 import { MdTerminal } from 'react-icons/md';
 import { Button } from '../ui/button';
@@ -9,6 +8,7 @@ import { useParams } from 'next/navigation';
 import executeCommandServer from '@/src/lib/server/execute-command-server';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
+import { useCommandHistoryStore } from '@/src/store/user/useCommandHistoryStore';
 
 enum TerminalTabOptions {
     OUTPUT = 'output',
@@ -34,6 +34,7 @@ export default function Terminal() {
     const params = useParams();
     const contractId = params.contractId as string;
     const { session } = useUserSessionStore();
+    const { addCommand, moveUp, moveDown, resetIndex } = useCommandHistoryStore();
 
     const Prompt = () => (
         <span className="text-green-500 select-none">
@@ -107,28 +108,24 @@ export default function Terminal() {
         };
     }, [isResizing]);
 
-    // Handle commands
     const handleCommand = (command: string) => {
         if (!session || !session.user || !session.user.token) return null;
 
         const trimmed = command.trim() as COMMAND;
         if (!trimmed) return;
 
+        addCommand(trimmed);
+
         let output = '';
+
         switch (trimmed) {
             case COMMAND.CLEAR:
                 setActionLogs([]);
                 return;
-            case COMMAND.HELP:
-                output = CommandResponse[trimmed];
-                break;
-            case COMMAND.HOT_KEYS:
-                output = CommandResponse[trimmed];
-                break;
-            case COMMAND.PLATFORM:
-                output = CommandResponse[trimmed];
-                break;
 
+            case COMMAND.HELP:
+            case COMMAND.HOT_KEYS:
+            case COMMAND.PLATFORM:
             case COMMAND.COMMANDS:
                 output = CommandResponse[trimmed];
                 break;
@@ -153,8 +150,8 @@ export default function Terminal() {
                 break;
         }
 
-        setActionLogs([
-            ...actionLogs,
+        setActionLogs((prev) => [
+            ...prev,
             { type: 'command', text: trimmed },
             { type: 'output', text: output },
         ]);
@@ -168,30 +165,38 @@ export default function Terminal() {
         switch (extension) {
             case 'rs':
                 return 'Rust';
-
             case 'ts':
                 return 'TypeScript';
-
             case 'gitignore':
             case 'prettierignore':
                 return 'Ignore';
-
             case 'json':
                 return 'JSON';
-
             case 'toml':
                 return 'TOML';
-
             default:
                 return 'File';
         }
     };
 
-    const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleCommand(input);
             setInput('');
+            resetIndex();
+        }
+
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prevCommand = moveUp();
+            if (prevCommand !== null) setInput(prevCommand);
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextCommand = moveDown();
+            setInput(nextCommand ?? '');
         }
     };
 
@@ -212,7 +217,7 @@ export default function Terminal() {
         <>
             {showTerminal && (
                 <div
-                    className="absolute bottom-6 left-0 w-full bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 z-10 font-mono flex flex-col"
+                    className="absolute bottom-6 left-0 w-full bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 font-mono flex flex-col z-[99999]"
                     style={{ height }}
                 >
                     {/* Tabs */}
@@ -255,21 +260,21 @@ export default function Terminal() {
                     ) : (
                         <div
                             ref={outputRef}
-                            className="flex-1 overflow-y-auto px-3 py-2 text-light/80 flex flex-col"
+                            onClick={() => inputRef.current?.focus()}
+                            className="overflow-y-auto px-3 py-2 text-light/80 flex flex-col group"
                         >
                             {renderLines(actionLogs)}
 
-                            <div className="flex mt-1 group">
+                            <div className="flex mt-1">
                                 <Prompt />
                                 <input
                                     ref={inputRef}
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={handleEnter}
-                                    className="bg-transparent outline-none flex-1 text-light/80 caret-green-400 ml-2 group-click:focus"
+                                    onKeyDown={handleInputKeyDown}
+                                    className="outline-none text-light/80 caret-green-400 ml-2 flex-1"
                                     placeholder="type a command or use --help"
-                                    autoFocus
                                 />
                             </div>
                         </div>
