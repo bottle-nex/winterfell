@@ -10,5 +10,9 @@
     "remove-logs": "npx ts-node src/scripts/remove-logs",
     "lint": "eslint './src/**/*.{ts,js}'",
     "format": "prettier --write './src/**/*.{ts,tsx,js,jsx,json,md}'"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "zod": "^4.1.12"
   }
 }
