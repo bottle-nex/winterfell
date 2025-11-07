@@ -10,11 +10,7 @@ export class GithubWorkerQueue {
 
     constructor(queue_name: string) {
         this.queue = new Queue(queue_name, queue_config);
-        this.worker = new Worker(
-            queue_name,
-            this.processJob.bind(this),
-            queue_config,
-        );
+        this.worker = new Worker(queue_name, this.processJob.bind(this), queue_config);
 
         console.log(`GitHub push queue initialized: ${queue_name}`);
     }
@@ -31,16 +27,14 @@ export class GithubWorkerQueue {
                 throw new Error('No files found in codebase');
             }
 
-
             await this.pushFilesToRepository(octokit, owner, repo_name, files, user_id);
             const repo_url = `https://github.com/${owner}/${repo_name}`;
 
             return {
                 success: true,
                 repo_url,
-                files_count: files.length
+                files_count: files.length,
             };
-
         } catch (error) {
             const err = error instanceof Error ? error.message : 'Unknown error';
             throw new Error(`GitHub push failed: ${err}`);
@@ -149,9 +143,9 @@ export class GithubWorkerQueue {
         return this.queue.add('github-push', job_data, {
             jobId,
             attempts: 3,
-            backoff: { 
-                type: 'exponential', 
-                delay: 5000 
+            backoff: {
+                type: 'exponential',
+                delay: 5000,
             },
             removeOnComplete: false,
             removeOnFail: false,

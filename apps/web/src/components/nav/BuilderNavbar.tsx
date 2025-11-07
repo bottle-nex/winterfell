@@ -198,21 +198,6 @@ export default function BuilderNavbar() {
                 </div>
 
                 <div className="flex items-center justify-between gap-x-5 relative">
-                    <NetworkTicker />
-
-                    <div className="relative">
-                        <ToolTipComponent content="Settings" side="bottom">
-                            <IoMdOptions
-                                onClick={() => setOpenSettingsPanel(true)}
-                                className="hover:bg-neutral-700/70 rounded-[4px] p-[4px] h-6 w-6 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
-                            />
-                        </ToolTipComponent>
-                        <BuilderSettingsPanel
-                            openSettingsPanel={openSettingsPanel}
-                            setOpenSettingsPanel={setOpenSettingsPanel}
-                        />
-                    </div>
-
                     <ToolTipComponent
                         content="deploy your contract to the solana blockchain"
                         side="bottom"
