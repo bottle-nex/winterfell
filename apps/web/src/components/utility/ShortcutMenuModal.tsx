@@ -2,7 +2,6 @@
 
 import { useShortcutMenuToggle } from "@/src/hooks/useShortcutMenuToggle";
 import OpacityBackground from "./OpacityBackground";
-import { RxCross2 } from "react-icons/rx";
 
 export default function ShortcutMenu() {
     const { open, setOpen } = useShortcutMenuToggle();

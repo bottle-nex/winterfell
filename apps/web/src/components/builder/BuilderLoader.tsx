@@ -64,7 +64,7 @@ export default function BuilderLoader() {
                 </div>
 
                 {currentFileEditing && (
-                    <div className="w-80 h-16 bg-[#0c0d0e]/50 backdrop-blur-sm rounded border border-neutral-800/50 px-4 flex items-center gap-3 overflow-hidden">
+                    <div className="w-80 h-16 bg-[#0c0d0e] backdrop-blur-sm rounded border border-neutral-800/50 px-4 flex items-center gap-3 overflow-hidden">
                         <div className="flex-shrink-0">
                             <FileIcon filename={fileName || ''} size={20} />
                         </div>

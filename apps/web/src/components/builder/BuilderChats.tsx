@@ -78,7 +78,6 @@ export default function BuilderChats() {
                 throw new Error('No response body');
             }
 
-            // ✅ Fixed: Buffer partial chunks to handle split JSONs
             let buffer = '';
 
             while (true) {

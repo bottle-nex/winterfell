@@ -17,6 +17,7 @@ export enum STAGE {
     BUILDING = 'BUILDING',
     CREATING_FILES = 'CREATING_FILES',
     FINALIZING = 'FINALIZING',
+    COMPLETED = 'COMPLETED',
     END = 'END',
     ERROR = 'ERROR',
 }
@@ -108,4 +109,10 @@ export interface StreamEvent {
     data: StreamEventData;
     systemMessage: Message;
     timestamp: number;
+}
+
+export enum LOADER_STATES {
+    HUNG = 'HUNG',
+    BUFFERING = 'BUFFERING',
+    COMPLETED = 'COMPLETED' 
 }
