@@ -114,5 +114,5 @@ export interface StreamEvent {
 export enum LOADER_STATES {
     HUNG = 'HUNG',
     BUFFERING = 'BUFFERING',
-    COMPLETED = 'COMPLETED' 
+    COMPLETED = 'COMPLETED',
 }

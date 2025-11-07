@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export function useShortcutMenuToggle() {
     const [open, setOpen] = useState(false);
@@ -6,7 +6,7 @@ export function useShortcutMenuToggle() {
     useEffect(() => {
         function handler(e: KeyboardEvent) {
             const isCmd = e.metaKey || e.ctrlKey;
-            const isQuestion = e.key === "/";
+            const isQuestion = e.key === '/';
 
             if (isCmd && isQuestion) {
                 e.preventDefault();
@@ -14,8 +14,8 @@ export function useShortcutMenuToggle() {
             }
         }
 
-        window.addEventListener("keydown", handler);
-        return () => window.removeEventListener("keydown", handler);
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
     }, []);
 
     return { open, setOpen };
