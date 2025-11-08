@@ -24,7 +24,8 @@ export default function BuilderNavbarSearchComponent() {
     }, [fileTree]);
 
     useShortcuts({
-        'meta+ ': () => inputRef.current?.focus(),
+        'meta+k': () => inputRef.current?.focus(),
+        'ctrl+k': () => inputRef.current?.focus(),
     });
 
     useEffect(() => {
@@ -102,7 +103,10 @@ export default function BuilderNavbarSearchComponent() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onFocus={() => inputValue && setShowDropdown(true)}
-                className="border border-neutral-700 pl-4 p-0 px-4 h-7 !text-xs tracking-wide min-w-[20rem]"
+                className={cn(
+                    "border border-neutral-700 pl-4 p-0 px-4 h-7 !text-xs tracking-wide min-w-[20rem]",
+                    'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[0px]',
+                )}
                 placeholder="search for files (e.g. lib.rs)"
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500 text-xs cursor-pointer">
