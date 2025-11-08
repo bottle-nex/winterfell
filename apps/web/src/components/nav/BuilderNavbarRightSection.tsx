@@ -15,7 +15,7 @@ import { useChatStore } from '@/src/store/user/useChatStore';
 import { toast } from 'sonner';
 import { EXPORT_CONTRACT_URL, GITHUB_CONNECT_URL } from '@/routes/api_routes';
 
-export default function NavbarRightSection() {
+export default function BuilderNavbarRightSection() {
     const { session, setSession } = useUserSessionStore();
     const { contractId } = useChatStore();
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
