@@ -1,9 +1,6 @@
 import { PromptTemplate } from "@langchain/core/prompts";
-import { RunnableSequence } from "@langchain/core/runnables";
-import { gemini_planner } from "../models/models";
 
-
-const planner_prompt = new PromptTemplate({
+export const planner_prompt = new PromptTemplate({
     template: `
     You're a planning agent for solana anchor smart contract generator. Given user request + context, return a structured plan,
 
@@ -19,8 +16,3 @@ const planner_prompt = new PromptTemplate({
     `,
     inputVariables: ["input"]
 });
-
-export const planner_chain = RunnableSequence.from([
-    planner_prompt,
-    gemini_planner,
-])
