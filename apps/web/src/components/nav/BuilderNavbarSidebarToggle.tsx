@@ -7,7 +7,7 @@ import ToolTipComponent from '../ui/TooltipComponent';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
-export default function NavbarSidebarToggle() {
+export default function BuilderNavbarSidebarToggle() {
     const { collapseFileTree, setCollapseFileTree } = useCodeEditor();
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';

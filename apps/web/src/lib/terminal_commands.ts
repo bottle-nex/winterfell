@@ -17,18 +17,18 @@ const platformResponse = `
 PLATFORM DETAILS:
 portal              Winterfell
 version             1.0.0
-shell               winterfell
+shell               winter
 `;
 
 const commandsResponse = `
 SHELL COMMANDS:
-winterfell build                to build the contract
-winterfell test                 to run the test file
+winter build                to build the contract
+winter test                 to run the test file
 
 
 PREMIUM(+) SHELL COMMANDS:
-winterfell deploy --devnet      to deploy the contract on devnet
-winterfell deploy --mainnet     to deploy the contract on mainnet
+winter deploy --devnet      to deploy the contract on devnet
+winter deploy --mainnet     to deploy the contract on mainnet
 `;
 
 // const winterfellBuildResponse = ``;
@@ -39,10 +39,10 @@ export enum COMMAND {
     HOT_KEYS = '--hotkeys',
     PLATFORM = '--platform',
     COMMANDS = '--commands',
-    WINTERFELL_BUILD = 'winterfell build',
-    WINTERFELL_TEST = 'winterfell test',
-    WINTERFELL_DEPLOY_DEVNET = 'winterfell deploy --devnet',
-    WINTERFELL_DEPLOY_MAINNET = 'winterfell deploy --mainnet',
+    WINTERFELL_BUILD = 'winter build',
+    WINTERFELL_TEST = 'winter test',
+    WINTERFELL_DEPLOY_DEVNET = 'winter deploy --devnet',
+    WINTERFELL_DEPLOY_MAINNET = 'winter deploy --mainnet',
 }
 
 export const CommandResponse: Record<COMMAND, string> = {

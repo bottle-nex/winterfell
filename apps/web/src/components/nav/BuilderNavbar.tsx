@@ -1,8 +1,8 @@
 'use client';
 import { LiaServicestack } from 'react-icons/lia';
-import NavbarSearch from './NavbarSearch';
-import NavbarRightSection from './NavbarRightSection';
-import NavbarSidebarToggle from './NavbarSidebarToggle';
+import BuilderNavbarSidebarToggle from './BuilderNavbarSidebarToggle';
+import BuilderNavbarSearchComponent from './BuilderNavbarSearchComponent';
+import BuilderNavbarRightSection from './BuilderNavbarRightSection';
 
 export default function BuilderNavbar() {
     return (
@@ -13,9 +13,9 @@ export default function BuilderNavbar() {
             </div>
 
             <div className="flex items-center justify-between">
-                <NavbarSidebarToggle />
-                <NavbarSearch />
-                <NavbarRightSection />
+                <BuilderNavbarSidebarToggle />
+                <BuilderNavbarSearchComponent />
+                <BuilderNavbarRightSection />
             </div>
         </div>
     );

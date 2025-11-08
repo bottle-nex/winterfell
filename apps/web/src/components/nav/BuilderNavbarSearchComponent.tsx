@@ -4,11 +4,11 @@ import { ChevronRight } from 'lucide-react';
 import { Input } from '../ui/input';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import { flattenFileTree, searchFiles } from '@/src/lib/fileTreeHelper';
+import { flattenFileTree, searchFiles } from '@/src/lib/file_tree_helper';
 import { FlatFile, FileNode } from '@/src/types/prisma-types';
 import useShortcuts from '@/src/hooks/useShortcut';
 
-export default function NavbarSearch() {
+export default function BuilderNavbarSearchComponent() {
     const { fileTree, selectFile } = useCodeEditor();
     const [inputValue, setInputValue] = useState<string>('');
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
