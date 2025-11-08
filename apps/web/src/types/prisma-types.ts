@@ -9,6 +9,13 @@ export enum NODE {
     FOLDER = 'FOLDER',
 }
 
+export interface FlatFile {
+    id: string;
+    name: string;
+    path: string;
+    type: NODE;
+}
+
 export interface FileNode {
     id: string;
     name: string;

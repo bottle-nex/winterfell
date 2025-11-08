@@ -7,13 +7,12 @@ import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useParams } from 'next/navigation';
 import executeCommandServer from '@/src/lib/server/execute-command-server';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
-import { useTerminalLogStore } from '@/src/store/code/useTerminalLogStore';
 import { useCommandHistoryStore } from '@/src/store/user/useCommandHistoryStore';
-
-enum TerminalTabOptions {
-    OUTPUT = 'output',
-    ACTIONS = 'actions',
-}
+import useShortcuts from '@/src/hooks/useShortcut';
+import ToolTipComponent from '../ui/TooltipComponent';
+import { PiBroomFill } from 'react-icons/pi';
+import { BiPlus } from 'react-icons/bi';
+import { IoIosClose } from 'react-icons/io';
 
 interface Line {
     type: 'command' | 'output';
@@ -21,16 +20,15 @@ interface Line {
 }
 
 export default function Terminal() {
-    const [showTerminal, setShowTerminal] = useState<boolean>(false);
-    const [height, setHeight] = useState<number>(220);
-    const [isResizing, setIsResizing] = useState<boolean>(false);
-    const [activeTab, setActiveTab] = useState<TerminalTabOptions>(TerminalTabOptions.OUTPUT);
-    const [actionLogs, setActionLogs] = useState<Line[]>([]);
-    const [input, setInput] = useState<string>('');
-    const { logs } = useTerminalLogStore();
-    const { currentFile } = useCodeEditor();
+    const [showTerminal, setShowTerminal] = useState(false);
+    const [height, setHeight] = useState(220);
+    const [isResizing, setIsResizing] = useState(false);
+    const [logs, setLogs] = useState<Line[]>([]);
+    const [input, setInput] = useState('');
+
     const outputRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const { currentFile } = useCodeEditor();
     const params = useParams();
     const contractId = params.contractId as string;
     const { session } = useUserSessionStore();
@@ -43,47 +41,21 @@ export default function Terminal() {
     );
 
     useEffect(() => {
-        if (activeTab === TerminalTabOptions.ACTIONS) {
-            inputRef.current?.focus();
-        }
-    }, [showTerminal, activeTab]);
+        if (showTerminal) inputRef.current?.focus();
+    }, [showTerminal]);
 
     useEffect(() => {
         outputRef.current?.scrollTo({
             top: outputRef.current.scrollHeight,
             behavior: 'smooth',
         });
-    }, [actionLogs, input]);
+    }, [logs, input]);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            const isMac = navigator.platform.toUpperCase().includes('MAC');
-            const toggleKey = isMac
-                ? e.metaKey && e.key.toLowerCase() === 'k'
-                : e.ctrlKey && e.key.toLowerCase() === 'k';
-            const switchTabKey = isMac
-                ? e.metaKey && e.key.toLowerCase() === 's'
-                : e.ctrlKey && e.key.toLowerCase() === 's';
+    useShortcuts({
+        'meta+k': () => setShowTerminal((prev) => !prev),
+        'ctrl+k': () => setShowTerminal((prev) => !prev),
+    });
 
-            if (toggleKey) {
-                e.preventDefault();
-                setShowTerminal((prev) => !prev);
-            }
-
-            if (switchTabKey && showTerminal) {
-                e.preventDefault();
-                setActiveTab((prev) =>
-                    prev === TerminalTabOptions.OUTPUT
-                        ? TerminalTabOptions.ACTIONS
-                        : TerminalTabOptions.OUTPUT,
-                );
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [showTerminal]);
-
-    // Resize terminal
     useEffect(() => {
         const doResize = (e: MouseEvent) => {
             if (!isResizing) return;
@@ -109,18 +81,16 @@ export default function Terminal() {
     }, [isResizing]);
 
     const handleCommand = (command: string) => {
-        if (!session || !session.user || !session.user.token) return null;
-
+        if (!session || !session.user?.token) return null;
         const trimmed = command.trim() as COMMAND;
         if (!trimmed) return;
 
         addCommand(trimmed);
-
         let output = '';
 
         switch (trimmed) {
             case COMMAND.CLEAR:
-                setActionLogs([]);
+                setLogs([]);
                 return;
 
             case COMMAND.HELP:
@@ -150,33 +120,11 @@ export default function Terminal() {
                 break;
         }
 
-        setActionLogs((prev) => [
+        setLogs((prev) => [
             ...prev,
             { type: 'command', text: trimmed },
             { type: 'output', text: output },
         ]);
-    };
-
-    const handleCurrentFileExtension = () => {
-        if (!currentFile) return 'no selected file.';
-
-        const extension = currentFile.name.split('.')[1];
-
-        switch (extension) {
-            case 'rs':
-                return 'Rust';
-            case 'ts':
-                return 'TypeScript';
-            case 'gitignore':
-            case 'prettierignore':
-                return 'Ignore';
-            case 'json':
-                return 'JSON';
-            case 'toml':
-                return 'TOML';
-            default:
-                return 'File';
-        }
     };
 
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -200,6 +148,26 @@ export default function Terminal() {
         }
     };
 
+    const handleCurrentFileExtension = () => {
+        if (!currentFile) return 'no selected file.';
+        const extension = currentFile.name.split('.')[1];
+        switch (extension) {
+            case 'rs':
+                return 'Rust';
+            case 'ts':
+                return 'TypeScript';
+            case 'json':
+                return 'JSON';
+            case 'toml':
+                return 'TOML';
+            case 'gitignore':
+            case 'prettierignore':
+                return 'Ignore';
+            default:
+                return 'File';
+        }
+    };
+
     const renderLines = (lines: Line[]) =>
         lines.map((line, i) => (
             <div key={i} className="whitespace-pre-wrap text-left">
@@ -217,68 +185,70 @@ export default function Terminal() {
         <>
             {showTerminal && (
                 <div
-                    className="absolute bottom-6 left-0 w-full bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 font-mono flex flex-col z-[99999]"
+                    className="absolute bottom-6 left-0 w-full bg-dark-base border-t border-neutral-800 overflow-hidden text-[11px] text-neutral-200 font-mono shadow-lg flex flex-col z-[99999]"
                     style={{ height }}
                 >
-                    {/* Tabs */}
                     <div
                         onMouseDown={(e) => {
                             e.preventDefault();
                             setIsResizing(true);
                         }}
-                        className="cursor-ns-resize bg-dark-base text-light/50 py-1 px-4 border-b border-neutral-800 flex space-x-3 select-none"
+                        className="cursor-ns-resize text-light/50 py-1 px-4 flex justify-between items-center select-none"
                     >
                         <Button
-                            onClick={() => setActiveTab(TerminalTabOptions.OUTPUT)}
-                            className={`tracking-[2px] py-0 px-1 rounded-none bg-transparent hover:bg-transparent h-fit w-fit text-[11px] cursor-pointer ${
-                                activeTab === TerminalTabOptions.OUTPUT
-                                    ? 'text-light/70 border-b border-light/70'
-                                    : 'text-light/50'
-                            }`}
+                            disabled
+                            className="tracking-[2px] p-0 text-[11px] h-fit w-fit bg-transparent font-sans text-light/90 rounded-none"
                         >
-                            OUTPUT
+                            TERMINAL
                         </Button>
-                        <Button
-                            onClick={() => setActiveTab(TerminalTabOptions.ACTIONS)}
-                            className={`tracking-[2px] py-0 px-1 text-[11px] h-fit w-fit bg-transparent hover:bg-transparent rounded-none cursor-pointer ${
-                                activeTab === TerminalTabOptions.ACTIONS
-                                    ? 'text-light/70 border-b border-light/70'
-                                    : 'text-light/50'
-                            }`}
-                        >
-                            ACTIONS
-                        </Button>
+
+                        <div className="absolute right-2 top-1.5 flex gap-x-1 items-center">
+                            <ToolTipComponent content="clear">
+                                <Button
+                                    onClick={() => setLogs([])}
+                                    className="h-fit w-0 bg-transparent hover:bg-dark p-0.5 rounded cursor-pointer"
+                                >
+                                    <PiBroomFill className="size-3 text-light/70" />
+                                </Button>
+                            </ToolTipComponent>
+
+                            <ToolTipComponent content="add new tab">
+                                <Button className="h-fit w-0 bg-transparent hover:bg-dark p-0.5 rounded cursor-pointer">
+                                    <BiPlus className="size-4 text-light/70" />
+                                </Button>
+                            </ToolTipComponent>
+
+                            <ToolTipComponent content="close">
+                                <Button
+                                    onClick={() => setShowTerminal(false)}
+                                    className="h-fit w-0 bg-transparent hover:bg-dark p-0.5 rounded cursor-pointer"
+                                >
+                                    <IoIosClose className="size-5 text-light/70" />
+                                </Button>
+                            </ToolTipComponent>
+                        </div>
                     </div>
 
-                    {activeTab === TerminalTabOptions.OUTPUT ? (
-                        <div
-                            ref={outputRef}
-                            className="flex-1 overflow-y-auto px-3 py-2 text-light/80 flex flex-col"
-                        >
-                            {renderLines(logs.map((log) => ({ type: 'output', text: log })))}
-                        </div>
-                    ) : (
-                        <div
-                            ref={outputRef}
-                            onClick={() => inputRef.current?.focus()}
-                            className="h-full overflow-y-auto px-3 py-2 text-light/80 flex flex-col group"
-                        >
-                            {renderLines(actionLogs)}
+                    <div
+                        ref={outputRef}
+                        onClick={() => inputRef.current?.focus()}
+                        className="h-full overflow-y-auto px-3 py-2 mt-1 text-light/80 flex flex-col group"
+                    >
+                        {renderLines(logs)}
 
-                            <div className="flex mt-1">
-                                <Prompt />
-                                <input
-                                    ref={inputRef}
-                                    type="text"
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={handleInputKeyDown}
-                                    className="outline-none text-light/80 caret-green-400 ml-2 flex-1"
-                                    placeholder="type a command or use --help"
-                                />
-                            </div>
+                        <div className="flex mt-1">
+                            <Prompt />
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleInputKeyDown}
+                                className="outline-none text-light/80 caret-green-400 ml-2 flex-1"
+                                placeholder="type a command or use --help"
+                            />
                         </div>
-                    )}
+                    </div>
                 </div>
             )}
 

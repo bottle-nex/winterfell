@@ -164,7 +164,6 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                 currentFile: null,
                 currentCode: '',
             });
-            console.log('fileTree is : ', existingTree);
             return existingTree;
         },
 

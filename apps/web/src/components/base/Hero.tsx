@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react';
 import { motion, useAnimation, useInView, useScroll, useTransform } from 'framer-motion';
 import { Button } from '../ui/button';
 import { RiCodeSSlashFill } from 'react-icons/ri';
-import { Terminal, ArrowRight, FileCode } from 'lucide-react';
 import City from './City';
 import ActionTickers from '../tickers/ActionTickers';
 import DashboardTextAreaComponent from './DashboardTextAreaComponent';

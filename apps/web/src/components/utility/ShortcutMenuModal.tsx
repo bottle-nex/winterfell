@@ -1,15 +1,20 @@
-'use client'
-
-import { useShortcutMenuToggle } from "@/src/hooks/useShortcutMenuToggle";
-import OpacityBackground from "./OpacityBackground";
+'use client';
+import OpacityBackground from './OpacityBackground';
+import useShortcuts from '@/src/hooks/useShortcut';
+import { useState } from 'react';
 
 export default function ShortcutMenu() {
-    const { open, setOpen } = useShortcutMenuToggle();
+    const [open, setOpen] = useState<boolean>(false);
+
+    useShortcuts({
+        'meta+/': () => setOpen((o) => !o),
+        'ctrl+/': () => setOpen((o) => !o),
+    });
 
     if (!open) return null;
 
     return (
-        <OpacityBackground onBackgroundClick={() => setOpen(prev => !prev)}>
+        <OpacityBackground onBackgroundClick={() => setOpen((prev) => !prev)}>
             <div className="fixed left-5 bottom-5 flex items-center justify-center">
                 <div className="bg-dark-base border border-[#353535] rounded-[8px] w-[250px] py-4 px-6">
                     <div className="flex justify-between items-center mb-5">
@@ -28,6 +33,7 @@ export default function ShortcutMenu() {
                         <ShortcutItem keys="⌘ /" desc="Start Chat" />
                         <ShortcutItem keys="⌘ ?" desc="Show Shortcuts" />
                         <ShortcutItem keys="⌘ E" desc="Toggle Sidebar" />
+                        <ShortcutItem keys="⌘ ␣" desc="Open searchbar" />
                     </div>
 
                     <p className="text-xs text-light/60 mt-5 text-center tracking-wider">
@@ -42,12 +48,8 @@ export default function ShortcutMenu() {
 function ShortcutItem({ desc, keys }: { desc: string; keys: string }) {
     return (
         <div className="flex justify-between items-center text-light/90 tracking-wide">
-            <span className="text-sm">
-                {desc}
-            </span>
-            <kbd className="px-2 py-1 rounded text-sm font-mono">
-                {keys}
-            </kbd>
+            <span className="text-sm">{desc}</span>
+            <kbd className="px-2 py-1 rounded text-sm font-mono">{keys}</kbd>
         </div>
     );
 }

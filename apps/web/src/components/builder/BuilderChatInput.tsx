@@ -71,8 +71,6 @@ export default function BuilderChatInput() {
                 }),
             });
 
-            console.log({ response });
-
             if (response.status === 403) {
                 toast.error('message limit reached');
             }
