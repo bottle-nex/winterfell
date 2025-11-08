@@ -13,18 +13,19 @@ import {
     STAGE,
     StreamEvent,
 } from '@/src/types/stream_event_types';
-import AnimtaedLoader from '../ui/animated-loader';
 import SystemMessage from './SystemMessage';
 import AppLogo from '../tickers/AppLogo';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { useChatStore } from '@/src/store/user/useChatStore';
 import { Message } from '@/src/types/prisma-types';
+import { LayoutGrid } from '../ui/animated/layout-grid-icon';
+import { TextShimmer } from '../ui/shimmer-text';
 
 export default function BuilderChats() {
     const { session } = useUserSessionStore();
     const params = useParams();
     const contractId = params.contractId as string;
-    const hasInitialized = useRef(false);
+    const hasInitialized = useRef<boolean>(false);
     const messageEndRef = useRef<HTMLDivElement>(null);
     const { setCollapseFileTree } = useCodeEditor();
     const { setContractId } = useChatStore();
@@ -154,14 +155,12 @@ export default function BuilderChats() {
                             default:
                                 break;
                         }
-                    } catch (err) {
-                        // Don’t spam logs for partial JSON
+                    } catch (error) {
                         console.warn('Skipping incomplete stream event chunk');
                     }
                 }
             }
 
-            // ✅ Final parse if leftover data exists
             if (buffer.trim()) {
                 try {
                     const jsonString = buffer.startsWith('data: ') ? buffer.slice(6) : buffer;
@@ -193,8 +192,8 @@ export default function BuilderChats() {
                 {messages.map((message) => (
                     <div key={message.id} className="w-full flex flex-shrink-0">
                         {message.role === 'USER' && (
-                            <div className="flex justify-end w-full">
-                                <div className="flex items-center gap-x-2 max-w-[70%]">
+                            <div className="flex justify-end items-start w-full">
+                                <div className="flex items-start gap-x-2 max-w-[70%]">
                                     <div className="px-4 py-2 rounded-[4px] text-sm font-semibold bg-dark text-light text-right">
                                         {message.content}
                                     </div>
@@ -203,8 +202,8 @@ export default function BuilderChats() {
                                             className="rounded-full flex-shrink-0"
                                             src={session.user.image}
                                             alt="user"
-                                            width={36}
-                                            height={36}
+                                            width={32}
+                                            height={32}
                                         />
                                     )}
                                 </div>
@@ -213,7 +212,7 @@ export default function BuilderChats() {
                         {message.role === 'AI' && (
                             <div className="flex justify-start w-full">
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
-                                    <AppLogo showLogoText={false} />
+                                    <AppLogo showLogoText={false} size={22} />
                                     <div className="px-4 py-2 rounded-[4px] text-sm font-normal bg-dark text-light text-left tracking-wider text-[13px] italic">
                                         {returnParsedData(message.content)}
                                     </div>
@@ -225,12 +224,14 @@ export default function BuilderChats() {
                                 <div className="flex items-start gap-x-2 w-full">
                                     <div className="rounded-[4px] text-sm font-normal w-full text-light text-left tracking-wider text-[13px]">
                                         {loading && (
-                                            <div className="flex items-center gap-x-2 mb-2">
-                                                <AnimtaedLoader
+                                            <div className="flex items-center gap-x-1 mb-2">
+                                                <LayoutGrid
                                                     shouldAnimate={loading}
                                                     className="h-4 w-4"
                                                 />
-                                                <span>Processing your request...</span>
+                                                <TextShimmer>
+                                                    Processing your request...
+                                                </TextShimmer>
                                             </div>
                                         )}
                                         <SystemMessage

@@ -37,35 +37,40 @@
 }
 
 .shadow-inset-right {
-  position: relative;
-  overflow: hidden;
+    position: relative;
+    overflow: hidden;
 }
 
 .shadow-inset-right::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 60px; /* slightly wider */
-  height: 100%;
-  pointer-events: none;
-  background: linear-gradient(to left, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.6), transparent);
-  z-index: 10;
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px; /* slightly wider */
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to left, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.6), transparent);
+    z-index: 10;
 }
 
 .shadow-inset-left {
-  position: relative;
-  overflow: hidden;
+    position: relative;
+    overflow: hidden;
 }
 
 .shadow-inset-left::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60px; /* slightly wider */
-  height: 100%;
-  pointer-events: none;
-  background: linear-gradient(to right, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.6), transparent);
-  z-index: 10;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px; /* slightly wider */
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        rgba(10, 10, 10, 0.9),
+        rgba(10, 10, 10, 0.6),
+        transparent
+    );
+    z-index: 10;
 }

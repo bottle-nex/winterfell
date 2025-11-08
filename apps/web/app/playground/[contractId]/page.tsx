@@ -79,7 +79,7 @@ export default function Page({ params }: { params: Promise<{ contractId: string 
     useEffect(() => {
         if (loading) return;
         get_chat();
-        //
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contractId, session]);
 
     useEffect(() => {

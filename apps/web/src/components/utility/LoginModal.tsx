@@ -3,11 +3,9 @@ import { signIn } from 'next-auth/react';
 import { Dispatch, SetStateAction } from 'react';
 import OpacityBackground from '../utility/OpacityBackground';
 import { Button } from '../ui/button';
-// import Image from 'next/image';
-import { FaGithub } from 'react-icons/fa';
 import Card from '../ui/Card';
-// import { Input } from '../ui/input';
-// import { GoArrowRight } from 'react-icons/go';
+import Image from 'next/image';
+import { FaGithub } from 'react-icons/fa';
 
 interface LoginModalProps {
     opensignInModal: boolean;
@@ -36,23 +34,6 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                     Sign in to your account
                                 </p>
                             </div>
-                            {/* <div className="relative w-full">
-                                <Input
-                                    type="email"
-                                    placeholder="username@gmail.com"
-                                    className="w-full bg-[#0a0a0a] text-[#d4d8de] placeholder:text-neutral-500 border border-neutral-800 rounded-full px-5 py-5.5 pr-12 focus:outline-none placeholder:tracking-wider"
-                                />
-                                <Button className="absolute h-7 w-7 right-2 top-1/2 -translate-y-1/2 bg-[#6640EF] hover:translate-x-0.5 text-black rounded-full py-2 transition-transform">
-                                    <GoArrowRight className="text-dark-base" />
-                                </Button>
-                            </div>
-
-                            <div className="flex items-center justify-center w-full text-[#6b7177] text-xs">
-                                <div className="flex-grow h-px bg-[#2a2d31]" />
-                                <span className="mx-3">OR</span>
-                                <div className="flex-grow h-px bg-[#2a2d31]" />
-                            </div>
-
                             <Button
                                 onClick={() => signinHandler('GOOGLE')}
                                 className="w-full flex items-center justify-center gap-3 px-6 py-5 text-sm font-medium bg-[#0f0f0f] hover:bg-[#141414] border border-neutral-800 rounded-[8px] transition-all"
@@ -68,7 +49,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                 <span className="text-[#d4d8de] text-sm tracking-wide">
                                     Continue with Google
                                 </span>
-                            </Button> */}
+                            </Button>
 
                             <Button
                                 onClick={() => signinHandler('GITHUB')}
