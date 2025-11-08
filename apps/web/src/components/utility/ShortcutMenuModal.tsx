@@ -29,11 +29,10 @@ export default function ShortcutMenu() {
                     </div>
 
                     <div className="space-y-2.5">
-                        <ShortcutItem keys="⌘ K" desc="Open Terminal" />
-                        <ShortcutItem keys="⌘ /" desc="Start Chat" />
-                        <ShortcutItem keys="⌘ ?" desc="Show Shortcuts" />
+                        <ShortcutItem keys="⌘ J" desc="Open Terminal" />
+                        <ShortcutItem keys="⌘ /" desc="Show Shortcuts" />
                         <ShortcutItem keys="⌘ E" desc="Toggle Sidebar" />
-                        <ShortcutItem keys="⌘ ␣" desc="Open searchbar" />
+                        <ShortcutItem keys="⌘ K" desc="Open searchbar" />
                     </div>
 
                     <p className="text-xs text-light/60 mt-5 text-center tracking-wider">

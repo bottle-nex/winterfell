@@ -44,9 +44,9 @@ export default function Terminal() {
     });
 
     useShortcuts({
-        'meta+k': () => setShowTerminal((prev) => !prev),
-        'ctrl+k': () => setShowTerminal((prev) => !prev),
-        'ctrl+`': () => addNewTerminal(),
+        'meta+j': () => setShowTerminal((prev) => !prev),
+        'ctrl+j': () => setShowTerminal((prev) => !prev),
+        'ctrl+shift+`': () => addNewTerminal(),
     });
 
     const Prompt = () => (
@@ -233,7 +233,7 @@ export default function Terminal() {
                     className="flex items-center space-x-1.5 hover:bg-neutral-800/50 px-2 py-[2px] rounded-md cursor-pointer transition text-[11px]"
                     onClick={() => setShowTerminal((prev) => !prev)}
                 >
-                    <span className="font-bold text-light/50 tracking-wider">Ctrl/Cmd + K</span>
+                    <span className="font-bold text-light/50 tracking-wider">Ctrl/Cmd + J</span>
                     <span className="text-light/50 flex items-center space-x-1 tracking-widest">
                         <span>to toggle</span>
                         <MdTerminal className="size-4" />
