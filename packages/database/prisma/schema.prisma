@@ -53,6 +53,16 @@ model Contract {
   messages    Message[]
 }
 
+model ContractEMbedding {
+  id  String  @id @default(uuid())
+  contractId  String
+  fileName  String
+  filePath  String
+  fileContent String
+  chunkIndex  Int
+  
+}
+
 model BuildJob {
   id         String   @id @default(cuid())
   contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)

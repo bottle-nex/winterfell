@@ -1,4 +1,4 @@
-import { PromptTemplate } from "@langchain/core/prompts";
+import { PromptTemplate } from '@langchain/core/prompts';
 
 export const coder_prompt = new PromptTemplate({
     template: `
@@ -13,5 +13,5 @@ export const coder_prompt = new PromptTemplate({
     Context:
     {context}
     `,
-    inputVariables: ["input", "plan", "context"],
+    inputVariables: ['input', 'plan', 'context'],
 });

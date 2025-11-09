@@ -104,8 +104,9 @@ export default function BuilderNavbarSearchComponent() {
                 onKeyDown={handleKeyDown}
                 onFocus={() => inputValue && setShowDropdown(true)}
                 className={cn(
-                    "border border-neutral-700 pl-4 p-0 px-4 h-7 !text-xs tracking-wide min-w-[20rem]",
+                    'border border-neutral-700 pl-4 p-0 px-4 h-7 !text-xs tracking-wide min-w-[20rem] text-light/80',
                     'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[0px]',
+                    'tracking-wider',
                 )}
                 placeholder="search for files (e.g. lib.rs)"
             />

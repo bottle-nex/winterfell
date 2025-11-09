@@ -1,5 +1,4 @@
 'use client';
-
 import { JSX, useCallback } from 'react';
 import { Editor, Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
@@ -111,24 +110,28 @@ export default function CodeEditor(): JSX.Element {
     );
 
     return (
-        <div className="flex min-h-0 h-full w-full">
-            {collapseFileTree && (
-                <div className="w-[18rem]">
-                    <Filetree />
-                </div>
-            )}
+        <div className="flex flex-col w-full h-full relative">
+            <div className="flex flex-1 min-h-0">
+                {collapseFileTree && (
+                    <div className="w-[18rem] h-full flex-shrink-0">
+                        <Filetree />
+                    </div>
+                )}
 
-            <Editor
-                height="100%"
-                language="rust"
-                beforeMount={handleEditorWillMount}
-                onMount={handleEditorDidMount}
-                theme="clean-dark"
-                options={{
-                    readOnly: true,
-                }}
-                value={currentCode}
-            />
+                <div className="flex-1 min-w-0 h-full">
+                    <Editor
+                        height="100%"
+                        language="rust"
+                        beforeMount={handleEditorWillMount}
+                        onMount={handleEditorDidMount}
+                        theme="clean-dark"
+                        options={{
+                            readOnly: true,
+                        }}
+                        value={currentCode}
+                    />
+                </div>
+            </div>
 
             <Terminal />
         </div>

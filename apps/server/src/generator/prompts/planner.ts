@@ -1,4 +1,4 @@
-import { PromptTemplate } from "@langchain/core/prompts";
+import { PromptTemplate } from '@langchain/core/prompts';
 
 export const planner_prompt = new PromptTemplate({
     template: `
@@ -14,5 +14,5 @@ export const planner_prompt = new PromptTemplate({
     User request:
     {input}
     `,
-    inputVariables: ["input"]
+    inputVariables: ['input'],
 });

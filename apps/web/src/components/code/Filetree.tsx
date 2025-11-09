@@ -54,14 +54,14 @@ export default function Filetree() {
     if (!collapseFileTree) return null;
 
     return (
-        <div className="h-full overflow-y-auto bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[18rem]">
-            <div className="p-3 border-b border-neutral-800">
+        <div className="flex flex-col h-full bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[18rem]">
+            <div className="p-3 border-b border-neutral-800 flex-shrink-0">
                 <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                     Project Files
                 </h2>
             </div>
 
-            <div className="p-2 w-full">
+            <div className="p-2 w-full flex-1 overflow-y-auto">
                 <UncontrolledTreeEnvironment
                     dataProvider={dataProvider}
                     getItemTitle={(item) => item.data}

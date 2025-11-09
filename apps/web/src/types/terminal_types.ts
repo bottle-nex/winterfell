@@ -1,9 +1,9 @@
-interface Line {
+export interface Line {
     type: 'command' | 'output';
     text: string;
 }
 
-interface TerminalTab {
+export interface TerminalTab {
     id: string;
     name: string;
     logs: Line[];
