@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import executeCommandServer from '@/src/lib/server/execute-command-server';
 import { COMMAND, CommandResponse } from '../lib/terminal_commands';
+import { Line, TerminalTab } from '../types/terminal_types';
 
 interface UseTerminalLogicProps {
     contractId: string;
@@ -12,6 +13,7 @@ export function useTerminalLogic({ contractId, token, addCommand }: UseTerminalL
     const [terminals, setTerminals] = useState<TerminalTab[]>([
         { id: '1', name: 'shell 1', logs: [], input: '' },
     ]);
+
     const [activeTab, setActiveTab] = useState<string>('1');
 
     const appendLog = useCallback((tabId: string, line: Line) => {

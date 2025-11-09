@@ -1,13 +1,14 @@
-
 ## CODE CONVENTION TO MUST FOLLOW FOR [lib.rs]
-- `declare_id!()` with provided programId
-- `#[program]` functions only delegate to instruction handlers
-- NO account definitions
-- NO business logic
-- Imports instruction contexts
+
+-   `declare_id!()` with provided programId
+-   `#[program]` functions only delegate to instruction handlers
+-   NO account definitions
+-   NO business logic
+-   Imports instruction contexts
 
 ## EXAMPLE PATTERN FOR [lib.rs]
-```rust
+
+````rust
 use anchor_lang::prelude::*;
 
 declare_id!("${programId}");
@@ -52,3 +53,4 @@ pub struct UniqueContextName<'info> {
 ## CODE CONVENTION TO MUST FOLLOW FOR [states/[state].rs]
 - only structs annotated with #[account]
 - Each struct in separate file
+````

@@ -15,12 +15,15 @@ interface ShortcutProps {
 export default function useShortcuts(shortcuts: ShortcutProps) {
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
-            const key = e.key.toLowerCase();
+            const key = e.key === 'Dead' ? '`' : e.key.toLowerCase();
             const combo = [];
 
             switch (true) {
                 case e.metaKey && e.ctrlKey:
                     combo.push('meta', 'ctrl');
+                    break;
+                case e.ctrlKey && e.shiftKey:
+                    combo.push('ctrl', 'shift');
                     break;
                 case e.metaKey:
                     combo.push('meta');

@@ -1,5 +1,5 @@
 const helpResponse = `
-AVAILABLE COMMANDS:
+WINTER COMMANDS:
 clear              Clear the terminal
 --help             Show available commands
 --commands         Show winterfell commands
@@ -9,8 +9,8 @@ clear              Clear the terminal
 
 const hotKeysResponse = `
 HOT KEYS:
-Ctrl/ Cmd + S          Switch Terminal Tabs
-Ctrl/ Cmd + K          Toggle shell
+Ctrl + Shift + ~           Switch Terminal Tabs
+Ctrl + Shift + d           Toggle shell
 `;
 
 const platformResponse = `
