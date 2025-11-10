@@ -82,7 +82,7 @@ export default function Navbar() {
                 </div>
                 <div className="flex items-center gap-x-4">
                     <MdHomeFilled
-                        onClick={() => router.push("/home")}
+                        onClick={() => router.push('/home')}
                         className="hover:bg-neutral-700/70 hidden md:block rounded-sm p-[4px] h-7 w-7 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
                     />
                     <IoIosCreate

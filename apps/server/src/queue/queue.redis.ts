@@ -1,6 +1,7 @@
 import { Queue } from 'bullmq';
 import queue_config from '../configs/queue.config';
 import { BuildJobPayload, COMMAND } from '@repo/types';
+import crypto from 'crypto';
 
 export default class ServerToOrchestratorQueue {
     private queue: Queue;
@@ -21,12 +22,16 @@ export default class ServerToOrchestratorQueue {
         try {
             const job = await this.queue.add(command, payload, {
                 priority: 2,
-                jobId: `anchor-command-${payload.contractId}-${Date.now()}`,
+                jobId: `anchor-command-${payload.contractId}-${this.create_job_id()}`,
             });
             return job.id;
         } catch (err) {
             console.error('failed to run anchor build command', err);
             return undefined;
         }
+    }
+
+    private create_job_id() {
+        return crypto.randomBytes(10).toString('hex');
     }
 }
