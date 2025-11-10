@@ -12,6 +12,7 @@
     "format": "prettier --write './src/**/*.{ts,tsx,js,jsx,json,md}'"
   },
   "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
     "dotenv": "^17.2.3",
     "zod": "^4.1.12"
   }
