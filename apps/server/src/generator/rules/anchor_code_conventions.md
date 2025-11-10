@@ -1,10 +1,10 @@
 ## CODE CONVENTION TO MUST FOLLOW FOR [lib.rs]
 
--   `declare_id!()` with provided programId
--   `#[program]` functions only delegate to instruction handlers
--   NO account definitions
--   NO business logic
--   Imports instruction contexts
+- `declare_id!()` with provided programId
+- `#[program]` functions only delegate to instruction handlers
+- NO account definitions
+- NO business logic
+- Imports instruction contexts
 
 ## EXAMPLE PATTERN FOR [lib.rs]
 

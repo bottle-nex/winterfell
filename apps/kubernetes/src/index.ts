@@ -1,6 +1,6 @@
-import express from 'express';
-import { env } from './configs/configs.env';
-import Services from './services/init.services';
+import express from "express";
+import { env } from "./configs/configs.env";
+import Services from "./services/init.services";
 
 const PORT = env.KUBERNETES_PORT;
 export const kubernetes_services = new Services();
