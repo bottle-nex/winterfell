@@ -9,6 +9,7 @@ import { v4 as uuid } from 'uuid';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useEffect, useState } from 'react';
 import LoginModal from '../utility/LoginModal';
+import { MdHomeFilled } from 'react-icons/md';
 
 const navItems: NavItemsType[] = [
     { name: 'Features', link: '#feature' },
@@ -80,6 +81,10 @@ export default function Navbar() {
                     </div>
                 </div>
                 <div className="flex items-center gap-x-4">
+                    <MdHomeFilled
+                        onClick={() => router.push("/home")}
+                        className="hover:bg-neutral-700/70 hidden md:block rounded-sm p-[4px] h-7 w-7 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"
+                    />
                     <IoIosCreate
                         onClick={handleSubmit}
                         className="hover:bg-neutral-700/70 hidden md:block rounded-sm p-[4px] h-7 w-7 text-light/70 select-none cursor-pointer transition-transform hover:-translate-y-0.5"

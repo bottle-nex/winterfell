@@ -1,7 +1,7 @@
 'use client';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import Image from 'next/image';
-import ProfileMenu from '../utility/LogoutMenu';
+import ProfileMenu from '../utility/ProfileMenu';
 import { useState } from 'react';
 import { LiaServicestack } from 'react-icons/lia';
 

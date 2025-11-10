@@ -5,7 +5,7 @@ import { Line, TerminalTab } from '../types/terminal_types';
 
 interface UseTerminalLogicProps {
     contractId: string;
-    token: string | undefined;
+    token: string | undefined | null;
     addCommand: (command: string) => void;
 }
 

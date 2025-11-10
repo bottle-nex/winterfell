@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useState, useRef } from 'react';
 import LoginModal from '../utility/LoginModal';
-import ProfileMenu from '../utility/LogoutMenu';
+import ProfileMenu from '../utility/ProfileMenu';
 
 export default function NavbarSigninAction() {
     const { session } = useUserSessionStore();
@@ -59,7 +59,7 @@ export default function NavbarSigninAction() {
 
                     {showDropdown && (
                         <div className="absolute top-full right-2 mt-2 z-[9999]">
-                            <ProfileMenu />
+                            <ProfileMenu setOpenProfleMenu={setShowDropdown} />
                         </div>
                     )}
                 </div>

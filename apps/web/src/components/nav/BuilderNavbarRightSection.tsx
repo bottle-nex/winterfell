@@ -9,7 +9,7 @@ import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { WalletPanel } from '../base/WalletPanel';
-import ProfileMenu from '../utility/LogoutMenu';
+import ProfileMenu from '../utility/ProfileMenu';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useChatStore } from '@/src/store/user/useChatStore';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ export default function BuilderNavbarRightSection() {
     const [showRepoPanel, setShowRepoPanel] = useState<boolean>(false);
     const [repoName, setRepoName] = useState<string>('');
 
-    const [showLogoutDropdown, setShowLogoutDropdown] = useState<boolean>(false);
+    const [openProfileMenu, setOpenProfleMenu] = useState<boolean>(false);
     const [isConnectingGithub, setIsConnectingGithub] = useState<boolean>(false);
     const [isExporting, setIsExporting] = useState<boolean>(false);
 
@@ -167,7 +167,7 @@ export default function BuilderNavbarRightSection() {
 
             {session?.user?.image && (
                 <Image
-                    onClick={() => setShowLogoutDropdown((prev) => !prev)}
+                    onClick={() => setOpenProfleMenu((prev) => !prev)}
                     src={session.user.image}
                     alt="user"
                     width={28}
@@ -175,9 +175,9 @@ export default function BuilderNavbarRightSection() {
                     className="rounded-full cursor-pointer"
                 />
             )}
-            {showLogoutDropdown && (
+            {openProfileMenu && (
                 <div className="absolute top-full right-2 mt-2 z-[9999]">
-                    <ProfileMenu />
+                    <ProfileMenu setOpenProfleMenu={setOpenProfleMenu} />
                 </div>
             )}
 

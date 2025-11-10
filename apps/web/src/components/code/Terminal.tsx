@@ -38,7 +38,7 @@ export default function Terminal() {
         deleteTerminal,
     } = useTerminalLogic({
         contractId,
-        token: session?.user?.token!,
+        token: session?.user?.token,
         addCommand,
     });
 
@@ -199,17 +199,20 @@ export default function Terminal() {
                                 />
                             </div>
                         </div>
-                        <div className="w-fit border-l border-neutral-800 px-1 flex flex-col items-center py-2 overflow-y-auto flex-shrink-0">
+
+                        <div className="w- border-l border-neutral-800 px-1 flex flex-col items-center py-2 overflow-y-auto flex-shrink-0">
                             {terminals.map((tab) => (
-                                <Button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`h-fit w-auto bg-transparent hover:bg-dark p-1 rounded-none cursor-pointer ${
-                                        activeTab === tab.id ? 'bg-dark' : 'text-light/70'
-                                    }`}
-                                >
-                                    <PiTerminalWindow className="size-4" />
-                                </Button>
+                                <ToolTipComponent key={tab.id} content={tab.name}>
+                                    <Button
+                                        // variant='ghost'
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`h-fit !px-1.5 bg-transparent py-1 hover:bg-dark rounded-none cursor-pointer ${
+                                            activeTab === tab.id ? 'bg-dark' : 'text-light/70'
+                                        }`}
+                                    >
+                                        <PiTerminalWindow className="size-4" />
+                                    </Button>
+                                </ToolTipComponent>
                             ))}
                         </div>
                     </div>
