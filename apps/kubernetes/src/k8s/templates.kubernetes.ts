@@ -1,6 +1,6 @@
 import { V1Pod } from "@kubernetes/client-node";
 import { PodConfig } from "../types/types.kubernetes";
-import { env } from "../configs/env.config";
+import { env } from "../configs/configs.env";
 import { pod_resources } from "./resources.kubernetes";
 
 export default function podTemplate(configs: PodConfig) {

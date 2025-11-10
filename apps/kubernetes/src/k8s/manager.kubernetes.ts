@@ -1,7 +1,7 @@
 import { CoreV1Api } from "@kubernetes/client-node";
 import podTemplate from "./templates.kubernetes";
 import { kubernetes_services } from "..";
-import { env } from "../configs/env.config";
+import { env } from "../configs/configs.env";
 
 export default class KubernetesManager {
     private core_api: CoreV1Api = kubernetes_services.kubernetes_client.core_api;

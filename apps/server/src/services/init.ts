@@ -2,7 +2,7 @@ import ObjectStore from '../class/object_store';
 import ContentGenerator from '../controllers/gen/content_generator';
 import RazorpayGateway from '../payments/razorpay';
 import { GithubWorkerQueue } from '../queue/github_worker_queue';
-import ServerToOrchestratorQueue from '../queue/loader_queue';
+import ServerToOrchestratorQueue from '../queue/queue.redis';
 
 export let contentGenerator: ContentGenerator;
 export let objectStore: ObjectStore;
