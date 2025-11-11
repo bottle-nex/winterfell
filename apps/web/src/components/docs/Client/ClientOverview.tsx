@@ -4,7 +4,7 @@ import { PiExportFill } from 'react-icons/pi';
 
 export default function ClientOverview() {
     return (
-        <div className="mt-10 w-full h-full flex flex-col items-start text-left tracking-wide text-light/90 gap-y-2">
+        <div className="pt-12 w-full h-full flex flex-col items-start text-left tracking-wide text-light/90 gap-y-2 max-w-[70%] mx-auto">
             <div className="text-3xl">Overview</div>
 
             <span className="text-light/70 tracking-wider leading-[1.4]">
@@ -14,11 +14,11 @@ export default function ClientOverview() {
                 client SDK creation and frontend integration.
             </span>
 
-            <div className="relative h-[30rem] w-full bg-light/80 mt-4 flex flex-col justify-center items-center gap-y-1 tracking-wider text-dark overflow-hidden">
+            <div className="relative h-[28rem] w-full bg-light/80 mt-4 flex flex-col justify-center items-center gap-y-1 tracking-wider text-dark overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/50 to-transparent opacity-20" />
                 <div className="relative z-10 text-center">
                     <span className="block text-5xl font-semibold drop-shadow-2xl">
-                        Winterfell.DEV
+                        Winterfell.Dev
                     </span>
                     <span className="block text-2xl drop-shadow-2xl">
                         AI powered smart contract generator
@@ -63,9 +63,9 @@ function StartCards({ heading, description, icon }: StartCardsProps) {
         >
             <div className="flex gap-x-1.5 items-center">
                 {icon}
-                <span className="font-semibold tracking-wider">{heading}</span>
+                <span className="font-semibold tracking-wider text-[14px]">{heading}</span>
             </div>
-            <div className="text-sm text-light/60 tracking-wider">{description}</div>
+            <div className="text-[13px] text-light/60 tracking-wider">{description}</div>
         </div>
     );
 }
