@@ -36,13 +36,13 @@ export default function ClientOverview() {
                 <StartCards
                     heading="Build/ Deploy"
                     description="Compile, build and deploy using winter shell"
-                    icon={<TerminalIcon />}
+                    icon={<TerminalIcon size={14} />}
                 />
 
                 <StartCards
                     heading="Export"
                     description="Download/ Export your code to GitHub"
-                    icon={<PiExportFill />}
+                    icon={<PiExportFill size={15} />}
                 />
             </div>
         </div>

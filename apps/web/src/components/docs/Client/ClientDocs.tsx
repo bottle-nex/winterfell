@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import ClientOverview from './ClientOverview';
 import ClientDocsPanelRenderer from './ClientDocsPanelRenderer';
 
 export enum ClientDocsPanel {
@@ -48,21 +47,16 @@ const contents = [
     }
 ];
 
-
-
-
-
 export default function ClientDocs() {
     const [activeIndex, setActiveIndex] = useState<number>(1);
     const [clientPanel, setClientPanel] = useState<ClientDocsPanel>(ClientDocsPanel.OVERVIEW);
 
-
-
     function calculatePosition(index: number) {
-        return index * 33.5;
+        return index * 37.5;
     };
 
     function switchPanel(index: number, clientPanel: ClientDocsPanel) {
+        if (index === 0) return;
         setActiveIndex(index)
         setClientPanel(clientPanel);
     }
@@ -73,7 +67,7 @@ export default function ClientDocs() {
                 <ClientDocsPanelRenderer clientPanel={clientPanel} />
             </div>
             <div className='min-h-screen'>
-                <div className="flex fixed flex-col  gap-y-4 text-left text-xs tracking-wide text-light/70 mt-22">
+                <div className="flex fixed flex-col gap-y-5 text-left text-xs tracking-wide text-light/70 mt-22">
                     <div
                         className="absolute -left-4 top-4 h-3 w-[2px] rounded-full bg-white shadow-[0_0_12px_3px_rgba(255,255,255,0.9)] transition-all duration-500 ease-out"
                         style={{

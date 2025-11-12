@@ -1,6 +1,6 @@
 'use client';
 import React, { useMemo } from 'react';
-import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider } from 'react-complex-tree';
+import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider, TreeItem } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { FileNode, NODE } from '@/src/types/prisma-types';
@@ -8,20 +8,14 @@ import { AiFillFolder } from 'react-icons/ai';
 import { AiFillFolderOpen } from 'react-icons/ai';
 import FileIcon from '../tickers/FileIcon';
 
-interface TreeItem {
-    index: string;
-    children?: string[];
-    data: string;
-    isFolder: boolean;
-}
-
 interface TreeData {
     [key: string]: TreeItem;
 }
 
-export default function Filetree() {
+
+export default function FileTree() {
     const { fileTree, selectFile } = useCodeEditor();
-    const { collapseFileTree } = useCodeEditor();
+
     const treeData = useMemo(() => {
         const flattened: TreeData = {};
 
@@ -51,67 +45,55 @@ export default function Filetree() {
         data,
     }));
 
-    if (!collapseFileTree) return null;
-
     return (
-        <div className="flex flex-col h-full bg-[#16171a] text-neutral-200 border-r border-neutral-800 w-[18rem]">
-            <div className="p-3 border-b border-neutral-800 flex-shrink-0">
-                <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
-                    Project Files
-                </h2>
-            </div>
+        <UncontrolledTreeEnvironment
+            dataProvider={dataProvider}
+            getItemTitle={(item) => item.data}
+            viewState={{}}
+            canDragAndDrop={false}
+            canDropOnFolder={false}
+            canReorderItems={false}
+            onSelectItems={(items) => {
+                const itemId = items[0];
 
-            <div className="p-2 w-full flex-1 overflow-y-auto">
-                <UncontrolledTreeEnvironment
-                    dataProvider={dataProvider}
-                    getItemTitle={(item) => item.data}
-                    viewState={{}}
-                    canDragAndDrop={false}
-                    canDropOnFolder={false}
-                    canReorderItems={false}
-                    onSelectItems={(items) => {
-                        const itemId = items[0];
-
-                        if (itemId && itemId !== 'root') {
-                            const findNode = (nodes: FileNode[], id: string): FileNode | null => {
-                                for (const node of nodes) {
-                                    if (node.id === id) return node;
-                                    if (node.children) {
-                                        const found = findNode(node.children, id);
-                                        if (found) return found;
-                                    }
-                                }
-                                return null;
-                            };
-                            const node = findNode(fileTree, itemId as string);
-
-                            if (node && node.type === NODE.FILE) {
-                                selectFile(node);
+                if (itemId && itemId !== 'root') {
+                    const findNode = (nodes: FileNode[], id: string): FileNode | null => {
+                        for (const node of nodes) {
+                            if (node.id === id) return node;
+                            if (node.children) {
+                                const found = findNode(node.children, id);
+                                if (found) return found;
                             }
                         }
-                    }}
-                    renderItemTitle={({ item, context }) => (
-                        <div className="flex items-center gap-2">
-                            {item.isFolder ? (
-                                context.isExpanded ? (
-                                    <AiFillFolderOpen size={16} className="text-[#317FFF]" />
-                                ) : (
-                                    <AiFillFolder size={16} className="text-[#317FFF]" />
-                                )
-                            ) : (
-                                <FileIcon
-                                    filename={item.data}
-                                    size={14}
-                                    className="text-neutral-400"
-                                />
-                            )}
-                            <span className="text-sm">{item.data}</span>
-                        </div>
+                        return null;
+                    };
+                    const node = findNode(fileTree, itemId as string);
+
+                    if (node && node.type === NODE.FILE) {
+                        selectFile(node);
+                    }
+                }
+            }}
+            renderItemTitle={({ item, context }) => (
+                <div className="flex items-center gap-2">
+                    {item.isFolder ? (
+                        context.isExpanded ? (
+                            <AiFillFolderOpen size={16} className="text-[#317FFF]" />
+                        ) : (
+                            <AiFillFolder size={16} className="text-[#317FFF]" />
+                        )
+                    ) : (
+                        <FileIcon
+                            filename={item.data}
+                            size={14}
+                            className="text-neutral-400"
+                        />
                     )}
-                >
-                    <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
-                </UncontrolledTreeEnvironment>
-            </div>
-        </div>
-    );
+                    <span className="text-sm">{item.data}</span>
+                </div>
+            )}
+        >
+            <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
+        </UncontrolledTreeEnvironment>
+    )
 }

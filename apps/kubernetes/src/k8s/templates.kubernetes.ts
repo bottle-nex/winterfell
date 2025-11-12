@@ -14,11 +14,11 @@ export default function podTemplate(configs: PodConfig) {
       name: pod_name,
       namespace: env.KUBERNETES_NAMESPACE,
       labels: {
-        app: "anchor-executor",
+        "app": "anchor-executor",
         "job-id": job_id,
         "contract-id": contract_id,
         "user-id": user_id,
-        command: command,
+        "command": command,
       },
       annotations: {
         "created-at": new Date().toISOString(),
@@ -26,6 +26,7 @@ export default function podTemplate(configs: PodConfig) {
       },
     },
     spec: {
+      restartPolicy: "Never",
       initContainers: [
         {
           name: "code-checkout",
@@ -33,13 +34,13 @@ export default function podTemplate(configs: PodConfig) {
           command: ["/bin/sh", "-c"],
           args: [
             `
-                        echo "Checking out your codebase from ${code_snapshot_url}...;
-                        aws s3 cp ${code_snapshot_url} /workspace/code.zip;
-                        cd /workspace;
-                        unzip code.zip;
-                        rm code.zip;
-                        echo "Code checkout complete";
-                        `,
+            echo "Checking out your codebase from ${code_snapshot_url}...;
+            aws s3 cp ${code_snapshot_url} /workspace/code.zip;
+            cd /workspace;
+            unzip code.zip;
+            rm code.zip;
+            echo "Code checkout complete";
+            `,
           ],
           volumeMounts: [
             {

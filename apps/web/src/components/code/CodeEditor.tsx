@@ -2,9 +2,9 @@
 import { JSX, useCallback } from 'react';
 import { Editor, Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
-import Filetree from './Filetree';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import Terminal from './Terminal';
+import SidePanel from './SidePanel';
 
 export default function CodeEditor(): JSX.Element {
     const { collapseFileTree, currentCode } = useCodeEditor();
@@ -114,7 +114,7 @@ export default function CodeEditor(): JSX.Element {
             <div className="flex flex-1 min-h-0">
                 {collapseFileTree && (
                     <div className="w-[18rem] h-full flex-shrink-0">
-                        <Filetree />
+                        <SidePanel />
                     </div>
                 )}
 
