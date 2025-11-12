@@ -2,7 +2,6 @@ import { LuFile } from "react-icons/lu";
 import { PiGithubLogoFill } from "react-icons/pi";
 import ToolTipComponent from "../ui/TooltipComponent";
 import { Dispatch, SetStateAction } from "react";
-import { Button } from "../ui/button";
 
 export enum sidePanelValues {
     FILE = 'FILE',

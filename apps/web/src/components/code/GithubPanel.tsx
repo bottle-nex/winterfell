@@ -1,25 +1,20 @@
 "use client";
-
 import { useState } from "react";
 import { PiGithubLogoFill } from "react-icons/pi";
 import { Button } from "../ui/button";
 import { FaGithub } from "react-icons/fa";
 
+type ConnectionStatus = 'idle' | 'connecting' | 'connected';
+
 export default function GithubPanel() {
-    const [isConnecting, setIsConnecting] = useState<boolean>(false);
-    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('idle');
 
-    const handleGithubConnect = async () => {
-        try {
-            setIsConnecting(true);
-            await new Promise((resolve) => setTimeout(resolve, 1500)); // simulate delay
+    const handleGithubConnect = () => {
+        setConnectionStatus('connecting');
 
-            setIsConnected(true);
-        } catch (err) {
-            console.error("GitHub connection failed", err);
-        } finally {
-            setIsConnecting(false);
-        }
+        setTimeout(() => {
+            setConnectionStatus('connected');
+        }, 2000);
     };
 
     return (
@@ -31,23 +26,22 @@ export default function GithubPanel() {
                     Connect your GitHub account to automatically push your generated
                     contract to your repository.
                 </p>
-
-                {!isConnected ? (
+                {connectionStatus !== 'connected' ? (
                     <Button
-                        disabled={isConnecting}
+                        onClick={handleGithubConnect}
+                        disabled={connectionStatus === 'connecting'}
                         size="xs"
-                        className="bg-[#24292e] text-light hover:bg-[#24292e] gap-2.5 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px] w-full"
+                        className="bg-[#24292e] text-light hover:bg-[#24292e] gap-2.5 tracking-wider cursor-pointer font-semibold rounded-[4px] w-full"
                     >
                         <FaGithub className="size-3.5 text-light" />
                         <span className="text-[11px]">
-                            {isConnecting ? 'Connecting...' : 'Connect GitHub'}
+                            {connectionStatus === 'connecting' ? 'Connecting...' : 'Connect GitHub'}
                         </span>
                     </Button>
                 ) : (
                     <Button
-                        onClick={handleGithubConnect}
                         disabled={true}
-                        className="mt-2 bg-light/10 hover:bg-light/20 text-primary rounded-xl px-6 py-2"
+                        className="mt-2 bg-light/10 hover:bg-light/20 text-primary rounded-[4px] px-6 py-2"
                     >
                         <PiGithubLogoFill size={20} />
                         connected to github
