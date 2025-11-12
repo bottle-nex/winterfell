@@ -1,6 +1,6 @@
 import { anchorContractTemplates } from '@/src/templates/contract_templates.const';
 import Image from 'next/image';
-import { FaHeart } from 'react-icons/fa';
+import { FaChevronRight, FaHeart } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa6';
 
 export default function ContractTemplates() {
@@ -14,11 +14,11 @@ export default function ContractTemplates() {
                 {anchorContractTemplates.map((contract) => (
                     <div
                         key={contract.id}
-                        className="h-full min-w-[calc(30%-12px)] grid grid-rows-[85%_15%] overflow-hidden group"
+                        className="h-full min-w-[calc(30%-12px)] grid grid-rows-[85%_15%] overflow-hidden group relative"
                     >
                         <div className="bg-[#0A0C0D70] overflow-hidden shadow-sm border border-neutral-800 rounded-[8px] relative">
                             <Image
-                                src={'/Images/template/image.png'}
+                                src={contract.image}
                                 alt=""
                                 fill
                                 className="object-cover opacity-90"
@@ -39,6 +39,10 @@ export default function ContractTemplates() {
                                     <span className="text-xs">32</span>
                                 </div>
                             </div>
+                        </div>
+                        <div className='absolute flex items-center justify-center gap-x-1 px-2 py-1 bg-dark opacity-0 group-hover:opacity-100 rounded-[4px] bottom-12 right-3 translate-x-2 group-hover:translate-x-0'>
+                            <span className='text-xs'>start building </span>
+                            <FaChevronRight size={12} strokeWidth={0.2} />
                         </div>
                     </div>
                 ))}
