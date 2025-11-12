@@ -1,18 +1,20 @@
-import { PromptTemplate } from '@langchain/core/prompts';
+import { PromptTemplate } from "@langchain/core/prompts";
 
 export const planner_prompt = new PromptTemplate({
-    template: `
-    You're a planning agent for solana anchor smart contract generator. Given user request + context, return a structured plan,
+  template: `
+You're a planning agent for Solana Anchor smart contract generation.
 
-    Return JSON:
-    {
-        "goal": "...",
-        "tasks": ["...", "...", "..."],
-        "files_likely_affected": ["...", "..."],
-    }
+Return JSON like this:
+{{
+  "goal": "...",
+  "tasks": ["...", "...", "..."],
+  "files_likely_affected": ["...", "..."]
+}}
 
-    User request:
-    {input}
-    `,
-    inputVariables: ['input'],
+Goal: {goal}
+Tasks: {tasks}
+Files likely affected: {files_likely_affected}
+`,
+  inputVariables: ["goal", "tasks", "files_likely_affected"],
 });
+
