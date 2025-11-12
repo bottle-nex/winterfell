@@ -1,3 +1,4 @@
+
 import { Account, AuthOptions, ISODateString } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
@@ -38,17 +39,11 @@ export const authOption: AuthOptions = {
                     });
 
                     const result = response.data;
-
                     if (result?.success) {
-                        const resultData = result.data;
-
-                        console.log({resultData});
-
-                        user.id = resultData.user.id.toString();
+                        user.id = result.user.id.toString();
                         user.token = result.token;
-                        user.hasGithub = resultData.user.hasGithub;
-                        user.githubUsername = resultData.user.githubUsername;
-                        user.provider = resultData.provider;
+                        user.hasGithub = result.user.hasGithub;
+                        user.githubUsername = result.user.githubUsername;
                         return true;
                     }
                 }
@@ -58,39 +53,11 @@ export const authOption: AuthOptions = {
                 return false;
             }
         },
-        async jwt({ token, user, session, account, trigger }) {
+        async jwt({ token, user }) {
             if (user) {
                 token.user = user as UserType;
             }
-
-            if (trigger === 'update' && session) {
-                token.user = { ...token.user, ...session.user } as UserType
-            }
-            if (account && token.user) {
-        try {
-            const response = await axios.post(`${SIGNIN_URL}`, {
-                user: token.user,
-                account,
-            });
-
-            const result = response.data;
-
-            if (result?.success) {
-                const resultData = result.data;
-                token.user = {
-                    ...token.user,
-                    id: resultData.user.id.toString(),
-                    token: result.token,
-                    hasGithub: resultData.user.hasGithub,
-                    githubUsername: resultData.user.githubUsername,
-                };
-            }
-        } catch (err) {
-            console.error('JWT callback error:', err);
-        }
-    }
-
-    return token;
+            return token;
         },
         async session({ session, token }: { session: CustomSession; token: JWT }) {
             session.user = token.user as UserType;
@@ -108,7 +75,6 @@ export const authOption: AuthOptions = {
                     response_type: 'code',
                 },
             },
-            allowDangerousEmailAccountLinking: true,
         }),
         GitHubProvider({
             clientId: process.env.GITHUB_CLIENT_ID || '',
@@ -118,7 +84,7 @@ export const authOption: AuthOptions = {
                     scope: 'repo user',
                 },
             },
-            allowDangerousEmailAccountLinking: true,
         }),
     ],
 };
+

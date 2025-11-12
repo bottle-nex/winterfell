@@ -3,12 +3,12 @@ import Image from "next/image"
 
 export default function ClientHowItWorks() {
     return (
-        <div className="w-full min-h-screen py-10 h-full flex flex-col items-start text-left tracking-wide gap-y-5">
-            <div className="text-3xl">
-                How It Works
-            </div>
+        <div className="w-full h-full py-10 flex flex-col items-center text-left tracking-wide gap-y-5 ">
 
-            <div className="flex flex-col gap-y-4 h-full">
+            <div className="flex flex-col gap-y-4 h-full ">
+                <div className="text-3xl">
+                    How It Works
+                </div>
                 {/* <div className="text-[18px] tracking-wider">
                     Let’s first dive into what Winterfell actually does <span className="text-light/40 hover:text-[#a187fc] transition-colors duration-300">(because its kind of cool)</span>.
                 </div> */}
@@ -46,7 +46,7 @@ export default function ClientHowItWorks() {
                 </div>
             </div>
 
-            <div className="h-full w-full relative flex-1 border border-neutral-800 rounded-[4px]">
+            <div className="h-full w-full max-w-4xl relative border border-neutral-800 rounded-[4px]">
                 <Image
                     src={'/Images/winterfell-architecture.png'}
                     alt="winterfell-client-architecture"

@@ -39,38 +39,35 @@ export default function BuilderNavbarRightSection() {
         if (showRepoPanel) {
             document.addEventListener('mousedown', handleClickOutside);
         }
-
-        console.log({session});
-        console.log('token is ----------------------> ', session?.user.token);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showRepoPanel]);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('githubLinked') === 'true') {
+            toast.success('GitHub connected successfully!');
+            
+            getSession().then((newSession) => {
+                if (newSession) {
+                    setSession(newSession as any);
+                }
+            });
+            
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }, [setSession]);
 
     async function handleConnectGitHub() {
         try {
             setIsConnectingGithub(true);
-            console.log('inside connect github 1');
-            const result = await signIn('github', {
-                redirect: false,
+            await signIn('github', { 
+                callbackUrl: `${window.location.pathname}?githubLinked=true`,
+                redirect: true 
             });
-            console.log({ result });
-
-            if (result?.ok) {
-                const updatedSession = await getSession();
-                console.log({ updatedSession });
-
-                if (updatedSession?.user) {
-                    setSession(updatedSession);
-                    toast.success('Github connected successfully.');
-                } else {
-                    toast.error('failed to update session');
-                }
-            } else if (result?.error) {
-                toast.error('Failed to connect GitHub');
-            }
+            
         } catch (error) {
             toast.error('Failed to connect GitHub');
             console.error('GitHub connection error:', error);
-        } finally {
             setIsConnectingGithub(false);
         }
     }
