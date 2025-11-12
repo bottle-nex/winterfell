@@ -13,6 +13,7 @@ import { Button } from '../ui/button';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { useTerminalResize } from '@/src/hooks/useTerminalResize';
 import { useTerminalLogic } from '@/src/hooks/useTerminal';
+import { Line } from '@/src/types/terminal_types';
 
 export default function Terminal() {
     const [showTerminal, setShowTerminal] = useState<boolean>(false);
@@ -190,6 +191,7 @@ export default function Terminal() {
                             <div className="flex mt-1">
                                 <Prompt />
                                 <input
+                                    aria-label='terminal'
                                     ref={inputRef}
                                     type="text"
                                     value={currentTerminal.input}

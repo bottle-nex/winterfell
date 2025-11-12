@@ -10,7 +10,7 @@ export default function BuilderDashboard(): JSX.Element {
         <div className="w-full h-full grid grid-cols-[30%_70%] bg-dark-base z-0 overflow-hidden">
             <BuilderChats />
             <div className="pb-4 pr-4 h-full">
-                <div className="w-full h-full z-10 border-neutral-800 border rounded-[4px] relative">
+                <div className="w-full h-full z-10 border-neutral-800 border rounded-[4px] relative overflow-hidden">
                     {loading ? <BuilderLoder /> : <CodeEditor />}
                 </div>
             </div>

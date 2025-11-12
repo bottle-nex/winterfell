@@ -7,11 +7,13 @@ import City from './City';
 import ActionTickers from '../tickers/ActionTickers';
 import DashboardTextAreaComponent from './DashboardTextAreaComponent';
 import HighlighterTicker from '../tickers/HighlighterTicker';
+import { useRouter } from 'next/navigation';
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
     const isInView = useInView(heroRef, { once: true });
     const controls = useAnimation();
+    const router = useRouter();
 
     useEffect(() => {
         if (isInView) {
@@ -69,7 +71,7 @@ export default function Hero() {
                                 Explore Playground
                                 <RiCodeSSlashFill />
                             </Button>
-                            <span className="font-light text-primary tracking-wide md:text-xs border-b border-primary py-1">
+                            <span onClick={() => router.push("/docs/client")} className="font-light text-primary tracking-wide md:text-xs border-b border-primary py-1 cursor-pointer">
                                 Read Our Docs
                             </span>
                         </div>
