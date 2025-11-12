@@ -50,6 +50,7 @@ export default function BuilderChats() {
             startChat(initialMessage.content);
             setContractId(contractId);
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contractId]);
 
@@ -67,6 +68,7 @@ export default function BuilderChats() {
                     message: message,
                 }),
             });
+            
 
             if (!response.ok) {
                 throw new Error('Failed to start chat');

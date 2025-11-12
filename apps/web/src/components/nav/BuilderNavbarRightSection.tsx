@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { getSession, signIn } from 'next-auth/react';
 import { IoIosPaperPlane } from 'react-icons/io';
 import { FaGithub } from 'react-icons/fa';
 import { ArrowUp } from 'lucide-react';
@@ -10,14 +11,14 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { WalletPanel } from '../base/WalletPanel';
 import ProfileMenu from '../utility/ProfileMenu';
-import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { useChatStore } from '@/src/store/user/useChatStore';
 import { toast } from 'sonner';
-import { EXPORT_CONTRACT_URL, GITHUB_CONNECT_URL } from '@/routes/api_routes';
+import { EXPORT_CONTRACT_URL } from '@/routes/api_routes';
+import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 
 export default function BuilderNavbarRightSection() {
-    const { session, setSession } = useUserSessionStore();
     const { contractId } = useChatStore();
+    const { session, setSession } = useUserSessionStore();
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
     const [showRepoPanel, setShowRepoPanel] = useState<boolean>(false);
     const [repoName, setRepoName] = useState<string>('');
@@ -25,7 +26,7 @@ export default function BuilderNavbarRightSection() {
     const [openProfileMenu, setOpenProfleMenu] = useState<boolean>(false);
     const [isConnectingGithub, setIsConnectingGithub] = useState<boolean>(false);
     const [isExporting, setIsExporting] = useState<boolean>(false);
-
+    
     const hasGithub = session?.user?.hasGithub;
     const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,70 +36,80 @@ export default function BuilderNavbarRightSection() {
                 setShowRepoPanel(false);
             }
         }
-        if (showRepoPanel) document.addEventListener('mousedown', handleClickOutside);
+        if (showRepoPanel) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        console.log({session});
+        console.log('token is ----------------------> ', session?.user.token);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showRepoPanel]);
 
-    useEffect(() => {
-        const handleGithubCallback = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const state = urlParams.get('state');
+    async function handleConnectGitHub() {
+        try {
+            setIsConnectingGithub(true);
+            console.log('inside connect github 1');
+            const result = await signIn('github', {
+                redirect: false,
+            });
+            console.log({ result });
 
-            if (code && state === 'github-connect') {
-                setIsConnectingGithub(true);
-                try {
-                    const response = await axios.post(
-                        `${GITHUB_CONNECT_URL}`,
-                        { code },
-                        { headers: { Authorization: `Bearer ${session?.user?.token}` } },
-                    );
-                    if (response.data.success) {
-                        setSession({
-                            ...session!,
-                            user: {
-                                ...session?.user,
-                                token: response.data.token,
-                                hasGithub: true,
-                                githubUsername: response.data.githubUsername,
-                            },
-                        });
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                } catch (error) {
-                    console.error('Failed to connect GitHub:', error);
-                } finally {
-                    setIsConnectingGithub(false);
+            if (result?.ok) {
+                const updatedSession = await getSession();
+                console.log({ updatedSession });
+
+                if (updatedSession?.user) {
+                    setSession(updatedSession);
+                    toast.success('Github connected successfully.');
+                } else {
+                    toast.error('failed to update session');
                 }
+            } else if (result?.error) {
+                toast.error('Failed to connect GitHub');
             }
-        };
-        handleGithubCallback();
-    }, [session, setSession]);
+        } catch (error) {
+            toast.error('Failed to connect GitHub');
+            console.error('GitHub connection error:', error);
+        } finally {
+            setIsConnectingGithub(false);
+        }
+    }
 
     async function handleCodePushToGithub() {
-        if (!repoName.trim()) return toast.error('Please enter a repository name');
-        if (!contractId) return toast.error('No contract found');
-
+        if (!repoName.trim()) {
+            return toast.error('Please enter a repository name');
+        }
+        if (!contractId) {
+            return toast.error('No contract found');
+        }
+        
         setIsExporting(true);
         try {
             const response = await axios.post(
                 EXPORT_CONTRACT_URL,
-                { repo_name: repoName, contract_id: contractId },
+                { 
+                    repo_name: repoName, 
+                    contract_id: contractId 
+                },
                 {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${session?.user?.token}`,
                     },
-                },
+                }
             );
+            
             if (response.data.success) {
-                toast.success('Pushed successfully!');
+                toast.success('Code exported to GitHub successfully!');
                 setShowRepoPanel(false);
                 setRepoName('');
+            } else {
+                toast.error(response.data.message || 'Failed to export');
             }
-        } catch (error) {
-            toast.error('Failed to export to GitHub');
-            console.error(error);
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Failed to export to GitHub';
+            toast.error(errorMessage);
+            console.error('Export error:', error);
         } finally {
             setIsExporting(false);
         }
@@ -106,7 +117,10 @@ export default function BuilderNavbarRightSection() {
 
     return (
         <div className="flex items-center justify-between gap-x-3 relative">
-            <ToolTipComponent content="Deploy your contract to the solana blockchain" side="bottom">
+            <ToolTipComponent 
+                content="Deploy your contract to the solana blockchain" 
+                side="bottom"
+            >
                 <Button
                     onClick={() => setOpenWalletPanel(true)}
                     size="xs"
@@ -120,9 +134,10 @@ export default function BuilderNavbarRightSection() {
             {!hasGithub ? (
                 <ToolTipComponent content="Connect GitHub to export code" side="bottom">
                     <Button
+                        onClick={handleConnectGitHub}
                         disabled={isConnectingGithub}
                         size="xs"
-                        className="bg-[#24292e] text-white hover:bg-[#24292e] gap-1.5 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                        className="bg-[#24292e] text-white hover:bg-[#1a1e22] gap-1.5 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <FaGithub className="size-3.5" />
                         <span className="text-[11px]">
@@ -144,21 +159,27 @@ export default function BuilderNavbarRightSection() {
                     </ToolTipComponent>
 
                     {showRepoPanel && (
-                        <div className="absolute top-full mt-3 right-0 border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
+                        <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
                             <Input
                                 type="text"
                                 value={repoName}
                                 onChange={(e) => setRepoName(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && repoName.trim()) {
+                                        handleCodePushToGithub();
+                                    }
+                                }}
                                 placeholder="Enter repo name"
                                 className="w-full border border-neutral-800 text-light text-sm px-3 py-1 rounded-sm"
+                                autoFocus
                             />
                             <Button
                                 onClick={handleCodePushToGithub}
-                                disabled={isExporting}
+                                disabled={isExporting || !repoName.trim()}
                                 size="sm"
-                                className="bg-primary text-light hover:bg-primary/90 text-xs font-semibold rounded-[4px]"
+                                className="bg-primary text-light hover:bg-primary/90 text-xs font-semibold rounded-[4px] disabled:opacity-50"
                             >
-                                {isExporting ? 'Exporting...' : <ArrowUp />}
+                                {isExporting ? '...' : <ArrowUp className="size-4" />}
                             </Button>
                         </div>
                     )}
@@ -172,7 +193,7 @@ export default function BuilderNavbarRightSection() {
                     alt="user"
                     width={28}
                     height={28}
-                    className="rounded-full cursor-pointer"
+                    className="rounded-full cursor-pointer hover:ring-2 hover:ring-primary transition"
                 />
             )}
             {openProfileMenu && (
