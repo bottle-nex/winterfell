@@ -10,16 +10,19 @@ generator client {
 }
 
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  name              String?
-  image             String?
-  password          String? // if using credentials login
-  provider          String?
+  id       String  @id @default(cuid())
+  email    String  @unique
+  name     String?
+  image    String?
+  password String? // if using credentials login
+  provider String?
+
+  githubId          String?
   githubAccessToken String?
   githubUsername    String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   subscription Subscription?
   contracts    Contract[]
@@ -55,13 +58,12 @@ model Contract {
 }
 
 model ContractEMbedding {
-  id  String  @id @default(uuid())
+  id          String @id @default(uuid())
   contractId  String
-  fileName  String
-  filePath  String
+  fileName    String
+  filePath    String
   fileContent String
   chunkIndex  Int
-  
 }
 
 model BuildJob {
@@ -135,7 +137,7 @@ model Message {
   creatingFiles  Boolean @default(false)
   finalzing      Boolean @default(false)
   error          Boolean @default(false)
-  
+
   // isCodeBuilt Boolean? @default(false)
   // buildStatus
 

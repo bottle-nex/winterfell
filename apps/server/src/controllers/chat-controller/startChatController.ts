@@ -18,6 +18,7 @@ export default async function startChatController(req: Request, res: Response) {
     }
 
     const { contractId, message } = data.data;
+
     try {
         let contract;
         contract = await prisma.contract.findUnique({

@@ -1,12 +1,22 @@
 'use client';
 import { cn } from '@/src/lib/utils';
 import { TabType, useDocsTabStore } from '@/src/store/user/useDocsTabStore';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import AppLogo from '../tickers/AppLogo';
 
 export default function DocsNavbar() {
     const { tab, setActiveTab } = useDocsTabStore();
     const router = useRouter();
+    const pathName = usePathname();
+
+    useEffect(() => {
+        if (pathName.includes('/docs/client')) {
+            setActiveTab(TabType.CLIENT);
+        } else if (pathName.includes('/docs/dev')) {
+            setActiveTab(TabType.DEV);
+        }
+    }, [pathName, setActiveTab]);
 
     return (
         <div className='flex items-center justify-between w-full px-4 py-2'>
