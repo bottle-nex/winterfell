@@ -3,8 +3,8 @@ import 'react-complex-tree/lib/style-modern.css';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import EditorSidePanel, { sidePanelValues } from './EditorSidePanel';
 import { useState } from 'react';
-import FileTree from './FileTree';
 import GithubPanel from './GithubPanel';
+import FileTree from './Filetree';
 
 export default function SidePanel() {
     const [sidePanelRenderer, setSidePanelRenderer] = useState<sidePanelValues>(sidePanelValues.FILE);
