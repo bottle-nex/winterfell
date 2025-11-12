@@ -10,7 +10,6 @@ import getUserPlanController from '../controllers/payment-controller/getUserPlan
 import syncFilesController from '../controllers/files/syncFilesController';
 import githubCodePushController from '../controllers/github-deploy-controller/githubCodePushController';
 import githubJobStatusController from '../controllers/github-deploy-controller/githubJobStatusController';
-import githubConnectController from '../controllers/github-deploy-controller/githubSignInController';
 import continueChatController from '../controllers/chat-controller/continueChatController';
 import getChatController from '../controllers/chat-controller/getChatController';
 import runCommandsController from '../controllers/contract-controller/run_commands_controller';
@@ -22,7 +21,6 @@ router.post('/sign-in', signInController);
 router.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({ message: 'Server is running' });
 });
-router.post('/github/connect', authMiddleware, githubConnectController);
 
 // code-routes
 router.post('/new', authMiddleware, startChatController);

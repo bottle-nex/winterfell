@@ -30,7 +30,7 @@ export default function DocsNavbar() {
             >
 
                 <div
-                    className={`absolute transition-all duration-500 ease-in-out -top-[3px] left-0 h-[1.5px] w-5 rounded-t-full bg-white shadow-[0_1px_8px_2px_rgba(255,255,255,0.8)] z-10
+                    className={`absolute transition-all duration-500 ease-in-out -top-[3px] left-0 h-[1.5px] w-5 rounded-t-full bg-white shadow-[0_1px_8px_2px_rgba(108,68,252,0.8)] z-10
           ${tab === TabType.DEV ? 'translate-x-[545%]' : 'translate-x-[165%]'}
         `}
                 />
