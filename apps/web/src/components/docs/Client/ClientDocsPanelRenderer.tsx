@@ -1,4 +1,5 @@
 import { ClientDocsPanel } from "./ClientDocs";
+import ClientHowItWorks from "./ClientHowItWorks";
 import ClientOverview from "./ClientOverview";
 
 interface ClientDocsPanelRendererProps {
@@ -11,6 +12,8 @@ export default function ClientDocsPanelRenderer({ clientPanel }: ClientDocsPanel
         switch (clientPanel) {
             case ClientDocsPanel.OVERVIEW:
                 return <ClientOverview />
+            case ClientDocsPanel.HOW_IT_WORKS:
+                return <ClientHowItWorks/>;
         }
     }
 
