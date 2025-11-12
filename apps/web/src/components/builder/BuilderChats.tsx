@@ -68,7 +68,6 @@ export default function BuilderChats() {
                     message: message,
                 }),
             });
-            
 
             if (!response.ok) {
                 throw new Error('Failed to start chat');

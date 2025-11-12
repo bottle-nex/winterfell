@@ -1,8 +1,8 @@
-"use client";
-import { useState } from "react";
-import { PiGithubLogoFill } from "react-icons/pi";
-import { Button } from "../ui/button";
-import { FaGithub } from "react-icons/fa";
+'use client';
+import { useState } from 'react';
+import { PiGithubLogoFill } from 'react-icons/pi';
+import { Button } from '../ui/button';
+import { FaGithub } from 'react-icons/fa';
 
 type ConnectionStatus = 'idle' | 'connecting' | 'connected';
 
@@ -23,8 +23,8 @@ export default function GithubPanel() {
                 <PiGithubLogoFill size={48} />
                 <h2 className="text-lg font-semibold">Connect your GitHub</h2>
                 <p className="text-[13px] text-light/60 text-center tracking-wide">
-                    Connect your GitHub account to automatically push your generated
-                    contract to your repository.
+                    Connect your GitHub account to automatically push your generated contract to
+                    your repository.
                 </p>
                 {connectionStatus !== 'connected' ? (
                     <Button

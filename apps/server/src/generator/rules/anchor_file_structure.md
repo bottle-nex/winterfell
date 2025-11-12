@@ -8,24 +8,24 @@ package.json tsconfig.json
 
 ## CRITICAL FILE PATHS TO GENERATE
 
-- Main program: `programs/[program_name]/src/lib.rs`
-- State module: `programs/[program_name]/src/state/mod.rs`
-- State files: `programs/[program_name]/src/state/[state_name].rs`
-- Instructions module: `programs/[program_name]/src/instructions/mod.rs`
-- Instruction files: `programs/[program_name]/src/instructions/[instruction_name].rs`
-- Errors module: `programs/[program_name]/src/errors/mod.rs`
-- Errors file: `programs/[program_name]/src/errors/error_codes.rs`
-- Tests: `tests/[program_name].ts`
+-   Main program: `programs/[program_name]/src/lib.rs`
+-   State module: `programs/[program_name]/src/state/mod.rs`
+-   State files: `programs/[program_name]/src/state/[state_name].rs`
+-   Instructions module: `programs/[program_name]/src/instructions/mod.rs`
+-   Instruction files: `programs/[program_name]/src/instructions/[instruction_name].rs`
+-   Errors module: `programs/[program_name]/src/errors/mod.rs`
+-   Errors file: `programs/[program_name]/src/errors/error_codes.rs`
+-   Tests: `tests/[program_name].ts`
 
 ## DO NOT GENERATE
 
-- Cargo.toml (root)
-- Anchor.toml
-- package.json
-- tsconfig.json
-- rust-toolchain.toml
-- .gitignore
-- .prettierignore
-- migrations/deploy.ts
-- programs/[program_name]/Cargo.toml
-- programs/[program_name]/Xargo.toml
+-   Cargo.toml (root)
+-   Anchor.toml
+-   package.json
+-   tsconfig.json
+-   rust-toolchain.toml
+-   .gitignore
+-   .prettierignore
+-   migrations/deploy.ts
+-   programs/[program_name]/Cargo.toml
+-   programs/[program_name]/Xargo.toml

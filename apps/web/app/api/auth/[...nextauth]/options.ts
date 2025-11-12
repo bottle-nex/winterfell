@@ -1,4 +1,3 @@
-
 import { Account, AuthOptions, ISODateString } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
@@ -87,4 +86,3 @@ export const authOption: AuthOptions = {
         }),
     ],
 };
-

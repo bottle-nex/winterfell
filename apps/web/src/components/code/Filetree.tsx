@@ -1,6 +1,11 @@
 'use client';
 import React, { useMemo } from 'react';
-import { UncontrolledTreeEnvironment, Tree, StaticTreeDataProvider, TreeItem } from 'react-complex-tree';
+import {
+    UncontrolledTreeEnvironment,
+    Tree,
+    StaticTreeDataProvider,
+    TreeItem,
+} from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 import { FileNode, NODE } from '@/src/types/prisma-types';
@@ -11,7 +16,6 @@ import FileIcon from '../tickers/FileIcon';
 interface TreeData {
     [key: string]: TreeItem;
 }
-
 
 export default function FileTree() {
     const { fileTree, selectFile } = useCodeEditor();
@@ -83,11 +87,7 @@ export default function FileTree() {
                             <AiFillFolder size={16} className="text-[#317FFF]" />
                         )
                     ) : (
-                        <FileIcon
-                            filename={item.data}
-                            size={14}
-                            className="text-neutral-400"
-                        />
+                        <FileIcon filename={item.data} size={14} className="text-neutral-400" />
                     )}
                     <span className="text-sm">{item.data}</span>
                 </div>
@@ -95,5 +95,5 @@ export default function FileTree() {
         >
             <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
         </UncontrolledTreeEnvironment>
-    )
+    );
 }

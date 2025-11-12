@@ -191,7 +191,7 @@ export default function Terminal() {
                             <div className="flex mt-1">
                                 <Prompt />
                                 <input
-                                    aria-label='terminal'
+                                    aria-label="terminal"
                                     ref={inputRef}
                                     type="text"
                                     value={currentTerminal.input}
