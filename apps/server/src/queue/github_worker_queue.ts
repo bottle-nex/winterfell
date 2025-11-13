@@ -2,7 +2,7 @@ import { Job, Queue, Worker } from 'bullmq';
 import { Octokit } from '@octokit/rest';
 import { FileContent, GithubPushJobData } from '../types/github_worker_queue_types';
 import { get_s3_codebase } from '../services/git_services';
-import queue_config from '../configs/queue.config';
+import queue_config from '../configs/config.queue';
 
 export class GithubWorkerQueue {
     private queue: Queue<GithubPushJobData>;

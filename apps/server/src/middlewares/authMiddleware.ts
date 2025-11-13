@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import env from '../configs/env';
+import env from '../configs/config.env';
 import jwt from 'jsonwebtoken';
 import { AuthUser } from '../types/express';
 

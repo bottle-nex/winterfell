@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import PLANS from '../../configs/plans';
+import PLANS from '../../configs/config.plans';
 import { razorpay } from '../../services/init';
 import { prisma, SubscriptionStatus } from '@repo/database';
 

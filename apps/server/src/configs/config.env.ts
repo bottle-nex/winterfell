@@ -26,6 +26,8 @@ const envScehma = z.object({
     SERVER_REDIS_URL: z.string().transform((val) => val.trim()),
     GITHUB_CLIENT_ID: z.string().transform((val) => val.trim()),
     GITHUB_CLIENT_SECRET: z.string().transform((val) => val.trim()),
+    SERVER_STRIPE_SECRET_KEY: z.string(),
+    SERVER_STRIPE_WEBHOOK_SECRET: z.string(),
 });
 
 function parseScehma() {

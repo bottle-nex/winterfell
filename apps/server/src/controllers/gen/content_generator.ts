@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import Anthropic from '@anthropic-ai/sdk';
-import env from '../../configs/env';
+import env from '../../configs/config.env';
 import { Response } from 'express';
 import { ChatRole, Message, prisma } from '@repo/database';
 import StreamParser from '../../services/stream_parser';
