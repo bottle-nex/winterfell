@@ -7,11 +7,18 @@ export const coder_prompt = new PromptTemplate({
     User request:
     {input}
 
+    rules: (need to be fetched by tool-calling)
+    {rules}
+    do study rules before generation
+
+    files_likely_affected:
+    {files_likely_affected}
+
     Plan:
     {plan}
 
     Context:
     {context}
     `,
-    inputVariables: ['input', 'plan', 'context'],
+    inputVariables: ['input', 'rules', 'files_likely_affected', 'context'],
 });
