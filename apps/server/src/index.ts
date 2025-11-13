@@ -35,4 +35,4 @@ const caller = async () => {
     console.log(result.coder_output);
 };
 
-setTimeout(caller, 10000);
+setTimeout(caller, 2000)

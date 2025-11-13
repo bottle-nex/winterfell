@@ -14,9 +14,6 @@ export const coder_prompt = new PromptTemplate({
     files_likely_affected:
     {files_likely_affected}
 
-    Plan:
-    {plan}
-
     Context:
     {context}
     `,

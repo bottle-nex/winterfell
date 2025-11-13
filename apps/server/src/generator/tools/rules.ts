@@ -4,7 +4,7 @@ import { tool } from "@langchain/core/tools";
 import { tool_schema } from "../schema/tool_schema";
 import chalk from "chalk";
 
-const RULES_DIR: string = '../rules';
+const RULES_DIR = path.resolve(__dirname, '../rules');
 
 export default class Rules {
     /**
@@ -31,17 +31,22 @@ export default class Rules {
         return get_tool;
     }
 
-    public static get_rules_name() {
-        let docs: string[] = [];
+    // public static get_rules_name() {
+    //     let docs: string[] = [];
 
-        const rules_dir = fs.readdirSync(RULES_DIR);
+    //     const rules_dir = fs.readdirSync(RULES_DIR);
 
-        rules_dir.forEach((doc: string) => {
-            docs.push(doc.split('.')[0]);
-        });
+    //     if(!rules_dir) {
+    //         console.log("rules dir not found");
+    //         return;
+    //     }
 
-        console.log({ docs });
-        return docs;
-    }
+    //     rules_dir.forEach((doc: string) => {
+    //         docs.push(doc.split('.')[0]);
+    //     });
+
+    //     console.log({ docs });
+    //     return docs;
+    // }
 
 }
