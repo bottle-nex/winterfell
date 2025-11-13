@@ -1,7 +1,9 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [pgvector(map:"vector")]
 }
+
 
 generator client {
   provider = "prisma-client-js"
@@ -64,6 +66,7 @@ model ContractEMbedding {
   filePath    String
   fileContent String
   chunkIndex  Int
+  embedding Unsupported("vector(1536)")?
 }
 
 model BuildJob {

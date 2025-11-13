@@ -14,11 +14,11 @@ export default function podTemplate(configs: PodConfig) {
       name: pod_name,
       namespace: env.KUBERNETES_NAMESPACE,
       labels: {
-        "app": "anchor-executor",
+        app: "anchor-executor",
         "job-id": job_id,
         "contract-id": contract_id,
         "user-id": user_id,
-        "command": command,
+        command: command,
       },
       annotations: {
         "created-at": new Date().toISOString(),

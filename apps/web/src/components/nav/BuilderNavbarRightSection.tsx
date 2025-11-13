@@ -3,18 +3,18 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { getSession, signIn } from 'next-auth/react';
-import { IoIosPaperPlane } from 'react-icons/io';
+import { IoIosPaperPlane, IoLogoGithub } from 'react-icons/io';
 import { FaGithub } from 'react-icons/fa';
-import { ArrowUp } from 'lucide-react';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { WalletPanel } from '../base/WalletPanel';
 import ProfileMenu from '../utility/ProfileMenu';
 import { useChatStore } from '@/src/store/user/useChatStore';
 import { toast } from 'sonner';
 import { EXPORT_CONTRACT_URL } from '@/routes/api_routes';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
+import { cn } from '@/src/lib/utils';
+import ExportPanel from './ExportPanel.';
 
 export default function BuilderNavbarRightSection() {
     const { contractId } = useChatStore();
@@ -22,11 +22,10 @@ export default function BuilderNavbarRightSection() {
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
     const [showRepoPanel, setShowRepoPanel] = useState<boolean>(false);
     const [repoName, setRepoName] = useState<string>('');
-
     const [openProfileMenu, setOpenProfleMenu] = useState<boolean>(false);
     const [isConnectingGithub, setIsConnectingGithub] = useState<boolean>(false);
     const [isExporting, setIsExporting] = useState<boolean>(false);
-    
+
     const hasGithub = session?.user?.hasGithub;
     const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,13 +45,13 @@ export default function BuilderNavbarRightSection() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('githubLinked') === 'true') {
             toast.success('GitHub connected successfully!');
-            
+
             getSession().then((newSession) => {
                 if (newSession) {
                     setSession(newSession as any);
                 }
             });
-            
+
             window.history.replaceState({}, '', window.location.pathname);
         }
     }, [setSession]);
@@ -60,11 +59,10 @@ export default function BuilderNavbarRightSection() {
     async function handleConnectGitHub() {
         try {
             setIsConnectingGithub(true);
-            await signIn('github', { 
+            await signIn('github', {
                 callbackUrl: `${window.location.pathname}?githubLinked=true`,
-                redirect: true 
+                redirect: true,
             });
-            
         } catch (error) {
             toast.error('Failed to connect GitHub');
             console.error('GitHub connection error:', error);
@@ -79,23 +77,23 @@ export default function BuilderNavbarRightSection() {
         if (!contractId) {
             return toast.error('No contract found');
         }
-        
+
         setIsExporting(true);
         try {
             const response = await axios.post(
                 EXPORT_CONTRACT_URL,
-                { 
-                    repo_name: repoName, 
-                    contract_id: contractId 
+                {
+                    repo_name: repoName,
+                    contract_id: contractId,
                 },
                 {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${session?.user?.token}`,
                     },
-                }
+                },
             );
-            
+
             if (response.data.success) {
                 toast.success('Code exported to GitHub successfully!');
                 setShowRepoPanel(false);
@@ -114,10 +112,7 @@ export default function BuilderNavbarRightSection() {
 
     return (
         <div className="flex items-center justify-between gap-x-3 relative">
-            <ToolTipComponent 
-                content="Deploy your contract to the solana blockchain" 
-                side="bottom"
-            >
+            <ToolTipComponent content="deploy your contract" side="bottom">
                 <Button
                     onClick={() => setOpenWalletPanel(true)}
                     size="xs"
@@ -148,37 +143,21 @@ export default function BuilderNavbarRightSection() {
                         <Button
                             onClick={() => setShowRepoPanel((prev) => !prev)}
                             disabled={isExporting}
-                            size="sm"
-                            className="bg-primary text-light hover:bg-primary/90 hover:text-light/90 tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px]"
+                            size="xs"
+                            className={cn(
+                                'bg-dark text-light hover:bg-dark/90 hover:text-light/90',
+                                'tracking-wider cursor-pointer transition-transform hover:-translate-y-0.5 font-semibold rounded-[4px] text-xs',
+                            )}
                         >
-                            <span className="text-xs">Export</span>
+                            <IoLogoGithub className="size-4.5" />
                         </Button>
                     </ToolTipComponent>
 
                     {showRepoPanel && (
-                        <div className="absolute top-full mt-3 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg p-3 flex gap-2 w-[200px] z-20">
-                            <Input
-                                type="text"
-                                value={repoName}
-                                onChange={(e) => setRepoName(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && repoName.trim()) {
-                                        handleCodePushToGithub();
-                                    }
-                                }}
-                                placeholder="Enter repo name"
-                                className="w-full border border-neutral-800 text-light text-sm px-3 py-1 rounded-sm"
-                                autoFocus
-                            />
-                            <Button
-                                onClick={handleCodePushToGithub}
-                                disabled={isExporting || !repoName.trim()}
-                                size="sm"
-                                className="bg-primary text-light hover:bg-primary/90 text-xs font-semibold rounded-[4px] disabled:opacity-50"
-                            >
-                                {isExporting ? '...' : <ArrowUp className="size-4" />}
-                            </Button>
-                        </div>
+                        <ExportPanel
+                            handleCodePushToGithub={handleCodePushToGithub}
+                            isExporting={isExporting}
+                        />
                     )}
                 </div>
             )}

@@ -1,25 +1,20 @@
-import { ClientDocsPanel } from "./ClientDocs";
-import ClientHowItWorks from "./ClientHowItWorks";
-import ClientOverview from "./ClientOverview";
+import { ClientDocsPanel } from './ClientDocs';
+import ClientHowItWorks from './ClientHowItWorks';
+import ClientOverview from './ClientOverview';
 
 interface ClientDocsPanelRendererProps {
-    clientPanel: ClientDocsPanel
+    clientPanel: ClientDocsPanel;
 }
 
 export default function ClientDocsPanelRenderer({ clientPanel }: ClientDocsPanelRendererProps) {
-
     function renderPanels() {
         switch (clientPanel) {
             case ClientDocsPanel.OVERVIEW:
-                return <ClientOverview />
+                return <ClientOverview />;
             case ClientDocsPanel.HOW_IT_WORKS:
-                return <ClientHowItWorks/>;
+                return <ClientHowItWorks />;
         }
     }
 
-    return (
-        <>
-            {renderPanels()}
-        </>
-    )
+    return <>{renderPanels()}</>;
 }

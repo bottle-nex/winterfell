@@ -71,7 +71,10 @@ export default function Hero() {
                                 Explore Playground
                                 <RiCodeSSlashFill />
                             </Button>
-                            <span onClick={() => router.push("/docs/client")} className="font-light text-primary tracking-wide md:text-xs border-b border-primary py-1 cursor-pointer">
+                            <span
+                                onClick={() => router.push('/docs/client')}
+                                className="font-light text-primary tracking-wide md:text-xs border-b border-primary py-1 cursor-pointer"
+                            >
                                 Read Our Docs
                             </span>
                         </div>

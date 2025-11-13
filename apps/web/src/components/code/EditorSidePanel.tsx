@@ -1,7 +1,7 @@
-import { LuFile } from "react-icons/lu";
-import { PiGithubLogoFill } from "react-icons/pi";
-import ToolTipComponent from "../ui/TooltipComponent";
-import { Dispatch, SetStateAction } from "react";
+import { LuFile } from 'react-icons/lu';
+import { PiGithubLogoFill } from 'react-icons/pi';
+import ToolTipComponent from '../ui/TooltipComponent';
+import { Dispatch, SetStateAction } from 'react';
 
 export enum sidePanelValues {
     FILE = 'FILE',
@@ -12,14 +12,14 @@ const sidePanelData = [
     {
         icon: <LuFile size={20} />,
         value: sidePanelValues.FILE,
-        tooltip: "Files"
+        tooltip: 'Files',
     },
     {
         icon: <PiGithubLogoFill size={21} />,
         value: sidePanelValues.GITHUB,
-        tooltip: "GitHub Repository"
-    }
-]
+        tooltip: 'GitHub Repository',
+    },
+];
 
 interface EditorSidePanel {
     setSidePanelRenderer: Dispatch<SetStateAction<sidePanelValues>>;

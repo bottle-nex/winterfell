@@ -9,42 +9,42 @@ export enum ClientDocsPanel {
     EDITING_AND_UNDERSTANDING = 'EDITING_AND_UNDERSTANDING',
     BUILDING_AND_TESTING = 'BUILDING_AND_TESTING',
     DEPLOYMENT = 'DEPLOYMENT',
-    EXPORTING = 'EXPORTING'
+    EXPORTING = 'EXPORTING',
 }
 
 const contents = [
     {
         title: 'CONTENTS',
-        type: ClientDocsPanel.OVERVIEW
+        type: ClientDocsPanel.OVERVIEW,
     },
     {
         title: 'Overview',
-        type: ClientDocsPanel.OVERVIEW
+        type: ClientDocsPanel.OVERVIEW,
     },
     {
         title: 'How it works',
-        type: ClientDocsPanel.HOW_IT_WORKS
+        type: ClientDocsPanel.HOW_IT_WORKS,
     },
     {
         title: 'Getting Started',
-        type: ClientDocsPanel.GETTING_STARTED
+        type: ClientDocsPanel.GETTING_STARTED,
     },
     {
         title: 'Editing & Understanding',
-        type: ClientDocsPanel.EDITING_AND_UNDERSTANDING
+        type: ClientDocsPanel.EDITING_AND_UNDERSTANDING,
     },
     {
         title: 'Building & Testing',
-        type: ClientDocsPanel.BUILDING_AND_TESTING
+        type: ClientDocsPanel.BUILDING_AND_TESTING,
     },
     {
         title: 'Deployment',
-        type: ClientDocsPanel.DEPLOYMENT
+        type: ClientDocsPanel.DEPLOYMENT,
     },
     {
         title: 'Exporting',
-        type: ClientDocsPanel.EXPORTING
-    }
+        type: ClientDocsPanel.EXPORTING,
+    },
 ];
 
 export default function ClientDocs() {
@@ -53,20 +53,20 @@ export default function ClientDocs() {
 
     function calculatePosition(index: number) {
         return index * 37.5;
-    };
+    }
 
     function switchPanel(index: number, clientPanel: ClientDocsPanel) {
         if (index === 0) return;
-        setActiveIndex(index)
+        setActiveIndex(index);
         setClientPanel(clientPanel);
     }
 
     return (
         <div className="relative min-h-screen w-full grid grid-cols-[80%_20%]">
-            <div className='w-full'>
+            <div className="w-full">
                 <ClientDocsPanelRenderer clientPanel={clientPanel} />
             </div>
-            <div className='min-h-screen'>
+            <div className="min-h-screen">
                 <div className="flex fixed flex-col gap-y-5 text-left text-xs tracking-wide text-light/70 mt-22">
                     <div
                         className="absolute -left-4 top-4 h-3 w-[2px] rounded-full bg-white shadow-[0_0_12px_3px_rgba(255,255,255,0.9)] transition-all duration-500 ease-out"

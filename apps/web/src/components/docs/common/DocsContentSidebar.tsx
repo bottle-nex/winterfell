@@ -1,12 +1,12 @@
-'use client'
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 
 interface DocsContentSidebarProps {
     contents: string[];
     onSelect: (index: number) => void;
 }
 
-export default function DocsContentSidebar({contents, onSelect}: DocsContentSidebarProps) {
+export default function DocsContentSidebar({ contents, onSelect }: DocsContentSidebarProps) {
     const [activeIndex, setActiveIndex] = useState<number>(1);
     const calculatePosition = (index: number) => {
         return index * 44;
@@ -38,6 +38,5 @@ export default function DocsContentSidebar({contents, onSelect}: DocsContentSide
                 </div>
             ))}
         </div>
-
-    )
+    );
 }

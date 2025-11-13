@@ -21,7 +21,7 @@ export default function ClientOverview() {
                     distortion={1}
                     swirl={0.8}
                     speed={0.2}
-                    style={{ width: "100%", height: '100%' }}
+                    style={{ width: '100%', height: '100%' }}
                 />
                 <div className="absolute z-10 text-center h-full w-full flex flex-col justify-center items-center text-light">
                     <span className="block text-5xl font-semibold drop-shadow-2xl">

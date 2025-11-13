@@ -1,4 +1,3 @@
-
 import { Account, AuthOptions, ISODateString } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
@@ -37,10 +36,10 @@ export const authOption: AuthOptions = {
                         user,
                         account,
                     });
-
                     const result = response.data;
+                    console.log('response from backend is -----------------> ', response.data);
                     if (result?.success) {
-                        user.id = result.user.id.toString();
+                        user.id = result.user.id;
                         user.token = result.token;
                         user.hasGithub = result.user.hasGithub;
                         user.githubUsername = result.user.githubUsername;
@@ -87,4 +86,3 @@ export const authOption: AuthOptions = {
         }),
     ],
 };
-

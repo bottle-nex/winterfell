@@ -21,8 +21,8 @@ export const claude_coder = new ChatAnthropic({
                 console.log(token);
             },
             handleLLMEnd() {
-                console.log("<------------ stream complete ------------>");
-            }
-        }
-    ]
+                console.log('<------------ stream complete ------------>');
+            },
+        },
+    ],
 });

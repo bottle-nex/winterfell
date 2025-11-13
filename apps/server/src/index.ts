@@ -24,14 +24,14 @@ server.listen(env.SERVER_PORT, () => {
     console.warn('Server is running on port : ', env.SERVER_PORT);
 });
 
-console.log("----------------------IGNORE THIS FOR NOW----------------------");
+console.log('----------------------IGNORE THIS FOR NOW----------------------');
 
 const caller = async () => {
-    const result = await generate_contract("build a todo contract with only add todo function.");
+    const result = await generate_contract('build a todo contract with only add todo function.');
     console.log('----------------------- the plan');
     console.log(result.plan);
     console.log('----------------------- the code');
     console.log(result.coder_output);
-}
+};
 
-setTimeout(caller, 10000)
+setTimeout(caller, 10000);
