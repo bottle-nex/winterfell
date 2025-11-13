@@ -66,10 +66,10 @@ export default function ClientDocs() {
             <div className="w-full">
                 <ClientDocsPanelRenderer clientPanel={clientPanel} />
             </div>
-            <div className="min-h-screen">
+            <div className='min-h-screen z-50 bg-dark-base'>
                 <div className="flex fixed flex-col gap-y-5 text-left text-xs tracking-wide text-light/70 mt-22">
                     <div
-                        className="absolute -left-4 top-4 h-3 w-[2px] rounded-full bg-white shadow-[0_0_12px_3px_rgba(255,255,255,0.9)] transition-all duration-500 ease-out"
+                        className="absolute -left-4 top-4 h-3 w-0.5 rounded-full bg-primary shadow-[0_1px_8px_2px_rgba(108,68,252,0.8)] transition-all duration-500 ease-out"
                         style={{
                             top: `${calculatePosition(activeIndex)}px`,
                         }}

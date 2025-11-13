@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import env from '../configs/env';
+import env from '../configs/config.env';
 import { FileContent } from '../types/content_types';
 
 export default class ObjectStore {

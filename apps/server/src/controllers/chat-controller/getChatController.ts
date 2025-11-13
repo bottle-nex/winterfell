@@ -1,6 +1,6 @@
 import { prisma } from '@repo/database';
 import { Request, Response } from 'express';
-import env from '../../configs/env';
+import env from '../../configs/config.env';
 
 export default async function (req: Request, res: Response) {
     try {

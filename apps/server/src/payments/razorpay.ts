@@ -1,8 +1,8 @@
 import Razorpay from 'razorpay';
 import { Orders } from 'razorpay/dist/types/orders';
-import env from '../configs/env';
+import env from '../configs/config.env';
 import { PlanType, prisma, SubscriptionStatus } from '@repo/database';
-import PLANS from '../configs/plans';
+import PLANS from '../configs/config.plans';
 import crypto from 'crypto';
 
 export default class RazorpayGateway {

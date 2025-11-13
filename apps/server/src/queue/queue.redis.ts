@@ -1,5 +1,5 @@
 import { Queue } from 'bullmq';
-import queue_config from '../configs/queue.config';
+import queue_config from '../configs/config.queue';
 import { BuildJobPayload, COMMAND } from '@repo/types';
 import crypto from 'crypto';
 

@@ -14,13 +14,6 @@ export default function Home() {
                 <div className="border-t-[1px] border-neutral-700/60" />
                 <MostRecentTemplates />
             </div>
-            <div
-                className="absolute inset-0 z-0"
-                style={{
-                    background:
-                        'radial-gradient(125% 125% at 50% 10%, #0a0a0a 40%, #160133a4 100%)',
-                }}
-            />
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 import http from 'http';
-import env from './configs/env';
+import env from './configs/config.env';
 import cors from 'cors';
 import router from './routes';
 import init_services from './services/init';
