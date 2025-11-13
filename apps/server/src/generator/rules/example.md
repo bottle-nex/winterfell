@@ -45,8 +45,8 @@ anchor_lang::prelude::*; use crate::state::\_;
 
 #[derive(Accounts)] pub struct InitializeEscrow<'info> { #[account(init, payer = user, space = 8
 
--   8)] pub escrow: Account<'info, Escrow>, #[account(mut)] pub user: Signer<'info>, pub
-    system_program: Program<'info, System>, }
+- 8)] pub escrow: Account<'info, Escrow>, #[account(mut)] pub user: Signer<'info>, pub
+  system_program: Program<'info, System>, }
 
 pub fn handler(ctx: Context<InitializeEscrow>, amount: u64) -> Result<()> { let escrow = &mut
 ctx.accounts.escrow; escrow.amount = amount; Ok(()) } \`\`\`
@@ -54,8 +54,8 @@ ctx.accounts.escrow; escrow.amount = amount; Ok(()) } \`\`\`
 <file>programs/token*escrow/src/instructions/complete_escrow.rs</file> \`\`\`rust use
 anchor_lang::prelude::*; use crate::state::\_;
 
-#[derive(Accounts)] pub struct CompleteEscrow<'info> { #[account(mut, close = user)] pub escrow: Account<'info,
-Escrow>, #[account(mut)] pub user: Signer<'info>, }
+#[derive(Accounts)] pub struct CompleteEscrow<'info> { #[account(mut, close = user)] pub escrow:
+Account<'info, Escrow>, #[account(mut)] pub user: Signer<'info>, }
 
 pub fn handler(ctx: Context<CompleteEscrow>) -> Result<()> { Ok(()) } \`\`\`
 

@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: stairs_db
+      POSTGRES_DB: winterfell_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -21,7 +21,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: stairs_db
+      POSTGRES_DB: winterfell_db
     volumes:
       - temp_postgres_data:/var/lib/postgresql/data
 

@@ -112,7 +112,7 @@ export default function BuilderNavbarRightSection() {
 
     return (
         <div className="flex items-center justify-between gap-x-3 relative">
-            <ToolTipComponent content="Deploy your contract to the solana blockchain" side="bottom">
+            <ToolTipComponent content="deploy your contract" side="bottom">
                 <Button
                     onClick={() => setOpenWalletPanel(true)}
                     size="xs"

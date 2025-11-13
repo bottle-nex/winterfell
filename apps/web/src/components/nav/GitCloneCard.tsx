@@ -32,9 +32,9 @@ export default function GitCloneCard() {
                     onClick={() => setActiveTab(CloneOptions.HTTPS)}
                     size="xs"
                     className={cn(
-                        'text-[10px] tracking-wider font-semibold bg-dark text-light/80 hover:bg-dark hover:brightness-120 border border-transparent',
+                        'text-[11px] tracking-wider font-semibold bg-dark text-light hover:bg-dark hover:brightness-120 border border-transparent',
                         activeTab === CloneOptions.HTTPS
-                            ? 'border border-neutral-800 text-light'
+                            ? 'border border-neutral-800 text-dark bg-light hover:bg-light'
                             : '',
                     )}
                 >
@@ -44,9 +44,9 @@ export default function GitCloneCard() {
                     onClick={() => setActiveTab(CloneOptions.SSH)}
                     size="xs"
                     className={cn(
-                        'text-[10px] tracking-wider font-semibold bg-dark text-light/80 hover:bg-dark hover:brightness-120 border border-transparent',
+                        'text-[11px] tracking-wider font-semibold bg-dark text-light hover:brightness-120 border border-transparent hover:bg-dark',
                         activeTab === CloneOptions.SSH
-                            ? 'border border-neutral-800 text-light'
+                            ? 'border border-neutral-800 text-dark bg-light hover:bg-light'
                             : '',
                     )}
                 >
