@@ -33,6 +33,7 @@ const caller = async () => {
     console.log(result.plan);
     console.log('----------------------- the code');
     console.log(result.coder_output);
-};
+    console.log("----------------------IGNORE THIS FOR NOW----------------------");
+}
 
-setTimeout(caller, 2000)
+setTimeout(caller, 1000)
