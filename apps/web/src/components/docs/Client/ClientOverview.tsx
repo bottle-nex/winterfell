@@ -28,10 +28,9 @@ export default function ClientOverview() {
 
     return (
         <div className="py-24 w-full h-full flex flex-col gap-y-20 items-start text-left tracking-wide text-light/90 max-w-[80%] mx-auto">
-
-            <div className='flex flex-col items-start w-full'>
+            <div className="flex flex-col items-start w-full">
                 <div className="grid grid-cols-[60%_40%] w-full ">
-                    <div className=''>
+                    <div className="">
                         <div className="text-7xl flex flex-col items-start justify-center text-center">
                             <div className="flex items-center gap-x-3">
                                 <motion.div
@@ -42,16 +41,31 @@ export default function ClientOverview() {
                                 >
                                     Winterfell
                                 </motion.div>
-                                <motion.i transition={{ duration: 0.6 }} initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="font-normal text-primary">Docs</motion.i>
+                                <motion.i
+                                    transition={{ duration: 0.6 }}
+                                    initial={{ x: 40, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    className="font-normal text-primary"
+                                >
+                                    Docs
+                                </motion.i>
                             </div>
 
                             <motion.span
-                                transition={{ duration: 0.6 }} initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-                                className="mt-2">Rust Never Sleeps</motion.span>
+                                transition={{ duration: 0.6 }}
+                                initial={{ x: 40, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                className="mt-2"
+                            >
+                                Rust Never Sleeps
+                            </motion.span>
                         </div>
 
                         <div className="text-lg text-light/70 tracking-wider max-w-[600px] mt-6">
-                            Winterfell is an AI-powered platform that simplifies building, editing, deploying, and interacting with Rust-based Solana smart contracts using Anchor—from AI-assisted contract generation to client SDKs and frontend integration.
+                            Winterfell is an AI-powered platform that simplifies building, editing,
+                            deploying, and interacting with Rust-based Solana smart contracts using
+                            Anchor—from AI-assisted contract generation to client SDKs and frontend
+                            integration.
                         </div>
                     </div>
                     <div className="relative flex-1 w-full h-full">
@@ -63,8 +77,6 @@ export default function ClientOverview() {
                             className="rounded-2 object-cover invert scale-125 sepia-[0.3] hue-rotate-20 saturate-[10]"
                         />
                     </div>
-
-
                 </div>
 
                 <div className="flex items-center justify-center gap-x-5 mt-6">
@@ -94,11 +106,7 @@ export default function ClientOverview() {
                 </div>
             </div>
 
-            <SafariBrowser
-                className=""
-                url="winterfell.dev/client"
-                imageSrc={activeImage!}
-            />
+            <SafariBrowser className="" url="winterfell.dev/client" imageSrc={activeImage!} />
         </div>
     );
 }
@@ -109,7 +117,7 @@ interface StartCardsProps {
     icon?: React.ReactElement;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
-    delay: number
+    delay: number;
 }
 
 function StartCards({
@@ -124,7 +132,7 @@ function StartCards({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay, duration: 0.2, ease: "easeOut" }}
+            transition={{ delay, duration: 0.2, ease: 'easeOut' }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             className="flex flex-col max-w-60 items-start gap-y-1 rounded-md border border-neutral-700 bg-dark 

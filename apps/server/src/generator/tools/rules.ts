@@ -1,8 +1,8 @@
-import path from "path";
-import fs, { readFileSync } from "fs";
-import { tool } from "@langchain/core/tools";
-import { tool_schema } from "../schema/tool_schema";
-import chalk from "chalk";
+import path from 'path';
+import fs, { readFileSync } from 'fs';
+import { tool } from '@langchain/core/tools';
+import { tool_schema } from '../schema/tool_schema';
+import chalk from 'chalk';
 
 const RULES_DIR = path.resolve(__dirname, '../rules');
 
@@ -14,7 +14,6 @@ export default class Rules {
     public static get() {
         const get_tool = tool(
             async ({ rule_name }: { rule_name: string }) => {
-
                 console.log(chalk.red('tool called for rule: '), rule_name);
 
                 const file_path = path.join(RULES_DIR, `${rule_name}.md`);
@@ -48,5 +47,4 @@ export default class Rules {
     //     console.log({ docs });
     //     return docs;
     // }
-
 }

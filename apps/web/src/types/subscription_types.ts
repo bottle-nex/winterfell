@@ -1,7 +1,7 @@
 export enum PlanType {
     FREE = 'FREE',
     PREMIUM = 'PREMIUM',
-    PREMIUM_PLUS = 'PREMIUM_PLUS'
+    PREMIUM_PLUS = 'PREMIUM_PLUS',
 }
 
 export enum Features {
@@ -14,7 +14,7 @@ export enum SubscriptionStatus {
     ACTIVE = 'ACTIVE',
     CANCELLED = 'CANCELLED',
     EXPIRED = 'EXPIRED',
-    TRIALING = 'TRIALING'
+    TRIALING = 'TRIALING',
 }
 
 export interface Subscription {
@@ -42,19 +42,14 @@ export interface SubscriptionData {
 }
 
 export const PLAN_FEATURES: Record<PlanType, Features[]> = {
-    [PlanType.FREE]: [
-        Features.GENERATE_CONTRACT
-    ],
-    [PlanType.PREMIUM]: [
-        Features.GENERATE_CONTRACT,
-        Features.ACCESS_TERMINAL,
-    ],
+    [PlanType.FREE]: [Features.GENERATE_CONTRACT],
+    [PlanType.PREMIUM]: [Features.GENERATE_CONTRACT, Features.ACCESS_TERMINAL],
     [PlanType.PREMIUM_PLUS]: [
         Features.GENERATE_CONTRACT,
         Features.EDITOR_ACCESS,
         Features.ACCESS_TERMINAL,
     ],
-}
+};
 
 export interface PlanLimits {
     contractCount: number;
@@ -64,32 +59,32 @@ export interface PlanLimits {
 export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     [PlanType.FREE]: {
         contractCount: 3,
-        commandCount: 0
+        commandCount: 0,
     },
     [PlanType.PREMIUM]: {
         contractCount: 12,
-        commandCount: 60
+        commandCount: 60,
     },
     [PlanType.PREMIUM_PLUS]: {
         contractCount: 50,
-        commandCount: 300
-    }
+        commandCount: 300,
+    },
 };
 
 export const PLAN_DETAILS = {
     [PlanType.FREE]: {
         name: 'Free',
         price: 0,
-        description: 'Perfect for getting started'
+        description: 'Perfect for getting started',
     },
     [PlanType.PREMIUM]: {
         name: 'Premium',
         price: 49,
-        description: 'For professionals'
+        description: 'For professionals',
     },
     [PlanType.PREMIUM_PLUS]: {
         name: 'Premium Plus',
         price: 99,
-        description: 'For power users'
-    }
+        description: 'For power users',
+    },
 };

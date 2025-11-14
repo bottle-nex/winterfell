@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 import {
     Features,
     PLAN_FEATURES,
@@ -7,8 +7,8 @@ import {
     Subscription,
     SubscriptionStatus,
     SubscriptionUsage,
-} from "../types/subscription_types";
-import { useUserSessionStore } from "../store/user/useUserSessionStore";
+} from '../types/subscription_types';
+import { useUserSessionStore } from '../store/user/useUserSessionStore';
 
 interface SubscriptionContextType {
     subscription: Subscription | null;
@@ -42,7 +42,7 @@ export default function SubscriptionProvider({ children }: { children: ReactNode
             setSubscription(data.subscription);
             setSubscriptionUsage(data.subscriptionUsage);
         } catch (err) {
-            console.error("Error fetching subscription. Falling back to base plan:", err);
+            console.error('Error fetching subscription. Falling back to base plan:', err);
             setSubscription({
                 plan: PlanType.FREE,
                 status: SubscriptionStatus.ACTIVE,
@@ -119,15 +119,11 @@ export default function SubscriptionProvider({ children }: { children: ReactNode
         refreshSubscription,
     };
 
-    return (
-        <SubscriptionContext.Provider value={value}>
-            {children}
-        </SubscriptionContext.Provider>
-    );
+    return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 }
 
 export const useSubscription = () => {
     const ctx = useContext(SubscriptionContext);
-    if (!ctx) throw new Error("error while fetching the subcription details");
+    if (!ctx) throw new Error('error while fetching the subcription details');
     return ctx;
-}
+};
