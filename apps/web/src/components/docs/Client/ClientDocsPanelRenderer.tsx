@@ -1,4 +1,4 @@
-import { ClientDocsPanel } from './ClientDocs';
+import { ClientDocsPanel } from '@/src/types/docs-types';
 import ClientHowItWorks from './ClientHowItWorks';
 import ClientOverview from './ClientOverview';
 

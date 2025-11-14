@@ -1,10 +1,10 @@
-import RedisSubscriber from './redis.subscriber';
+import RedisManager from '../queue/redis.pubsub';
 import WebSocketServer from '../ws/WebsocketServer';
 
-export let subscriber: RedisSubscriber;
 export let wsserver: WebSocketServer;
+export let redis_manager: RedisManager;
 
 export default function init_services() {
-    subscriber = new RedisSubscriber();
     wsserver = new WebSocketServer();
+    redis_manager = new RedisManager();
 }

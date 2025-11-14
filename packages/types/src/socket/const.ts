@@ -1,0 +1,1 @@
+export type WebSocketPayloadType = 'RUN_COMMAND'

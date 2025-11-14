@@ -1,11 +1,10 @@
-version: "3.8"
-
+version: 3.8
 services:
   postgres:
     image: postgres:16
     container_name: winterfell-postgres
     ports:
-      - "5435:5432"
+      - 5435:5432
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -17,7 +16,7 @@ services:
     image: ankane/pgvector
     container_name: winterfell-temp-pg
     ports:
-      - "5436:5432"
+      - 5436:5432
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -29,7 +28,7 @@ services:
     image: redis:latest
     container_name: winterfell-redis
     ports: 
-      - "6379:6379"
+      - 6379:6379
 
 volumes:
   postgres_data:
