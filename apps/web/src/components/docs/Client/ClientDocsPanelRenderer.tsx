@@ -1,4 +1,5 @@
-import { ClientDocsPanel } from '@/src/types/docs-types';
+import { ClientDocsPanel } from './ClientDocs';
+import ClientGettingStarted from './ClientGettingStarted';
 import ClientHowItWorks from './ClientHowItWorks';
 import ClientOverview from './ClientOverview';
 
@@ -13,6 +14,8 @@ export default function ClientDocsPanelRenderer({ clientPanel }: ClientDocsPanel
                 return <ClientOverview />;
             case ClientDocsPanel.HOW_IT_WORKS:
                 return <ClientHowItWorks />;
+            case ClientDocsPanel.GETTING_STARTED:
+                return <ClientGettingStarted />;
         }
     }
 

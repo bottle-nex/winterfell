@@ -19,7 +19,7 @@ export default function DocsNavbar() {
     }, [pathName, setActiveTab]);
 
     return (
-        <div className="flex items-center justify-between w-full px-4 py-2 fixed top-0">
+        <div className="flex items-center justify-between w-full px-4 py-2 fixed z-[99999] top-0">
             <AppLogo />
             <div
                 className={cn(
