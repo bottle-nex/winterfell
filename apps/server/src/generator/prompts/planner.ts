@@ -15,5 +15,5 @@ Return JSON like this:
 
 Goal: {goal}
 `,
-  inputVariables: ["goal"],
+    inputVariables: ['goal'],
 });
