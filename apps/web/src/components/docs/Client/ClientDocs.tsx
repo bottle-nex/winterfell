@@ -68,7 +68,7 @@ export default function ClientDocs() {
 
     return (
         <div className="relative min-h-screen w-full grid grid-cols-[80%_20%]">
-            <div className="w-full">
+            <div className="w-full pt-18">
                 <ClientDocsPanelRenderer clientPanel={clientPanel} />
             </div>
             <div className="min-h-screen z-50 bg-dark-base">
