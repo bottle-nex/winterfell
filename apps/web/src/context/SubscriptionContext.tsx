@@ -64,6 +64,7 @@ export default function SubscriptionProvider({ children }: { children: ReactNode
 
     useEffect(() => {
         if (session?.user?.token) fetchSubscriptionData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session?.user?.token]);
 
     function isPremium(): boolean {

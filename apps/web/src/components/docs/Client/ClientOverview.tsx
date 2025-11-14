@@ -27,7 +27,7 @@ export default function ClientOverview() {
     const [activeImage, setActiveImage] = useState<string | null>('/images/demo-2.jpg');
 
     return (
-        <div className="py-24 w-full h-full flex flex-col gap-y-20 items-start text-left tracking-wide text-light/90 max-w-[80%] mx-auto">
+        <div className="py-24 w-full h-full flex flex-col gap-y-10 items-start text-left tracking-wide text-light/90 max-w-[80%] mx-auto">
             <div className="flex flex-col items-start w-full">
                 <div className="grid grid-cols-[60%_40%] w-full ">
                     <div className="">
@@ -70,7 +70,7 @@ export default function ClientOverview() {
                     </div>
                     <div className="relative flex-1 w-full h-full">
                         <Image
-                            src="/images/monkey.svg"
+                            src="/Images/svgs/monkey.svg"
                             fill
                             unoptimized
                             alt=""

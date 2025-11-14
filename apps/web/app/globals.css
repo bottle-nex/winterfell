@@ -14,6 +14,21 @@
     scrollbar-width: none;
 }
 
+@layer utilities {
+    .zigzag-text {
+        --c: #1095c1; /* Color for the zigzag lines */
+        --s: 0.15em; /* Size of the zigzag lines */
+
+        line-height: 1.1em;
+        padding-bottom: calc(2.1 * var(--s));
+        background:
+            conic-gradient(from 135deg at top, var(--c) 90deg, #0000 0) left 0 bottom var(--s) /
+                calc(2 * var(--s)) var(--s) repeat-x,
+            conic-gradient(from -45deg at bottom, var(--c) 90deg, #0000 0) left var(--s) bottom 0 /
+                calc(2 * var(--s)) var(--s) repeat-x;
+    }
+}
+
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);

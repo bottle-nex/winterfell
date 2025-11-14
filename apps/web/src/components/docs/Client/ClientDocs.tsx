@@ -6,10 +6,11 @@ export enum ClientDocsPanel {
     OVERVIEW = 'OVERVIEW',
     HOW_IT_WORKS = 'HOW_IT_WORKS',
     GETTING_STARTED = 'GETTING_STARTED',
-    EDITING_AND_UNDERSTANDING = 'EDITING_AND_UNDERSTANDING',
+    WINTERFELL_TERMINAL = 'WINTERFELL_TERMINAL',
     BUILDING_AND_TESTING = 'BUILDING_AND_TESTING',
     DEPLOYMENT = 'DEPLOYMENT',
     EXPORTING = 'EXPORTING',
+    SUBSCRIPTION_PLANS = 'SUBSCRIPTION_PLANS',
 }
 
 const contents = [
@@ -30,8 +31,8 @@ const contents = [
         type: ClientDocsPanel.GETTING_STARTED,
     },
     {
-        title: 'Editing & Understanding',
-        type: ClientDocsPanel.EDITING_AND_UNDERSTANDING,
+        title: 'Winterfell Terminal',
+        type: ClientDocsPanel.WINTERFELL_TERMINAL,
     },
     {
         title: 'Building & Testing',
@@ -44,6 +45,10 @@ const contents = [
     {
         title: 'Exporting',
         type: ClientDocsPanel.EXPORTING,
+    },
+    {
+        title: 'Subscription Plans',
+        type: ClientDocsPanel.SUBSCRIPTION_PLANS,
     },
 ];
 
@@ -66,7 +71,7 @@ export default function ClientDocs() {
             <div className="w-full">
                 <ClientDocsPanelRenderer clientPanel={clientPanel} />
             </div>
-            <div className='min-h-screen z-50 bg-dark-base'>
+            <div className="min-h-screen z-50 bg-dark-base">
                 <div className="flex fixed flex-col gap-y-5 text-left text-xs tracking-wide text-light/70 mt-22">
                     <div
                         className="absolute -left-4 top-4 h-3 w-0.5 rounded-full bg-primary shadow-[0_1px_8px_2px_rgba(108,68,252,0.8)] transition-all duration-500 ease-out"

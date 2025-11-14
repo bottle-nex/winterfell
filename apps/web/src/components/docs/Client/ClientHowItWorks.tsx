@@ -13,32 +13,32 @@ export default function ClientHowItWorks() {
                 <div className="flex flex-col gap-y-4 tracking-wide text-light/90">
                     <TitleDescription
                         title="Contract Creation"
-                        description="In Winterfell, you can craft anything from beginner-friendly to brain-meltingly complex contracts - all from a single prompt."
+                        description="You write a prompt and get redircted to the /playground endpoint."
                     />
 
                     <TitleDescription
-                        title="Winter Shell"
-                        description="Meet winter, our built-in terminal to chat directly with your Anchor contracts - like talking to your code, but cooler."
+                        title="Contract updates and refinement"
+                        description="Make changes in your contract, refine them using reprompts."
                     />
 
                     <TitleDescription
-                        title="Test & Build"
-                        description="Run tests, compile, and build straight from Winter Shell. No setup drama - just type and run."
+                        title="Test the contract"
+                        description="Run test commands, [ winter test ], through winter shell and see the test logs."
                     />
 
                     <TitleDescription
-                        title="Deploy"
-                        description="Ship your contracts to the Solana blockchain (Mainnet or Devnet). Just connect your wallet and boom - it’s live."
+                        title="Build the contract"
+                        description="Run build command, [ winter build ], through winter shell to build the contract and view build logs directly in the shell."
                     />
 
                     <TitleDescription
-                        title="Export Code"
-                        description="Push your project to GitHub or grab it as a zip. Your code, your way, nicely packaged."
+                        title="Export your custom contract"
+                        description="Either sign-in through GitHub and export the codebase or download the zip file."
                     />
 
                     <TitleDescription
-                        title="Plans"
-                        description="Stuck with limited generations or builds, we have affordable plans [PREMIUM/ PREMIUM PLUS] for you."
+                        title="Deployment"
+                        description="Deploy your custom generated contract directly on the mainnet/devnet of the SOLANA network."
                     />
                 </div>
             </div>
@@ -56,7 +56,7 @@ export default function ClientHowItWorks() {
     );
 }
 
-function TitleDescription({ title, description }: { title: string; description: string }) {
+export function TitleDescription({ title, description }: { title: string; description: string }) {
     return (
         <div className="flex flex-col gap-x-1">
             <div className="text-light/90 font-semibold tracking-wider">• {title}:</div>
