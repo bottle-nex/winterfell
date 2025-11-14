@@ -27,7 +27,6 @@ export default async function createOrderController(req: Request, res: Response)
 
         const order = await razorpay.create_order(planType, user.email);
 
-        // upserting the subscription in the DB
         await prisma.subscription.upsert({
             where: {
                 userId: user.id,
