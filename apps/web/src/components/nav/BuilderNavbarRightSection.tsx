@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import { getSession, signIn } from 'next-auth/react';
 import { IoIosPaperPlane, IoLogoGithub } from 'react-icons/io';
 import { FaGithub } from 'react-icons/fa';
@@ -9,22 +8,17 @@ import ToolTipComponent from '../ui/TooltipComponent';
 import { Button } from '../ui/button';
 import { WalletPanel } from '../base/WalletPanel';
 import ProfileMenu from '../utility/ProfileMenu';
-import { useChatStore } from '@/src/store/user/useChatStore';
 import { toast } from 'sonner';
-import { EXPORT_CONTRACT_URL } from '@/routes/api_routes';
 import { useUserSessionStore } from '@/src/store/user/useUserSessionStore';
 import { cn } from '@/src/lib/utils';
 import ExportPanel from './ExportPanel.';
 
 export default function BuilderNavbarRightSection() {
-    const { contractId } = useChatStore();
     const { session, setSession } = useUserSessionStore();
     const [openWalletPanel, setOpenWalletPanel] = useState<boolean>(false);
     const [showRepoPanel, setShowRepoPanel] = useState<boolean>(false);
-    const [repoName, setRepoName] = useState<string>('');
     const [openProfileMenu, setOpenProfleMenu] = useState<boolean>(false);
     const [isConnectingGithub, setIsConnectingGithub] = useState<boolean>(false);
-    const [isExporting, setIsExporting] = useState<boolean>(false);
 
     const hasGithub = session?.user?.hasGithub;
     const panelRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +42,7 @@ export default function BuilderNavbarRightSection() {
 
             getSession().then((newSession) => {
                 if (newSession) {
-                    setSession(newSession as any);
+                    setSession(newSession);
                 }
             });
 
@@ -67,46 +61,6 @@ export default function BuilderNavbarRightSection() {
             toast.error('Failed to connect GitHub');
             console.error('GitHub connection error:', error);
             setIsConnectingGithub(false);
-        }
-    }
-
-    async function handleCodePushToGithub() {
-        if (!repoName.trim()) {
-            return toast.error('Please enter a repository name');
-        }
-        if (!contractId) {
-            return toast.error('No contract found');
-        }
-
-        setIsExporting(true);
-        try {
-            const response = await axios.post(
-                EXPORT_CONTRACT_URL,
-                {
-                    repo_name: repoName,
-                    contract_id: contractId,
-                },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${session?.user?.token}`,
-                    },
-                },
-            );
-
-            if (response.data.success) {
-                toast.success('Code exported to GitHub successfully!');
-                setShowRepoPanel(false);
-                setRepoName('');
-            } else {
-                toast.error(response.data.message || 'Failed to export');
-            }
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || 'Failed to export to GitHub';
-            toast.error(errorMessage);
-            console.error('Export error:', error);
-        } finally {
-            setIsExporting(false);
         }
     }
 
@@ -138,11 +92,10 @@ export default function BuilderNavbarRightSection() {
                     </Button>
                 </ToolTipComponent>
             ) : (
-                <div className="relative" ref={panelRef}>
+                <div className="relative w-full" ref={panelRef}>
                     <ToolTipComponent content="Export codebase to GitHub" side="bottom">
                         <Button
                             onClick={() => setShowRepoPanel((prev) => !prev)}
-                            disabled={isExporting}
                             size="xs"
                             className={cn(
                                 'bg-dark text-light hover:bg-dark/90 hover:text-light/90',
@@ -153,12 +106,7 @@ export default function BuilderNavbarRightSection() {
                         </Button>
                     </ToolTipComponent>
 
-                    {showRepoPanel && (
-                        <ExportPanel
-                            handleCodePushToGithub={handleCodePushToGithub}
-                            isExporting={isExporting}
-                        />
-                    )}
+                    {showRepoPanel && <ExportPanel />}
                 </div>
             )}
 

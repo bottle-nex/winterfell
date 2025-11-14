@@ -2,6 +2,7 @@ import { Job, Queue, Worker } from 'bullmq';
 import { Octokit } from '@octokit/rest';
 import { FileContent, GithubPushJobData } from '../types/github_worker_queue_types';
 import { get_s3_codebase } from '../services/git_services';
+import { RequestError } from '@octokit/request-error';
 import queue_config from '../configs/config.queue';
 
 export class GithubWorkerQueue {
@@ -49,8 +50,8 @@ export class GithubWorkerQueue {
         try {
             await octokit.repos.get({ owner, repo: repo_name });
             console.log(`Repository ${repo_name} already exists`);
-        } catch (err: any) {
-            if (err.status === 404) {
+        } catch (err) {
+            if (err instanceof RequestError && err.status === 404) {
                 console.log(`Creating repository ${repo_name} with initial commit...`);
 
                 await octokit.repos.createForAuthenticatedUser({
