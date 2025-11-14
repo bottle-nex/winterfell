@@ -1,20 +1,13 @@
-'use client';
 import { cn } from '@/src/lib/utils';
 import GitCloneCard from './GitCloneCard';
-import { useState } from 'react';
 import { AiFillFileZip } from 'react-icons/ai';
 
-interface ExportPanelProps {
-    handleCodePushToGithub: () => void;
-    isExporting: boolean;
-}
-
-export default function ExportPanel({ handleCodePushToGithub, isExporting }: ExportPanelProps) {
+export default function ExportPanel() {
     return (
         <div
             className={cn(
                 'absolute top-11 right-0 bg-dark-base border border-neutral-800 rounded-md shadow-lg z-20',
-                'flex flex-col w-[20rem] pb-2',
+                'flex flex-col min-w-[20rem] w-full pb-2',
             )}
         >
             <div className="text-xs tracking-wide p-4 pb-0">

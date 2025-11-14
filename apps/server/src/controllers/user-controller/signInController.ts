@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@repo/database';
+import ResponseWriter from '../../class/response_writer';
+import { get_github_owner } from '../../services/git_services';
 
 const SERVER_JWT_SECRET = process.env.SERVER_JWT_SECRET;
 
@@ -43,6 +45,7 @@ export default async function signInController(req: Request, res: Response) {
         console.log('Existing user found:', !!existingUser);
 
         let myUser;
+        let owner;
         const isGithub = account.provider === 'github';
 
         if (existingUser) {
@@ -60,20 +63,18 @@ export default async function signInController(req: Request, res: Response) {
             }
 
             if (isGithub) {
+                owner = await get_github_owner(account.access_token);
+
                 updateData.githubAccessToken = account.access_token;
-                updateData.githubId = account.providerAccountId; // GitHub user ID
-                updateData.githubUsername = account.providerAccountId; // Or use profile.login if available
+                updateData.githubId = account.providerAccountId;
+                updateData.githubUsername = owner;
             }
 
             myUser = await prisma.user.update({
                 where: { email: user.email },
                 data: updateData,
             });
-
-            console.log('User updated successfully');
         } else {
-            console.log('Creating new user');
-
             myUser = await prisma.user.create({
                 data: {
                     name: user.name,
@@ -82,21 +83,21 @@ export default async function signInController(req: Request, res: Response) {
                     provider: account.provider,
                     githubAccessToken: isGithub ? account.access_token : null,
                     githubId: isGithub ? account.providerAccountId : null,
-                    githubUsername: isGithub ? account.providerAccountId : null,
+                    githubUsername: isGithub ? owner : null,
                 },
             });
 
             console.log('User created successfully');
         }
 
-        // Generate JWT
+        console.log('account name is: ', account.login);
+
         const jwtPayload = {
-            id: myUser.id, // Already a string (cuid)
+            id: myUser.id,
             email: myUser.email,
             name: myUser.name,
         };
 
-        console.log('Generating JWT token for user ID:', myUser.id);
         const token = jwt.sign(jwtPayload, SERVER_JWT_SECRET, { expiresIn: '30d' });
 
         const response = {
@@ -113,29 +114,11 @@ export default async function signInController(req: Request, res: Response) {
             token,
         };
 
-        console.log('SignIn successful for user:', myUser.email);
-        return res.json(response);
-    } catch (err) {
-        console.error('SignIn error - Full details:');
-        console.error('Error name:', err instanceof Error ? err.name : 'Unknown');
-        console.error('Error message:', err instanceof Error ? err.message : err);
-        console.error('Error stack:', err instanceof Error ? err.stack : 'No stack trace');
-
-        // Log Prisma-specific errors
-        if (err && typeof err === 'object' && 'code' in err) {
-            console.error('Prisma error code:', (err as any).code);
-            console.error('Prisma meta:', (err as any).meta);
-        }
-
-        return res.status(500).json({
-            success: false,
-            error: 'Authentication failed',
-            details:
-                process.env.NODE_ENV === 'development'
-                    ? err instanceof Error
-                        ? err.message
-                        : String(err)
-                    : undefined,
-        });
+        console.log('SignIn successful for user:', myUser);
+        res.json(response);
+        return;
+    } catch (error) {
+        ResponseWriter.error(res, 'Authentication failed', 500);
+        return;
     }
 }

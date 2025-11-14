@@ -157,7 +157,7 @@ export default function BuilderChats() {
                                 break;
                         }
                     } catch (error) {
-                        console.warn('Skipping incomplete stream event chunk');
+                        console.warn('Skipping incomplete stream event chunk', error);
                     }
                 }
             }

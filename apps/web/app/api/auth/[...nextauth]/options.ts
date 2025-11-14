@@ -37,7 +37,6 @@ export const authOption: AuthOptions = {
                         account,
                     });
                     const result = response.data;
-                    console.log('response from backend is -----------------> ', response.data);
                     if (result?.success) {
                         user.id = result.user.id;
                         user.token = result.token;
