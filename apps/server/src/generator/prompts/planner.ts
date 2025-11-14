@@ -6,14 +6,14 @@ You're a planning agent for Solana Anchor smart contract generation.
 
 Return JSON like this:
 {{
-  "goal": "...",
   "tasks": ["...", "...", "..."],
-  "files_likely_affected": ["...", "..."]
+  "files_likely_affected": [
+    {{ file: "...", context: "..." }},
+    {{ file: "...", context: "..." }},
+  ]
 }}
 
 Goal: {goal}
-Tasks: {tasks}
-Files likely affected: {files_likely_affected}
 `,
-    inputVariables: ['goal', 'tasks', 'files_likely_affected'],
+    inputVariables: ['goal'],
 });
