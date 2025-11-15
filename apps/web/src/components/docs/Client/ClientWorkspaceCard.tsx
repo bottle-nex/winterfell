@@ -10,7 +10,7 @@ interface WorkSpaceCardProps {
     className?: string;
 }
 
-export default function WorkspaceCard({
+export default function ClientWorkspaceCard({
     title,
     description,
     redirectLink,
@@ -26,7 +26,7 @@ export default function WorkspaceCard({
                     'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.84) 50%, rgba(0,0,0,0) 100%)',
             }}
             className={cn(
-                'h-[70vh] w-full rounded-[14px] overflow-hidden p-3 min-h-[96%]',
+                'h-[60vh] w-full rounded-[14px] overflow-hidden p-3 min-h-[96%]',
                 'border border-neutral-800 bg-neutral-900 relative',
                 'shadow-2xl',
                 className,

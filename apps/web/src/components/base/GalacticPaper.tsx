@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -8,80 +8,89 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import GUI from 'lil-gui';
 
 export default function GalacticPaper() {
-  const containerRef = useRef(null);
+    const containerRef = useRef(null);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
+    useEffect(() => {
+        if (!containerRef.current) return;
 
-    // Scene setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 2, 5);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    containerRef.current.appendChild(renderer.domElement);
-    
-    // Parameters
-    const params = {
-      alpha: 0.73,
-      fresnelStrength: 1.0,
-      waveAmplitude: 4.19,
-      noiseScale: 0.11,
-      colorDeep: '#0070ff',
-      colorShallow: '#080040',
-      textureInfluence: 0.5,
-      bloomStrength: 0.5,
-      bloomRadius: 0.4,
-      bloomThreshold: 0.083,
-      particleCount: 1000,
-      particleSpeed: 0.5,
-      particleSize: 5.0,
-      particleOffsetY: 0.2,
-    };
-    
-    // Post-processing
-    let composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
-    
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight));
-    bloomPass.strength = params.bloomStrength;
-    bloomPass.radius = params.bloomRadius;
-    bloomPass.threshold = params.bloomThreshold;
-    composer.addPass(bloomPass);
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            100,
+        );
+        camera.position.set(0, 2, 5);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        containerRef.current.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.enableZoom = false;
+        // Parameters
+        const params = {
+            alpha: 0.73,
+            fresnelStrength: 1.0,
+            waveAmplitude: 4.19,
+            noiseScale: 0.11,
+            colorDeep: '#0070ff',
+            colorShallow: '#080040',
+            textureInfluence: 0.5,
+            bloomStrength: 0.5,
+            bloomRadius: 0.4,
+            bloomThreshold: 0.083,
+            particleCount: 1000,
+            particleSpeed: 0.5,
+            particleSize: 5.0,
+            particleOffsetY: 0.2,
+        };
 
-    // Water geometry
-    const geometry = new THREE.PlaneGeometry(10, 10, 128, 128);
-    geometry.rotateX(-Math.PI / 2);
-    geometry.translate(0, 0.5, 0);
+        // Post-processing
+        let composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
 
-    // Texture
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('https://images.pexels.com/photos/3871773/pexels-photo-3871773.jpeg?&w=1920&h=1920');
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+        );
+        bloomPass.strength = params.bloomStrength;
+        bloomPass.radius = params.bloomRadius;
+        bloomPass.threshold = params.bloomThreshold;
+        composer.addPass(bloomPass);
 
-    // Uniforms for water and particles
-    const uniforms = {
-      uTime: { value: 0.0 },
-      uAlpha: { value: params.alpha },
-      uFresnelStrength: { value: params.fresnelStrength },
-      uWaveAmp: { value: params.waveAmplitude },
-      uNoiseScale: { value: params.noiseScale },
-      uColorDeep: { value: new THREE.Color(params.colorDeep) },
-      uColorShallow: { value: new THREE.Color(params.colorShallow) },
-      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      uTexture: { value: texture },
-      uTextureInfluence: { value: params.textureInfluence },
-      uParticleSize: { value: params.particleSize },
-    };
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.enableZoom = false;
 
-    // Water vertex shader
-    const vertexShader = `
+        // Water geometry
+        const geometry = new THREE.PlaneGeometry(10, 10, 128, 128);
+        geometry.rotateX(-Math.PI / 2);
+        geometry.translate(0, 0.5, 0);
+
+        // Texture
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load(
+            'https://images.pexels.com/photos/3871773/pexels-photo-3871773.jpeg?&w=1920&h=1920',
+        );
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(2, 2);
+
+        // Uniforms for water and particles
+        const uniforms = {
+            uTime: { value: 0.0 },
+            uAlpha: { value: params.alpha },
+            uFresnelStrength: { value: params.fresnelStrength },
+            uWaveAmp: { value: params.waveAmplitude },
+            uNoiseScale: { value: params.noiseScale },
+            uColorDeep: { value: new THREE.Color(params.colorDeep) },
+            uColorShallow: { value: new THREE.Color(params.colorShallow) },
+            uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+            uTexture: { value: texture },
+            uTextureInfluence: { value: params.textureInfluence },
+            uParticleSize: { value: params.particleSize },
+        };
+
+        // Water vertex shader
+        const vertexShader = `
       uniform float uTime;
       uniform float uWaveAmp;
       uniform float uNoiseScale;
@@ -208,8 +217,8 @@ export default function GalacticPaper() {
       }
     `;
 
-    // Water fragment shader
-    const fragmentShader = `
+        // Water fragment shader
+        const fragmentShader = `
       uniform float uTime;
       uniform float uAlpha;
       uniform float uFresnelStrength;
@@ -252,55 +261,55 @@ export default function GalacticPaper() {
       }
     `;
 
-    // Water material
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-      transparent: true,
-      side: THREE.DoubleSide,
-      wireframe: false,
-    });
+        // Water material
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms,
+            transparent: true,
+            side: THREE.DoubleSide,
+            wireframe: false,
+        });
 
-    const waterSurface = new THREE.Mesh(geometry, material);
-    scene.add(waterSurface);
+        const waterSurface = new THREE.Mesh(geometry, material);
+        scene.add(waterSurface);
 
-    // Particle system
-    let particleCount = params.particleCount;
-    const particleGeometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const uvs = new Float32Array(particleCount * 2);
-    const velocities = new Float32Array(particleCount * 3);
-    const lifetimes = new Float32Array(particleCount);
-    const offsetYs = new Float32Array(particleCount);
+        // Particle system
+        let particleCount = params.particleCount;
+        const particleGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const uvs = new Float32Array(particleCount * 2);
+        const velocities = new Float32Array(particleCount * 3);
+        const lifetimes = new Float32Array(particleCount);
+        const offsetYs = new Float32Array(particleCount);
 
-    // Initialize particles
-    for (let i = 0; i < particleCount; i++) {
-      const i3 = i * 3;
-      const i2 = i * 2;
-      const x = (Math.random() - 0.5) * 10;
-      const z = (Math.random() - 0.5) * 10;
-      const y = 0;
-      positions[i3] = x;
-      positions[i3 + 1] = y;
-      positions[i3 + 2] = z;
-      uvs[i2] = (x + 5) / 10;
-      uvs[i2 + 1] = (z + 5) / 10;
-      velocities[i3] = 0;
-      velocities[i3 + 1] = params.particleSpeed * (0.5 + Math.random());
-      velocities[i3 + 2] = 0;
-      lifetimes[i] = Math.random() * 5;
-      offsetYs[i] = Math.random() * params.particleOffsetY;
-    }
+        // Initialize particles
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            const i2 = i * 2;
+            const x = (Math.random() - 0.5) * 10;
+            const z = (Math.random() - 0.5) * 10;
+            const y = 0;
+            positions[i3] = x;
+            positions[i3 + 1] = y;
+            positions[i3 + 2] = z;
+            uvs[i2] = (x + 5) / 10;
+            uvs[i2 + 1] = (z + 5) / 10;
+            velocities[i3] = 0;
+            velocities[i3 + 1] = params.particleSpeed * (0.5 + Math.random());
+            velocities[i3 + 2] = 0;
+            lifetimes[i] = Math.random() * 5;
+            offsetYs[i] = Math.random() * params.particleOffsetY;
+        }
 
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
-    particleGeometry.setAttribute('lifetime', new THREE.BufferAttribute(lifetimes, 1));
-    particleGeometry.setAttribute('offsetY', new THREE.BufferAttribute(offsetYs, 1));
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particleGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+        particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+        particleGeometry.setAttribute('lifetime', new THREE.BufferAttribute(lifetimes, 1));
+        particleGeometry.setAttribute('offsetY', new THREE.BufferAttribute(offsetYs, 1));
 
-    // Particle vertex shader
-    const particleVertexShader = `
+        // Particle vertex shader
+        const particleVertexShader = `
       uniform float uTime;
       uniform float uWaveAmp;
       uniform float uNoiseScale;
@@ -431,8 +440,8 @@ export default function GalacticPaper() {
       }
     `;
 
-    // Particle fragment shader
-    const particleFragmentShader = `
+        // Particle fragment shader
+        const particleFragmentShader = `
       uniform float uTime;
       uniform float uAlpha;
       uniform float uFresnelStrength;
@@ -471,147 +480,164 @@ export default function GalacticPaper() {
       }
     `;
 
-    const particleMaterial = new THREE.ShaderMaterial({
-      vertexShader: particleVertexShader,
-      fragmentShader: particleFragmentShader,
-      uniforms: uniforms,
-      transparent: true,
-    });
+        const particleMaterial = new THREE.ShaderMaterial({
+            vertexShader: particleVertexShader,
+            fragmentShader: particleFragmentShader,
+            uniforms: uniforms,
+            transparent: true,
+        });
 
-    const particles = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particles);
+        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particles);
 
-    // Lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 5, 5);
-    scene.add(light);
+        // Lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5);
+        scene.add(light);
 
-    // GUI
-    const gui = new GUI();
-    gui.close();
-    const waterFolder = gui.addFolder('Water');
-    waterFolder.add(params, 'alpha', 0.0, 1.0).onChange(v => uniforms.uAlpha.value = v);
-    waterFolder.add(params, 'fresnelStrength', 0.0, 1.0).onChange(v => uniforms.uFresnelStrength.value = v);
-    waterFolder.add(params, 'waveAmplitude', 0.0, 8.0).onChange(v => uniforms.uWaveAmp.value = v);
-    waterFolder.add(params, 'noiseScale', 0.1, 2.0).onChange(v => uniforms.uNoiseScale.value = v);
-    waterFolder.addColor(params, 'colorDeep').onChange(v => uniforms.uColorDeep.value.set(v));
-    waterFolder.addColor(params, 'colorShallow').onChange(v => uniforms.uColorShallow.value.set(v));
-    waterFolder.add(params, 'textureInfluence', 0.0, 1.0).onChange(v => uniforms.uTextureInfluence.value = v);
-    
-    const particleFolder = gui.addFolder('Particles');
-    particleFolder.add(params, 'particleCount', 100, 50000, 1).onChange(v => {
-      scene.remove(particles);
-      const newParticleCount = Math.floor(v);
-      particleCount = newParticleCount;
-      const newPositions = new Float32Array(newParticleCount * 3);
-      const newUvs = new Float32Array(newParticleCount * 2);
-      const newVelocities = new Float32Array(newParticleCount * 3);
-      const newLifetimes = new Float32Array(newParticleCount);
-      const newOffsetYs = new Float32Array(newParticleCount);
-      for (let i = 0; i < newParticleCount; i++) {
-        const i3 = i * 3;
-        const i2 = i * 2;
-        const x = (Math.random() - 0.5) * 10;
-        const z = (Math.random() - 0.5) * 10;
-        const y = 0;
-        newPositions[i3] = x;
-        newPositions[i3 + 1] = y;
-        newPositions[i3 + 2] = z;
-        newUvs[i2] = (x + 5) / 10;
-        newUvs[i2 + 1] = (z + 5) / 10;
-        newVelocities[i3] = 0;
-        newVelocities[i3 + 1] = params.particleSpeed * (0.5 + Math.random());
-        newVelocities[i3 + 2] = 0;
-        newLifetimes[i] = Math.random() * 5;
-        newOffsetYs[i] = Math.random() * params.particleOffsetY;
-      }
-      particleGeometry.setAttribute('position', new THREE.BufferAttribute(newPositions, 3));
-      particleGeometry.setAttribute('uv', new THREE.BufferAttribute(newUvs, 2));
-      particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(newVelocities, 3));
-      particleGeometry.setAttribute('lifetime', new THREE.BufferAttribute(newLifetimes, 1));
-      particleGeometry.setAttribute('offsetY', new THREE.BufferAttribute(newOffsetYs, 1));
-      particles.geometry = particleGeometry;
-      scene.add(particles);
-    });
-    particleFolder.add(params, 'particleSpeed', 0.1, 2.0).onChange(v => {
-      const velocities = particleGeometry.attributes.velocity.array;
-      for (let i = 0; i < particleCount; i++) {
-        velocities[i * 3 + 1] = v * (0.5 + Math.random());
-      }
-      particleGeometry.attributes.velocity.needsUpdate = true;
-    });
-    particleFolder.add(params, 'particleOffsetY', 0.0, 100.0).onChange(v => {
-      const offsetYs = particleGeometry.attributes.offsetY.array;
-      for (let i = 0; i < particleCount; i++) {
-        offsetYs[i] = Math.random() * v;
-      }
-      particleGeometry.attributes.offsetY.needsUpdate = true;
-    });
-    particleFolder.add(params, 'particleSize', 2.0, 100.0).name('Particle Size').onChange(v => {
-      uniforms.uParticleSize.value = v;
-    });
+        // GUI
+        const gui = new GUI();
+        gui.close();
+        const waterFolder = gui.addFolder('Water');
+        waterFolder.add(params, 'alpha', 0.0, 1.0).onChange((v) => (uniforms.uAlpha.value = v));
+        waterFolder
+            .add(params, 'fresnelStrength', 0.0, 1.0)
+            .onChange((v) => (uniforms.uFresnelStrength.value = v));
+        waterFolder
+            .add(params, 'waveAmplitude', 0.0, 8.0)
+            .onChange((v) => (uniforms.uWaveAmp.value = v));
+        waterFolder
+            .add(params, 'noiseScale', 0.1, 2.0)
+            .onChange((v) => (uniforms.uNoiseScale.value = v));
+        waterFolder.addColor(params, 'colorDeep').onChange((v) => uniforms.uColorDeep.value.set(v));
+        waterFolder
+            .addColor(params, 'colorShallow')
+            .onChange((v) => uniforms.uColorShallow.value.set(v));
+        waterFolder
+            .add(params, 'textureInfluence', 0.0, 1.0)
+            .onChange((v) => (uniforms.uTextureInfluence.value = v));
 
-    const bloomFolder = gui.addFolder('Bloom');
-    bloomFolder.add(params, 'bloomStrength', 0.0, 3.0).onChange(v => bloomPass.strength = v);
-    bloomFolder.add(params, 'bloomRadius', 0.0, 1.0).onChange(v => bloomPass.radius = v);
-    bloomFolder.add(params, 'bloomThreshold', 0.0, 1.0).onChange(v => bloomPass.threshold = v);
+        const particleFolder = gui.addFolder('Particles');
+        particleFolder.add(params, 'particleCount', 100, 50000, 1).onChange((v) => {
+            scene.remove(particles);
+            const newParticleCount = Math.floor(v);
+            particleCount = newParticleCount;
+            const newPositions = new Float32Array(newParticleCount * 3);
+            const newUvs = new Float32Array(newParticleCount * 2);
+            const newVelocities = new Float32Array(newParticleCount * 3);
+            const newLifetimes = new Float32Array(newParticleCount);
+            const newOffsetYs = new Float32Array(newParticleCount);
+            for (let i = 0; i < newParticleCount; i++) {
+                const i3 = i * 3;
+                const i2 = i * 2;
+                const x = (Math.random() - 0.5) * 10;
+                const z = (Math.random() - 0.5) * 10;
+                const y = 0;
+                newPositions[i3] = x;
+                newPositions[i3 + 1] = y;
+                newPositions[i3 + 2] = z;
+                newUvs[i2] = (x + 5) / 10;
+                newUvs[i2 + 1] = (z + 5) / 10;
+                newVelocities[i3] = 0;
+                newVelocities[i3 + 1] = params.particleSpeed * (0.5 + Math.random());
+                newVelocities[i3 + 2] = 0;
+                newLifetimes[i] = Math.random() * 5;
+                newOffsetYs[i] = Math.random() * params.particleOffsetY;
+            }
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(newPositions, 3));
+            particleGeometry.setAttribute('uv', new THREE.BufferAttribute(newUvs, 2));
+            particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(newVelocities, 3));
+            particleGeometry.setAttribute('lifetime', new THREE.BufferAttribute(newLifetimes, 1));
+            particleGeometry.setAttribute('offsetY', new THREE.BufferAttribute(newOffsetYs, 1));
+            particles.geometry = particleGeometry;
+            scene.add(particles);
+        });
+        particleFolder.add(params, 'particleSpeed', 0.1, 2.0).onChange((v) => {
+            const velocities = particleGeometry.attributes.velocity.array;
+            for (let i = 0; i < particleCount; i++) {
+                velocities[i * 3 + 1] = v * (0.5 + Math.random());
+            }
+            particleGeometry.attributes.velocity.needsUpdate = true;
+        });
+        particleFolder.add(params, 'particleOffsetY', 0.0, 100.0).onChange((v) => {
+            const offsetYs = particleGeometry.attributes.offsetY.array;
+            for (let i = 0; i < particleCount; i++) {
+                offsetYs[i] = Math.random() * v;
+            }
+            particleGeometry.attributes.offsetY.needsUpdate = true;
+        });
+        particleFolder
+            .add(params, 'particleSize', 2.0, 100.0)
+            .name('Particle Size')
+            .onChange((v) => {
+                uniforms.uParticleSize.value = v;
+            });
 
-    // Resize handler
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-      composer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener('resize', handleResize);
+        const bloomFolder = gui.addFolder('Bloom');
+        bloomFolder
+            .add(params, 'bloomStrength', 0.0, 3.0)
+            .onChange((v) => (bloomPass.strength = v));
+        bloomFolder.add(params, 'bloomRadius', 0.0, 1.0).onChange((v) => (bloomPass.radius = v));
+        bloomFolder
+            .add(params, 'bloomThreshold', 0.0, 1.0)
+            .onChange((v) => (bloomPass.threshold = v));
 
-    // Animation loop
-    function animate() {
-      requestAnimationFrame(animate);
-      uniforms.uTime.value = performance.now() / 1000;
-      const lifetimes = particleGeometry.attributes.lifetime.array;
-      for (let i = 0; i < particleCount; i++) {
-        lifetimes[i] -= 1 / 60;
-        if (lifetimes[i] < 0) {
-          lifetimes[i] = 5.0;
+        // Resize handler
+        const handleResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            uniforms.uTime.value = performance.now() / 1000;
+            const lifetimes = particleGeometry.attributes.lifetime.array;
+            for (let i = 0; i < particleCount; i++) {
+                lifetimes[i] -= 1 / 60;
+                if (lifetimes[i] < 0) {
+                    lifetimes[i] = 5.0;
+                }
+            }
+            particleGeometry.attributes.lifetime.needsUpdate = true;
+            controls.update();
+            composer.render();
         }
-      }
-      particleGeometry.attributes.lifetime.needsUpdate = true;
-      controls.update();
-      composer.render();
-    }
-    animate();
+        animate();
 
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      gui.destroy();
-      renderer.dispose();
-      geometry.dispose();
-      material.dispose();
-      particleGeometry.dispose();
-      particleMaterial.dispose();
-      texture.dispose();
-      if (containerRef.current && renderer.domElement) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
-    };
-  }, []);
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            gui.destroy();
+            renderer.dispose();
+            geometry.dispose();
+            material.dispose();
+            particleGeometry.dispose();
+            particleMaterial.dispose();
+            texture.dispose();
+            if (containerRef.current && renderer.domElement) {
+                containerRef.current.removeChild(renderer.domElement);
+            }
+        };
+    }, []);
 
-  return (
-    <div 
-      ref={containerRef} 
-      style={{ 
-        width: '100vw', 
-        height: '100vh', 
-        margin: 0, 
-        overflow: 'hidden',
-        zIndex: 0,
-        position: 'fixed',
-        top: 0,
-        left: 0
-      }} 
-    />
-  );
+    return (
+        <div
+            ref={containerRef}
+            style={{
+                width: '100vw',
+                height: '100vh',
+                margin: 0,
+                overflow: 'hidden',
+                zIndex: 0,
+                position: 'fixed',
+                top: 0,
+                left: 0,
+            }}
+        />
+    );
 }

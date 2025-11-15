@@ -29,12 +29,12 @@ export default function ClientOverview() {
     const [activeImage, setActiveImage] = useState<string | null>('/images/demo-2.jpg');
 
     return (
-        <div className="py-24 w-full h-full flex flex-col gap-y-10 items-start text-left tracking-wide text-light/90 max-w-[80%] mx-auto">
+        <div className="w-full h-full flex flex-col gap-y-10 items-start text-left tracking-wide text-light/90 max-w-[80%] mx-auto">
             <div className="flex flex-col items-start w-full">
                 <div className="grid grid-cols-[60%_40%] w-full ">
                     <div className="">
                         <div className="text-6xl text-left flex flex-col items-start justify-center">
-                            <div className={cn("flex items-center gap-x-3", doto.className)}>
+                            <div className={cn('flex items-center gap-x-3', doto.className)}>
                                 <motion.div
                                     initial={{ y: -40, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
