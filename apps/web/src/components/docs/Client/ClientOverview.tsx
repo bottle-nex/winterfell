@@ -4,6 +4,8 @@ import Image from 'next/image';
 import SafariBrowser from '../../ui/SafariBrowser';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { cn } from '@/src/lib/utils';
+import { doto } from '../../base/FeatureOne';
 
 const overviewPoints = [
     {
@@ -31,8 +33,8 @@ export default function ClientOverview() {
             <div className="flex flex-col items-start w-full">
                 <div className="grid grid-cols-[60%_40%] w-full ">
                     <div className="">
-                        <div className="text-7xl flex flex-col items-start justify-center text-center">
-                            <div className="flex items-center gap-x-3">
+                        <div className="text-6xl text-left flex flex-col items-start justify-center">
+                            <div className={cn("flex items-center gap-x-3", doto.className)}>
                                 <motion.div
                                     initial={{ y: -40, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
@@ -50,18 +52,9 @@ export default function ClientOverview() {
                                     Docs
                                 </motion.i>
                             </div>
-
-                            <motion.span
-                                transition={{ duration: 0.6 }}
-                                initial={{ x: 40, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                className="mt-2"
-                            >
-                                Rust Never Sleeps
-                            </motion.span>
                         </div>
 
-                        <div className="text-lg text-light/70 tracking-wider max-w-[600px] mt-6">
+                        <div className="text-md text-light/70 tracking-wider max-w-[600px] mt-6">
                             Winterfell is an AI-powered platform that simplifies building, editing,
                             deploying, and interacting with Rust-based Solana smart contracts using
                             Anchor—from AI-assisted contract generation to client SDKs and frontend

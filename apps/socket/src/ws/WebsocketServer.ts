@@ -1,10 +1,10 @@
 import WebSocket, { WebSocketServer as WSServer } from 'ws';
 import { CustomWebSocket } from '../types/socket_types';
-import { env } from '../configs/config.env';
 import { COMMAND, WSServerIncomingPayload } from '@repo/types';
 import CommandService from '../build/build';
 import { redis_pubsub } from '../services/init_services';
-import RedisPubSub from '../redis/redis.pubsub';
+import RedisPubSub from '../queue/redis.pubsub';
+import { env } from '../configs/env.config';
 
 export interface ParsedMessage {
     type: COMMAND;
