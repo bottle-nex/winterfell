@@ -39,7 +39,7 @@ export default function ClientDocsSidebar({ switchPanel }: ClientDocsSidebarProp
     }
 
     return (
-        <div className="min-h-screen z-50 bg-dark border-l border-neutral-800 fixed top-0 right-0 w-[22vw] flex flex-col justify-start px-8 py-6">
+        <div className="min-h-screen z-50 bg-dark border-l border-neutral-800 fixed top-0 left-0 w-[22vw] flex flex-col justify-start px-8 py-6">
             <div className='relative'>
                 <AppLogo />
             </div>
