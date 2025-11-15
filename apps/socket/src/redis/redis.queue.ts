@@ -1,9 +1,9 @@
 import { Queue } from 'bullmq';
-import queue_config from '../configs/config.queue';
 import { BuildJobPayload, COMMAND } from '@repo/types';
 import crypto from 'crypto';
+import queue_config from '../configs/config.queue';
 
-export default class ServerToOrchestratorQueue {
+export default class SocketToOrchestratorQueue {
     private queue: Queue;
     constructor(queue_name: string) {
         this.queue = new Queue(queue_name, queue_config);

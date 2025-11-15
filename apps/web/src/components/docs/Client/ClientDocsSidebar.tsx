@@ -1,6 +1,6 @@
-import { contents } from "@/src/const/docsSidebarValues";
-import { ClientDocsPanel } from "@/src/types/docs-types";
-import { Dispatch, SetStateAction, useState } from "react";
+import { contents } from '@/src/const/docsSidebarValues';
+import { ClientDocsPanel } from '@/src/types/docs-types';
+import { Dispatch, SetStateAction, useState } from 'react';
 
 interface ClientDocsSidebarProps {
     setClientPanel: Dispatch<SetStateAction<ClientDocsPanel>>;
@@ -18,9 +18,8 @@ export default function ClientDocsSidebar({ setClientPanel }: ClientDocsSidebarP
         setClientPanel(clientPanel);
     }
 
-
     return (
-        <div className='min-h-screen z-50 bg-dark/30 border-l border-neutral-800'>
+        <div className="min-h-screen z-50 bg-dark/30 border-l border-neutral-800">
             <div className="flex fixed flex-col gap-y-5 text-left tracking-wide text-light/70 mt-22 pl-10">
                 <div
                     className="absolute left-5 top-4 h-3 w-0.5 rounded-full bg-primary shadow-[0_1px_8px_2px_rgba(108,68,252,0.8)] transition-all duration-500 ease-out"
@@ -42,5 +41,5 @@ export default function ClientDocsSidebar({ setClientPanel }: ClientDocsSidebarP
                 ))}
             </div>
         </div>
-    )
+    );
 }
