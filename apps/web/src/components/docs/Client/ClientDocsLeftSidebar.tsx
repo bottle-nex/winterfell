@@ -12,7 +12,7 @@ interface ClientDocsSidebarProps {
     switchPanel: (index: number, panel: ClientDocsPanel) => void;
 }
 
-export default function ClientDocsSidebar({ switchPanel }: ClientDocsSidebarProps) {
+export default function ClientDocsLeftSidebar({ switchPanel }: ClientDocsSidebarProps) {
     const [activeIndex, setActiveIndex] = useState<number>(1);
     const [activePanel, setActivePanel] = useState<ClientDocsPanel>(ClientDocsPanel.OVERVIEW);
     const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set());
@@ -39,7 +39,7 @@ export default function ClientDocsSidebar({ switchPanel }: ClientDocsSidebarProp
     }
 
     return (
-        <div className="min-h-screen z-50 bg-dark border-l border-neutral-800 fixed top-0 left-0 w-[22vw] flex flex-col justify-start px-8 py-6">
+        <div className="min-h-screen z-50 bg-dark border-l border-neutral-800 fixed top-0 left-0 w-[20vw] flex flex-col justify-start px-8 py-6">
             <div className='relative'>
                 <AppLogo />
             </div>
