@@ -20,7 +20,6 @@ export default function DocsNavbar() {
 
     return (
         <div className="flex items-center justify-between w-full px-4 py-2 fixed z-[99999] top-0">
-            <AppLogo />
             <div
                 className={cn(
                     `relative w-full max-w-fit z-100 flex items-center justify-between mt-4`,
