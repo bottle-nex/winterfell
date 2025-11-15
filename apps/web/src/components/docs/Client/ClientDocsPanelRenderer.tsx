@@ -1,6 +1,5 @@
 import { ClientDocsPanel } from '@/src/types/docs-types';
 import ClientGettingStarted from './ClientGettingStarted';
-import ClientHowItWorks from './ClientHowItWorks';
 import ClientOverview from './ClientOverview';
 import ClientE2B from './ClientE2B';
 
@@ -13,8 +12,6 @@ export default function ClientDocsPanelRenderer({ clientPanel }: ClientDocsPanel
         switch (clientPanel) {
             case ClientDocsPanel.OVERVIEW:
                 return <ClientOverview />;
-            case ClientDocsPanel.HOW_IT_WORKS:
-                return <ClientHowItWorks />;
             case ClientDocsPanel.GETTING_STARTED:
                 return <ClientGettingStarted />;
             case ClientDocsPanel.SANDBOX:

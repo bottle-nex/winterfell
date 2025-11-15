@@ -31,12 +31,20 @@ export default async function signInController(req: Request, res: Response) {
         });
     }
     try {
+<<<<<<< HEAD
         let myUser;
         let owner;
+=======
+>>>>>>> fec0c45 (Client Getting Started Docs page update)
         const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
         });
 
+<<<<<<< HEAD
+=======
+        let myUser;
+        let owner;
+>>>>>>> fec0c45 (Client Getting Started Docs page update)
         const isGithub = account.provider === 'github';
         if (existingUser) {
             const updateData: any = {
@@ -52,7 +60,6 @@ export default async function signInController(req: Request, res: Response) {
 
             if (isGithub) {
                 owner = await get_github_owner(account.access_token);
-
                 updateData.githubAccessToken = account.access_token;
                 updateData.githubId = account.providerAccountId;
                 updateData.githubUsername = owner;
@@ -97,8 +104,6 @@ export default async function signInController(req: Request, res: Response) {
             },
             token,
         };
-
-        console.log('SignIn successful for user:', myUser);
         res.json(response);
         return;
     } catch (err) {

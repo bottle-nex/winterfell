@@ -1,233 +1,240 @@
-'use client';
-import { Rocket } from '../../ui/animated/animated_rocket';
-import SafariBrowser from '../../ui/SafariBrowser';
 import { cn } from '@/src/lib/utils';
-import { Code } from '../../ui/animated/animated_code';
-import { useRouter } from 'next/navigation';
-import { FaExternalLinkAlt } from "react-icons/fa";
-import { MdArrowOutward, MdTerminal } from 'react-icons/md';
-import { FaArrowRightLong } from 'react-icons/fa6';
+import WorkspaceCard from '../common/WorkspaceCard';
 import { Highlighter } from '../../ui/highlighter';
+import { useRouter } from 'next/navigation';
+import { IoCopy, IoReturnDownBackSharp } from 'react-icons/io5';
+import { useRef, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
+import ToolTipComponent from '../../ui/TooltipComponent';
+import { MdTerminal } from 'react-icons/md';
+import { FaGithub } from 'react-icons/fa';
+import { HiPencil } from 'react-icons/hi2';
 
 export default function ClientGettingStarted() {
     const router = useRouter();
+    const promptRef = useRef<HTMLDivElement>(null);
+    const [copied, setCopied] = useState<boolean>(false);
+    const updateRef = useRef<HTMLDivElement>(null);
 
-    // return (
-    //     <div className="w-full h-full py-10 flex flex-col items-center text-left tracking-wide gap-y-5">
-    //         <div className="flex flex-col max-w-4xl w-full h-full">
-    //             <div className="text-3xl">Getting Started</div>
+    function handleCopy() {
+        if (promptRef.current) {
+            navigator.clipboard.writeText(promptRef.current.innerText);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    }
 
-    //             {/* phase 1 */}
-    //             <div className="flex h-full mt-8 gap-x-8 text-light/90 items-center">
-    //                 <div className="w-full flex flex-col gap-y-4">
-    //                     <div className="text-xl flex items-center gap-x-2">
-    //                         PHASE{' '}
-    //                         <span className="text-primary font-bold text-xl hover:scale-105 transition-all transform-3d duration-200 cursor-pointer">
-    //                             #1
-    //                         </span>{' '}
-    //                         <span className="text-base text-light/60 tracking-wider">
-    //                             {'{'} Root workspace {'}'}
-    //                         </span>
-    //                     </div>
-
-    //                     <div className="text-light/90 flex flex-col">
-    //                         <span>1. LLM Models</span>
-    //                         <span className="text-light/60">• Gemini</span>
-    //                         <span className="text-light/60">• Claude</span>
-    //                     </div>
-
-    //                     <div className="flex flex-col text-light/90">
-    //                         <span
-    //                             onClick={() => router.push('/home')}
-    //                             className="mb-1 cursor-pointer flex items-center gap-x-0.5 hover:tracking-wider transition-all transform duration-300"
-    //                         >
-    //                             2. Templates{' '}
-    //                             <MdArrowOutward className="size-5 bg-dark p-[3px] rounded-[4px]" />
-    //                         </span>
-    //                         <span className="text-light/60">
-    //                             • Common starter templates for beginners and advanced developers.
-    //                         </span>
-    //                         <span className="text-light/60">
-    //                             • Keeps a history of contracts you’ve generated.
-    //                         </span>
-    //                         <span className="text-light/60">
-    //                             • Highlights the latest community-built templates.
-    //                         </span>
-    //                     </div>
-
-    //                     <div className="text-md pt-3 tracking-wider">
-    //                         <span className="font-semibold"># Prompt Suggestions</span>
-    //                     </div>
-
-    //                     <div className="text-light/60 flex flex-col gap-y-1">
-    //                         <div className="flex flex-col">
-    //                             • Beginners: Start with something simple. for example:{' '}
-    //                             <span className="text-light/90 flex items-center">
-    //                                 ”Create a counter program"
-    //                             </span>
-    //                         </div>
-    //                         <div className="flex flex-col">
-    //                             • Want something more complex? Try prompts like{' '}
-    //                             <span className="text-light">
-    //                                 “Create a DLMM pool...” (and keep going from there).
-    //                             </span>
-    //                         </div>
-    //                     </div>
-    //                 </div>
-
-    //                 <div
-    //                     className={cn(
-    //                         'h-[28rem] w-[50rem] border border-neutral-800 shadow-xl',
-    //                         'bg-gradient-to-br from-dark via-transparent to-dark rounded-[4px]',
-    //                         'relative overflow-hidden group',
-    //                         'hover:from-light/5 transition-colors transform duration-300',
-    //                     )}
-    //                 >
-    //                     <div className="w-full flex flex-col items-start h-30 px-10 gap-y-[2px] py-6 tracking-wide">
-    //                         <Rocket width={30} height={30} stroke="rgb(200, 200, 200)" />
-
-    //                         <div className="text-[18px] text-light/80 font-semibold mt-1">
-    //                             First Contract
-    //                         </div>
-    //                         <div className="text-[15px] text-light/70">
-    //                             To get started, just put together a basic prompt
-    //                         </div>
-    //                     </div>
-
-    //                     <div className="absolute -bottom-11 -right-25 h-[20rem] w-[30rem] rounded-[4px] group-hover:-translate-y-1 transition-all transform duration-300 group-hover:shadow-[0_1px_15px_6px_rgba(92,62,180,0.2)]">
-    //                         <SafariBrowser
-    //                             url="winterfell.dev"
-    //                             imageSrc="/Images/winterfell-dashboard.png"
-    //                         />
-    //                     </div>
-    //                 </div>
-    //             </div>
-
-    //             {/* phase 2 */}
-    //             <div className="flex h-full mt-30 gap-x-8 text-light/90 items-center">
-    //                 <div className="w-full flex flex-col gap-y-4">
-    //                     <div className="text-xl flex items-center gap-x-2">
-    //                         PHASE{' '}
-    //                         <span className="text-primary font-bold text-xl hover:scale-105 transition-all transform-3d duration-200 cursor-pointer">
-    //                             #2
-    //                         </span>{' '}
-    //                         <span className="text-base tracking-wider text-light/60">
-    //                             {'{'} Playground workspace {'}'}
-    //                         </span>
-    //                     </div>
-
-    //                     <div className="flex flex-col text-light/90">
-    //                         <span className="mb-1">2. Reprompt & Refine</span>
-    //                         <span className="text-light/60">
-    //                             • Update or regenerate contract logic by simply re-prompting with
-    //                             new requirements.
-    //                         </span>
-    //                     </div>
-
-    //                     <div className="flex flex-col text-light/90">
-    //                         <span className="mb-1">2. File Explorer</span>
-    //                         <span className="text-light/60">
-    //                             • Browse, search, and navigate through all generated files
-    //                             instantly.
-    //                         </span>
-    //                     </div>
-
-    //                     <div className="flex flex-col text-light/90">
-    //                         <span className="mb-1">3. Export Code</span>
-    //                         <span className="text-light/60">
-    //                             • Push the entire generated codebase to a GitHub repository in one
-    //                             click.
-    //                         </span>
-    //                         <span className="text-light/60">
-    //                             • Download the zip file and directly use it.
-    //                         </span>
-    //                     </div>
-
-    //                     <div className="text-light/90 flex flex-col gap-y-1.5">
-    //                         <span>4. Winter shell</span>
-    //                         <span className="text-light/60">
-    //                             • Winterfell has its own terminal called winter.
-    //                         </span>
-    //                         <span className="text-light/60 flex items-center gap-x-2">
-    //                             • Press{' '}
-    //                             <span className="bg-dark px-2 py-0.5 rounded-[4px] text-light/90">
-    //                                 Ctrl + J
-    //                             </span>{' '}
-    //                             to open it or click on the{' '}
-    //                             <span className="bg-dark p-1 px-1.5 rounded-[4px]">
-    //                                 <MdTerminal className="size-5 text-light/90" />
-    //                             </span>{' '}
-    //                             icon.
-    //                         </span>
-    //                     </div>
-    //                 </div>
-
-    //                 <div
-    //                     className={cn(
-    //                         'h-[28rem] w-[50rem] border border-neutral-800 shadow-xl',
-    //                         'bg-gradient-to-br from-dark via-transparent to-dark rounded-[4px]',
-    //                         'relative overflow-hidden group',
-    //                         'hover:from-light/5 transition-colors transform duration-300',
-    //                     )}
-    //                 >
-    //                     <div className="w-full flex flex-col items-start h-30 px-9 gap-y-[2px] py-6 tracking-wide">
-    //                         <Code width={30} height={30} stroke="rgb(200, 200, 200)" />
-
-    //                         <div className="text-[18px] text-light/80 font-semibold mt-1">
-    //                             Playground
-    //                         </div>
-    //                         <div className="text-[15px] text-light/70">
-    //                             Continue with updates and changes as needed
-    //                         </div>
-    //                     </div>
-
-    //                     <div className="absolute -bottom-11 -right-27 h-[20rem] w-[30rem] rounded-[4px] group-hover:-translate-y-1 transition-all transform duration-300 group-hover:shadow-[0_1px_15px_6px_rgba(255,255,255,0.2)]">
-    //                         <SafariBrowser
-    //                             url="winterfell.dev/playground/contractId"
-    //                             imageSrc="/Images/winterfell-playground.png"
-    //                         />
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     </div>
+    function handleCopyUpdatePrompt() {
+        if (updateRef.current) {
+            navigator.clipboard.writeText(updateRef.current.innerText);
+        }
+    }
 
     return (
-        <div className="py-24 w-full h-full flex flex-col gap-y-6 items-start text-left tracking-wide text-light/90 max-w-[80%] mx-auto">
-            <div className='flex flex-col gap-y-1'>
-                <span className='text-3xl'>Getting Started</span>
-                <span className='text-md text-light/60'>Welcome to the step by step guide on how to create a contract with winterfell</span>
+        <div
+            className={cn(
+                'py-24 w-full flex flex-col gap-y-6 items-start',
+                'text-left tracking-wide text-light/90 max-w-[80%] mx-auto',
+            )}
+        >
+            <div className={cn('flex justify-between items-end gap-y-1 px-1 w-full')}>
+                <span className={cn('text-3xl')}>Getting Started</span>
+                <span className="text-light/60">
+                    Let's kick things off by exploring the interface
+                </span>
             </div>
 
-            <div className={cn(
-                'h-full w-full rounded-[14px] overflow-hidden p-3 min-h-[96%]',
-                'border border-neutral-800 bg-dark'
-            )}>
-                <div className='h-full w-full rounded-[8px] border border-neutral-800 overflow-hidden p-8 flex flex-col gap-y-10 relative items-center bg-dark-base/50 hover:bg-light/5 group tracking-wide'>
+            <WorkspaceCard
+                title="Root Workspace"
+                redirectLink="winterfell.dev"
+                description="Creating your first contract"
+                imageUrl="/Images/winterfell-dashboard.png"
+            />
 
-                    <div className='flex justify-between items-start w-full text-light/80'>
-                        <div className='flex flex-col items-start gap-y-1'>
-                            <div className='text-xl font-semibold group-hover:text-light'>
-                                Root Workspace
-                            </div>
-                            <div className='text-sm'>
-                                <span className='cursor-pointer text-light/70'>winterfell.dev</span> <span className='text-light/60'>- Creating your first contract</span>
+            {/* phase 1: creating contract - root workspace */}
+            <div className="w-full flex flex-col justify-start mt-10 gap-y-4 px-4">
+                <div className="flex items-center gap-x-3 h-fit">
+                    <div className="w-2 h-2 bg-white drop-shadow-2xl border rounded-full shadow-[0_0_8px_3px_rgba(255,255,255,0.4)]" />
+                    <div className="min-w-fit text-light">Create your first contract</div>
+                </div>
+
+                <div className="flex flex-col text-light/60 pl-4 max-w-[75%] text-sm tracking-wider">
+                    <div className="space-y-2">
+                        <div className="flex gap-x-2">
+                            <span>1.</span> Open{' '}
+                            <span
+                                onClick={() => router.push('/')}
+                                className="font-semibold hover:text-light/80 transition-colors transform duration-300 cursor-pointer"
+                            >
+                                <Highlighter action="underline" color="#805999" padding={0}>
+                                    winterfell.dev
+                                </Highlighter>
+                            </span>{' '}
+                            in a new tab.
+                        </div>
+
+                        <div className="flex gap-x-2">
+                            <span>2.</span> In the input-box, paste this:
+                        </div>
+
+                        <div
+                            ref={promptRef}
+                            className="ml-5 px-5 text-light/70 bg-dark py-3 rounded-lg relative max-w-[60%] group"
+                        >
+                            Build an upgradeable smart contract system with multi-tier
+                            subscriptions, recurring payments, NFT membership, coupons, revenue
+                            sharing, access control, factory + proxy, and full tests.
+                            <div
+                                onClick={handleCopy}
+                                className="absolute bottom-1.5 right-1.5 flex items-center text-sm gap-x-1 bg-dark-base px-1.5 py-0.5 rounded-sm cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity transform duration-200"
+                            >
+                                <IoCopy className="size-3" />
+                                <span>{copied ? 'copied' : 'copy'}</span>
                             </div>
                         </div>
 
-                        <div>
-                            <FaArrowRightLong className='size-6 group-hover:translate-x-1 transition-all transform duration-200' strokeWidth='0.1' />
+                        <div className="flex gap-x-2">
+                            <span>3. </span>Click the white arrow to submit.
                         </div>
-                    </div>
-
-                    <div className='absolute w-full max-w-[90%] h-full -bottom-28 group-hover:-translate-y-2 transition-all transform duration-300 '>
-                        <SafariBrowser
-                            url='winterfell.dev'
-                            imageSrc='/Images/winterfell-dashboard.png'
-                        />
+                        <div className="flex gap-x-2">
+                            <span>4. </span>Sign in or sign up (Google, GitHub - no credit card
+                            required). You won’t see this step if you’re already logged in.
+                        </div>
+                        <div className="flex gap-x-2">
+                            <span>5. </span>You will be redirected to the{' '}
+                            <span className="text-light">playground</span> page
+                        </div>
+                        <div className="flex gap-x-2">
+                            <span>6. </span>Wait a few minutes and you'll see winterfell generating
+                            the files simultaneously.
+                        </div>
+                        <div className="flex gap-x-2">
+                            <span>7. </span>You can try out templates as well
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <WorkspaceCard
+                className="mt-20"
+                title="Playground Workspace"
+                redirectLink="winterfell.dev/playground/(some-uuid)"
+                description="Update your contract"
+                imageUrl="/Images/winterfell-playground.png"
+            />
+
+            {/* phase 2: reprompt/ refine contract - playground workspace */}
+            <div className="w-full flex justify-between">
+                <div className="w-full flex flex-col justify-start mt-10 gap-y-4 px-4">
+                    <div className="flex items-center gap-x-3 h-fit">
+                        <div className="w-2 h-2 bg-white drop-shadow-2xl border rounded-full shadow-[0_0_8px_3px_rgba(255,255,255,0.4)]" />
+                        <div className="min-w-fit text-light">Update/ Refine your contract</div>
+                    </div>
+
+                    <div className="flex flex-col text-light/60 pl-4 max-w-[75%] text-sm tracking-wider">
+                        <div className="space-y-2">
+                            <div className="flex gap-x-2">
+                                <span>1.</span>You can see the contract being generated in
+                                playground endpoint.
+                            </div>
+
+                            <div className="flex gap-x-2">
+                                <span>2.</span>To update your contract, paste this in the input box:
+                            </div>
+
+                            <div
+                                ref={updateRef}
+                                className="ml-5 px-5 text-light/70 bg-dark py-3 rounded-lg relative max-w-[60%] group"
+                            >
+                                Update the contract, add test files and more instructions.
+                                <ToolTipComponent content="copy">
+                                    <div
+                                        onClick={handleCopyUpdatePrompt}
+                                        className="absolute top-1/3 right-1 flex items-center text-sm gap-x-1 px-1.5 py-0.5 rounded-sm cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity transform duration-200"
+                                    >
+                                        <IoCopy className="size-3" />
+                                    </div>
+                                </ToolTipComponent>
+                            </div>
+
+                            <div className="flex gap-x-2 items-center">
+                                <span>3. </span>Send the prompt by either pressing{' '}
+                                <span>
+                                    <IoReturnDownBackSharp className="text-light/80 size-4" />
+                                </span>{' '}
+                                or clicking the{' '}
+                                <span className="text-light/80">
+                                    <ArrowRight className="size-4" />
+                                </span>{' '}
+                                button
+                            </div>
+                            <div className="flex gap-x-2 items-center">
+                                <span>4. </span>Press{' '}
+                                <span className="text-light/80">Ctrl + J</span> or Click on the{' '}
+                                <span>
+                                    <MdTerminal className="text-light/80 size-4" />
+                                </span>{' '}
+                                icon to open{' '}
+                                <span className="text-light/80 bg-dark px-2 rounded-xs cursor-pointer hover:text-light transition-colors transform duration-200">
+                                    winter shell
+                                </span>
+                            </div>
+                            <div className="flex gap-x-2">
+                                <span>5. </span>Once you are inside the shell, start by typing{' '}
+                                <span className="text-light/80 tracking-widest">--help</span> on the
+                                shell.
+                            </div>
+                            <div className="flex gap-x-2">
+                                <span>6. </span>
+                                <span className="text-light/80 tracking-widest">
+                                    --commands
+                                </span>{' '}
+                                will give you the test, build and deploy commands.
+                            </div>
+                            <div className="flex gap-x-2">
+                                <span>7. </span>
+                                <span className="text-light/80">winter test: </span> Runs the test
+                                file of your contract
+                            </div>
+                            <div className="flex gap-x-2">
+                                <span>8. </span>
+                                <span className="text-light/80">winter build: </span> Runs the build
+                                file of your contract
+                            </div>
+                            <div className="flex gap-x-2">
+                                <span>9. </span>
+                                <span className="text-light/80">winter deploy: </span> Deploys your
+                                contract to the mainnet/ devnet.
+                            </div>
+                            <div className="flex gap-x-2 items-center">
+                                <span>10. </span>To export your codebase to GitHub, click on the{' '}
+                                <span>
+                                    <FaGithub className="text-light/80" />
+                                </span>{' '}
+                                on the top right of your screen.
+                            </div>
+                            <div className="flex gap-x-2 items-center">
+                                <span>11. </span>If GitHub is not linked, winterfell will connect
+                                you to your GitHub.
+                            </div>
+                            <div className="flex gap-x-2 items-center">
+                                <span>12. </span>Once you are connected to GitHub, edit the
+                                repository name by clicking{' '}
+                                <span>
+                                    <HiPencil className="text-light/80 size-3" />
+                                </span>{' '}
+                                icon.
+                            </div>
+                            <div className="flex gap-x-2 items-center">
+                                <span>13. </span>Now either Press Enter to export to GitHub or
+                                Download the ZIP file.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border border-neutral-800 h-fit min-w-fit p-1.5 rounded-lg"></div>
+            </div>
         </div>
-    )
+    );
 }
