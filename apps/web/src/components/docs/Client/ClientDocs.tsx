@@ -13,7 +13,7 @@ export default function ClientDocs() {
     }
 
     return (
-        <div className="relative min-h-screen w-full grid grid-cols-[22%_78%]">
+        <div className="relative min-h-screen w-full grid grid-cols-[22%_78%] select-none">
             <div className="relative">
                 <ClientDocsSidebar switchPanel={switchPanel} />
             </div>
