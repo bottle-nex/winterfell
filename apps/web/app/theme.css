@@ -3,13 +3,12 @@
     --color-light: #fdf9f0;
     --color-dark-base: #141517;
     --color-dark: #1c1d20;
-}
-
-@theme {
+    --color-primary-light: #9679ffea;
     --breakpoint-xs: 375px;
     --breakpoint-md2: 896px;
 }
 
+/* Move these outside @theme or into @layer utilities */
 .animated-cards::before {
     pointer-events: none;
     position: absolute;
@@ -46,7 +45,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 60px; /* slightly wider */
+    width: 60px;
     height: 100%;
     pointer-events: none;
     background: linear-gradient(to left, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.6), transparent);
@@ -63,7 +62,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 60px; /* slightly wider */
+    width: 60px;
     height: 100%;
     pointer-events: none;
     background: linear-gradient(
@@ -75,24 +74,25 @@
     z-index: 10;
 }
 
-@theme inline {
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-100% - var(--gap)));
+    }
+}
+
+@keyframes marquee-vertical {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(calc(-100% - var(--gap)));
+    }
+}
+
+@theme {
     --animate-marquee: marquee var(--duration) infinite linear;
     --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
-
-    @keyframes marquee {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(-100% - var(--gap)));
-        }
-    }
-    @keyframes marquee-vertical {
-        from {
-            transform: translateY(0);
-        }
-        to {
-            transform: translateY(calc(-100% - var(--gap)));
-        }
-    }
 }

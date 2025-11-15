@@ -1,9 +1,7 @@
 import { ClientDocsPanel } from '../types/docs-types';
 import { IconType } from 'react-icons';
-import { 
-    HiOutlineDocumentText, 
+import {
     HiOutlineInformationCircle,
-    HiOutlineLightBulb,
     HiOutlineRocketLaunch,
     HiOutlineBeaker,
     HiOutlineCog6Tooth,
@@ -11,8 +9,8 @@ import {
     HiOutlinePencilSquare,
     HiOutlineWrenchScrewdriver,
     HiOutlineCloudArrowUp,
-    HiOutlineArrowDownTray
-} from "react-icons/hi2";
+    HiOutlineArrowDownTray,
+} from 'react-icons/hi2';
 
 export interface SidebarContent {
     title: string;
@@ -23,19 +21,9 @@ export interface SidebarContent {
 
 export const contents: SidebarContent[] = [
     {
-        title: 'CONTENTS',
-        type: ClientDocsPanel.OVERVIEW,
-        icon: HiOutlineDocumentText,
-    },
-    {
         title: 'Overview',
         type: ClientDocsPanel.OVERVIEW,
         icon: HiOutlineInformationCircle,
-    },
-    {
-        title: 'How it works',
-        type: ClientDocsPanel.HOW_IT_WORKS,
-        icon: HiOutlineLightBulb,
     },
     {
         title: 'Getting Started',
