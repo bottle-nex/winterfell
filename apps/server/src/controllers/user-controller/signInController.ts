@@ -25,22 +25,19 @@ export default async function signInController(req: Request, res: Response) {
     }
 
     if (!SERVER_JWT_SECRET) {
-        console.error('SERVER_JWT_SECRET is not defined');
         return res.status(500).json({
             success: false,
             error: 'Server configuration error',
         });
     }
-
     try {
+        let myUser;
+        let owner;
         const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
         });
 
-        let myUser;
-        let owner;
         const isGithub = account.provider === 'github';
-
         if (existingUser) {
             const updateData: any = {
                 name: user.name,
@@ -55,7 +52,6 @@ export default async function signInController(req: Request, res: Response) {
 
             if (isGithub) {
                 owner = await get_github_owner(account.access_token);
-
                 updateData.githubAccessToken = account.access_token;
                 updateData.githubId = account.providerAccountId;
                 updateData.githubUsername = owner;
@@ -100,8 +96,6 @@ export default async function signInController(req: Request, res: Response) {
             },
             token,
         };
-
-        console.log('SignIn successful for user:', myUser);
         res.json(response);
         return;
     } catch (err) {
