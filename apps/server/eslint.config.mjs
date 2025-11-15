@@ -5,10 +5,8 @@ import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
 export default [
-  // Base JS recommended rules
   js.configs.recommended,
-  
-  // Ignore patterns
+
   {
     ignores: [
       'dist/**',
@@ -17,7 +15,7 @@ export default [
       'coverage/**',
     ],
   },
-  
+
   // TypeScript files configuration
   {
     files: ['**/*.ts', '**/*.js'],
@@ -26,7 +24,8 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json',
+        projectService: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
         console: 'readonly',
@@ -55,7 +54,6 @@ export default [
       prettier: prettier,
     },
     rules: {
-      // TypeScript specific rules
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -67,18 +65,15 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      
-      // General rules
+
       'no-console': 'off', // You're using winston for logging
       'no-unused-vars': 'off', // Using TS version instead
       'prefer-const': 'error',
       'no-var': 'error',
-      
-      // Prettier integration
+
       'prettier/prettier': 'error',
     },
   },
-  
-  // Prettier config (must be last to override other configs)
+
   prettierConfig,
 ];
