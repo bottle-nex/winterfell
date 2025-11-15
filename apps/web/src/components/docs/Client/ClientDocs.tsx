@@ -23,7 +23,6 @@ export default function ClientDocs() {
             <div className="w-full pt-18">
                 <ClientDocsPanelRenderer clientPanel={activeContent} />
             </div>
-
             <div className="w-full h-full flex items-center">
                 <ClientDocsRightSidebar switchPanel={switchPanel} />
             </div>
