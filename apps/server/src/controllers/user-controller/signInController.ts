@@ -31,20 +31,12 @@ export default async function signInController(req: Request, res: Response) {
         });
     }
     try {
-<<<<<<< HEAD
         let myUser;
         let owner;
-=======
->>>>>>> fec0c45 (Client Getting Started Docs page update)
         const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
         });
 
-<<<<<<< HEAD
-=======
-        let myUser;
-        let owner;
->>>>>>> fec0c45 (Client Getting Started Docs page update)
         const isGithub = account.provider === 'github';
         if (existingUser) {
             const updateData: any = {
