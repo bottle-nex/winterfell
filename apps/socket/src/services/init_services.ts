@@ -1,5 +1,5 @@
-import RedisPubSub from '../redis/redis.pubsub';
-import SocketToOrchestratorQueue from '../redis/redis.queue';
+import RedisPubSub from '../queue/redis.pubsub';
+import SocketToOrchestratorQueue from '../queue/redis.queue';
 import WebSocketServer from '../ws/WebsocketServer';
 
 export let wsserver: WebSocketServer;
