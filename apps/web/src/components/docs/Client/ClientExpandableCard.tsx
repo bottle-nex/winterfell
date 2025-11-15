@@ -14,7 +14,7 @@ export default function ClientExpandableSteps({ title, steps }: ExpandableStepsP
         <div className="bg-[#111111] border-b last:border-0 border-neutral-800 overflow-hidden">
             <Button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full flex items-center justify-between p-4 py-6 bg-dark-base/90 hover:bg-dark-base/50 transition-colors"
+                className="w-full flex items-center justify-between p-4 py-7 bg-dark-base/90 hover:bg-dark-base/50 transition-colors"
             >
                 <div className="flex items-center gap-2">
                     {isExpanded ? (

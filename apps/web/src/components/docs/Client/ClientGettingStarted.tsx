@@ -13,6 +13,7 @@ import {
     stepsShell,
     stepsUpdateContract,
 } from './getting_started_steps';
+import { doto } from '../../base/FeatureOne';
 
 export default function ClientGettingStarted() {
     return (
@@ -23,10 +24,7 @@ export default function ClientGettingStarted() {
             )}
         >
             <div className="flex justify-between items-end gap-y-1 px-1 w-full">
-                <span className="text-3xl">Getting Started</span>
-                <span className="text-light/60">
-                    Let's kick things off by exploring the interface
-                </span>
+                <span className={cn("text-6xl", doto.className)}>Getting Started</span>
             </div>
 
             <ClientWorkspaceCard

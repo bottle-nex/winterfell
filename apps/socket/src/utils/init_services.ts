@@ -1,5 +1,5 @@
 import RedisSubscriber from '../services/redis.subscriber';
-import WebSocketServer from '../ws/WebsocketServer';
+import WebSocketServer from '../ws/socket.server';
 
 export let redis: RedisSubscriber;
 export let wsserver: WebSocketServer;

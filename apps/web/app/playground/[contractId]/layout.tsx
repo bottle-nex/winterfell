@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import SessionSetter from '@/src/lib/SessionSeter';
 import { authOption } from '@/app/api/auth/[...nextauth]/options';
 import { Toaster } from 'sonner';
+import ShortcutMenu from '@/src/components/utility/ShortcutMenuModal';
 
 interface Props {
     children: React.ReactNode;
@@ -23,6 +24,7 @@ export default async function RootLayout({ children }: Props) {
                 suppressHydrationWarning
             >
                 {children}
+                <ShortcutMenu />
                 <Toaster
                     theme="dark"
                     closeButton

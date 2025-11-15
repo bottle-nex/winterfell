@@ -4,7 +4,6 @@ import { getServerSession } from 'next-auth';
 import { authOption } from './api/auth/[...nextauth]/options';
 import SessionSetter from '@/src/lib/SessionSeter';
 import WalletProviders from '@/src/providers/WalletProviders';
-import ShortcutMenu from '@/src/components/utility/ShortcutMenuModal';
 
 export const metadata: Metadata = {
     title: 'Winterfell',
@@ -23,7 +22,6 @@ export default async function RootLayout({
             <body className={`antialiased bg-black`} suppressHydrationWarning>
                 <WalletProviders>{children}</WalletProviders>
                 <SessionSetter session={session} />
-                <ShortcutMenu />
             </body>
         </html>
     );
