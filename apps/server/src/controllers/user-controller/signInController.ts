@@ -9,8 +9,6 @@ const SERVER_JWT_SECRET = process.env.SERVER_JWT_SECRET;
 export default async function signInController(req: Request, res: Response) {
     const { user, account } = req.body;
 
-    console.log('SignIn Request Body:', JSON.stringify({ user, account }, null, 2));
-
     if (!user || !user.email) {
         console.error('Missing user or user.email');
         return res.status(400).json({
@@ -20,7 +18,6 @@ export default async function signInController(req: Request, res: Response) {
     }
 
     if (!account || !account.provider) {
-        console.error('Missing account or account.provider');
         return res.status(400).json({
             success: false,
             error: 'Missing account provider',
@@ -36,21 +33,15 @@ export default async function signInController(req: Request, res: Response) {
     }
 
     try {
-        console.log('Looking up user with email:', user.email);
-
         const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
         });
-
-        console.log('Existing user found:', !!existingUser);
 
         let myUser;
         let owner;
         const isGithub = account.provider === 'github';
 
         if (existingUser) {
-            console.log('Updating existing user');
-
             const updateData: any = {
                 name: user.name,
                 image: user.image,
@@ -86,11 +77,7 @@ export default async function signInController(req: Request, res: Response) {
                     githubUsername: isGithub ? owner : null,
                 },
             });
-
-            console.log('User created successfully');
         }
-
-        console.log('account name is: ', account.login);
 
         const jwtPayload = {
             id: myUser.id,
@@ -117,8 +104,9 @@ export default async function signInController(req: Request, res: Response) {
         console.log('SignIn successful for user:', myUser);
         res.json(response);
         return;
-    } catch (error) {
+    } catch (err) {
         ResponseWriter.error(res, 'Authentication failed', 500);
+        console.error('error in sign in : ', err);
         return;
     }
 }

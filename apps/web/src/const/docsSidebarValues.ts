@@ -1,4 +1,4 @@
-import { ClientDocsPanel } from "../types/docs-types";
+import { ClientDocsPanel } from '../types/docs-types';
 
 export const contents = [
     {

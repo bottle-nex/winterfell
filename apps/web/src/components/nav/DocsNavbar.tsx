@@ -40,10 +40,11 @@ export default function DocsNavbar() {
                         router.push('/docs/client');
                     }}
                     className={`px-5 py-2 rounded-lg cursor-pointer transition-all duration-300 relative
-            ${tab === TabType.CLIENT
-                            ? 'bg-neutral-800 text-white'
-                            : 'bg-transparent text-neutral-300 hover:bg-neutral-800/50'
-                        }
+            ${
+                tab === TabType.CLIENT
+                    ? 'bg-neutral-800 text-white'
+                    : 'bg-transparent text-neutral-300 hover:bg-neutral-800/50'
+            }
           `}
                 >
                     Client
@@ -55,10 +56,11 @@ export default function DocsNavbar() {
                         router.push('/docs/dev');
                     }}
                     className={`px-5 py-2 rounded-[4px] cursor-pointer transition-all duration-300 relative
-          ${tab === TabType.DEV
-                            ? 'bg-neutral-800 text-white'
-                            : 'bg-transparent text-neutral-300 hover:bg-neutral-800/50'
-                        }
+          ${
+              tab === TabType.DEV
+                  ? 'bg-neutral-800 text-white'
+                  : 'bg-transparent text-neutral-300 hover:bg-neutral-800/50'
+          }
         `}
                 >
                     Dev

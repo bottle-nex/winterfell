@@ -49,12 +49,7 @@ interface RocketProps extends React.SVGAttributes<SVGSVGElement> {
     stroke?: string;
 }
 
-const Rocket = ({
-    width = 28,
-    height = 28,
-    strokeWidth = 2,
-    stroke = '#ffffff',
-}: RocketProps) => {
+const Rocket = ({ width = 28, height = 28, strokeWidth = 2, stroke = '#ffffff' }: RocketProps) => {
     const controls = useAnimation();
 
     return (

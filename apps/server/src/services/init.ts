@@ -16,7 +16,7 @@ export default function init_services() {
     contentGenerator = new ContentGenerator();
     objectStore = new ObjectStore();
     razorpay = new RazorpayGateway();
-    server_orchestrator_queue = new ServerToOrchestratorQueue('server-to-orchestrator');
+    // server_orchestrator_queue = new ServerToOrchestratorQueue('server-to-orchestrator');
     github_worker_queue = new GithubWorkerQueue('github-push');
     contract_services = new ContractServices();
 }

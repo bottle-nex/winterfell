@@ -11,7 +11,7 @@ interface LogoutModalProps {
 
 export default function LogoutModal({ openLogoutModal, setOpenLogoutModal }: LogoutModalProps) {
     async function LogoutHandler() {
-        alert("sign out");
+        alert('singiwni');
         await signOut({
             callbackUrl: '/',
             redirect: true,
@@ -21,8 +21,11 @@ export default function LogoutModal({ openLogoutModal, setOpenLogoutModal }: Log
     return (
         <div>
             {openLogoutModal && (
-                <OpacityBackground>
-                    <Card className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 bg-neutral-950 relative z-[999999]">
+                <OpacityBackground onBackgroundClick={() => setOpenLogoutModal(false)}>
+                    <Card
+                        onClick={(e) => e.stopPropagation()}
+                        className="max-w-md px-8 py-6 flex flex-col items-center justify-center space-y-6 bg-neutral-950 relative z-9999"
+                    >
                         <div className="space-y-2">
                             <h2 className="text-2xl font-semibold text-light">Log out ?</h2>
                             <p className="text-sm text-neutral-400 font-normal tracking-wide">
