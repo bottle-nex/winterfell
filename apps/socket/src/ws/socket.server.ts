@@ -4,7 +4,7 @@ import { COMMAND, WSServerIncomingPayload } from '@repo/types';
 import CommandService from '../build/build';
 import { redis_pubsub } from '../services/init_services';
 import RedisPubSub from '../queue/redis.pubsub';
-import { env } from '../configs/env.config';
+import { env } from '../configs/config.env';
 
 export interface ParsedMessage {
     type: COMMAND;
@@ -24,9 +24,10 @@ export default class WebSocketServer {
     private initialize_connection() {
         if (!this.wss) return;
         this.wss.on('connection', (ws: CustomWebSocket) => {
+            console.log('socket connected');
             this.add_listeners(ws);
-            const topic = '';
-            this.redis.subscribe(topic);
+            // const topic = '';
+            // this.redis.subscribe(topic);
         });
     }
 
@@ -36,14 +37,14 @@ export default class WebSocketServer {
             this.handle_incoming_message(ws, parsed);
         });
 
-        ws.on('close', () => {
-            this.connection_mapping.delete(ws.user.id);
-        });
+        // ws.on('close', () => {
+        //     this.connection_mapping.delete(ws.user.id);
+        // });
 
-        ws.on('error', () => {
-            this.connection_mapping.delete(ws.user.id);
-            ws.close();
-        });
+        // ws.on('error', () => {
+        //     this.connection_mapping.delete(ws.user.id);
+        //     ws.close();
+        // });
     }
 
     private async handle_incoming_message(ws: CustomWebSocket, message: ParsedMessage) {

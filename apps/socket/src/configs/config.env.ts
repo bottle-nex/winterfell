@@ -10,6 +10,7 @@ const envSchema = z.object({
     SOCKET_JWT_SECRET: z.string(),
     SOCKET_REDIS_URL: z.url(),
     SOCKET_PORT: z.string().transform((val) => Number(val)),
+    DATABASE_URL: z.url(),
 });
 
 function parseEnv() {

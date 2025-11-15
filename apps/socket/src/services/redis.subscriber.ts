@@ -1,7 +1,7 @@
 import { Redis } from 'ioredis';
 import { wsserver } from './init_services';
-import { ParsedMessage } from '../ws/WebsocketServer';
-import { env } from '../configs/env.config';
+import { ParsedMessage } from '../ws/socket.server';
+import { env } from '../configs/config.env';
 
 export default class RedisSubscriber {
     private subscriber: Redis;
