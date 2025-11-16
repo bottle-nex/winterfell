@@ -16,7 +16,7 @@ export default function ClientDocs() {
     }
 
     return (
-        <div className="relative min-h-screen h-full w-full grid grid-cols-[20%_62%_18%] pb-20 select-none">
+        <div className="relative min-h-screen h-full w-full grid grid-cols-[20%_62%_18%] pb-20">
             <div className="relative">
                 <ClientDocsLeftSidebar switchPanel={switchPanel} />
             </div>
@@ -24,7 +24,7 @@ export default function ClientDocs() {
                 <ClientDocsPanelRenderer clientPanel={activeContent} />
             </div>
             <div className="w-full h-full flex items-center">
-                <ClientDocsRightSidebar switchPanel={switchPanel} />
+                <ClientDocsRightSidebar />
             </div>
         </div>
     );

@@ -72,7 +72,7 @@ export default function Hero() {
                                 <RiCodeSSlashFill />
                             </Button>
                             <span
-                                onClick={() => router.push('/docs/client')}
+                                onClick={() => router.push('/docs')}
                                 className="font-light text-primary tracking-wide md:text-xs border-b border-primary py-1 cursor-pointer"
                             >
                                 Read Our Docs

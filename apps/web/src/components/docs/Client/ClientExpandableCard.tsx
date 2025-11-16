@@ -4,6 +4,7 @@ import { IoMdArrowDropdown, IoMdArrowDropright } from 'react-icons/io';
 
 export interface ExpandableStepsProps {
     title: string;
+    id?: string | undefined;
     steps: { number: number; title: string; description: string | React.ReactNode }[];
 }
 
@@ -41,8 +42,8 @@ export default function ClientExpandableSteps({ title, steps }: ExpandableStepsP
                                 {step.number}
                             </div>
 
-                            <div className="flex-1 pt-1">
-                                <h3 className="text-light/80 text-md font-semibold mb-2">
+                            <div className="flex-1 pt-1.5">
+                                <h3 className="text-light/80 text-sm font-semibold mb-2">
                                     {step.title}
                                 </h3>
                                 <div className="text-light/60 text-sm leading-relaxed">

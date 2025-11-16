@@ -12,7 +12,7 @@ import githubCodePushController from '../controllers/github-deploy-controller/gi
 import githubJobStatusController from '../controllers/github-deploy-controller/githubJobStatusController';
 import continueChatController from '../controllers/chat-controller/continueChatController';
 import getChatController from '../controllers/chat-controller/getChatController';
-import runCommandsController from '../controllers/contract-controller/run_commands_controller';
+// import runCommandsController from '../controllers/contract-controller/run_commands_controller';
 
 const router: Router = Router();
 
@@ -25,7 +25,7 @@ router.get('/health', (_req: Request, res: Response) => {
 // code-routes
 router.post('/new', authMiddleware, startChatController);
 router.post('/continue', authMiddleware, continueChatController);
-router.post('/contract/run-command', authMiddleware, runCommandsController);
+// router.post('/contract/run-command', authMiddleware, runCommandsController);
 router.post('/contract/export', authMiddleware, githubCodePushController);
 router.get('/contract/push-status', githubJobStatusController);
 router.post('/contract/get-chat', authMiddleware, getChatController);

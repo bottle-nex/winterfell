@@ -1,4 +1,4 @@
-import { ClientDocsPanel } from '../types/docs-types';
+import { ClientDocsPanel, GettingStartedSubContent, OverviewSubContent } from '../types/docs-types';
 import { IconType } from 'react-icons';
 import {
     HiOutlineInformationCircle,
@@ -15,6 +15,10 @@ import {
 export interface SidebarContent {
     title: string;
     type: ClientDocsPanel;
+    subSections?: {
+        id: string;
+        label: string;
+    }[];
     icon?: IconType;
     children?: SidebarContent[];
 }
@@ -23,11 +27,20 @@ export const contents: SidebarContent[] = [
     {
         title: 'Overview',
         type: ClientDocsPanel.OVERVIEW,
+        subSections: [
+            { id: OverviewSubContent.AI_CONTRACTS, label: 'AI Contracts' },
+            { id: OverviewSubContent.SMART_EDITOR, label: 'Smart Editor' },
+            { id: OverviewSubContent.ONE_CLICK_DEPLOYMENT, label: 'One Click Deployment' },
+        ],
         icon: HiOutlineInformationCircle,
     },
     {
         title: 'Getting Started',
         type: ClientDocsPanel.GETTING_STARTED,
+        subSections: [
+            { id: GettingStartedSubContent.ROOT_WORKSPACE, label: 'Root Workspace' },
+            { id: GettingStartedSubContent.PLAYGROUND_WORKSPACE, label: 'Playground Workspace' },
+        ],
         icon: HiOutlineRocketLaunch,
     },
     {

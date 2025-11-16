@@ -4,19 +4,23 @@ import ClientWorkspaceCard from './ClientWorkspaceCard';
 import ClientExpandableSteps from './ClientExpandableCard';
 import { LiaSlackHash } from 'react-icons/lia';
 import {
-    stepsAccount,
-    stepsCreateContract,
     stepsGithubExport,
-    stepsPlayground,
     stepsPlaygroundOverview,
-    stepsPlaygroundTools,
     stepsShell,
     stepsUpdateContract,
+    usePromptCopy,
+    stepsCreateYourAccoutn,
+    stepsBuildYourFirstContract,
+    stepsWorkInThePlayground,
 } from './getting_started_steps';
-import { doto } from '../../base/FeatureOne';
 import DocsHeading from '../../ui/DocsHeading';
+import { GettingStartedSubContent } from '@/src/types/docs-types';
 
 export default function ClientGettingStarted() {
+    const { promptRef, handleCopy } = usePromptCopy();
+    const buildSteps = stepsBuildYourFirstContract(promptRef, handleCopy);
+    const updateBuildSteps = stepsWorkInThePlayground(promptRef, handleCopy);
+
     return (
         <div
             className={cn(
@@ -24,60 +28,66 @@ export default function ClientGettingStarted() {
                 'text-left tracking-wide text-light/90 max-w-[80%] mx-auto',
             )}
         >
-            <DocsHeading firstText='Getting' secondText='Started' />
+            <div className="flex justify-between items-end gap-y-1 px-1 w-full">
+               <DocsHeading firstText='Winterfell' secondText='Guide'/>
+            </div>
 
-            <ClientWorkspaceCard
-                title="Root Workspace"
-                redirectLink="winterfell.dev"
-                description="Creating your first contract"
-                imageUrl="/Images/winterfell-dashboard.png"
-            />
-
-            <div className="w-full px-2 flex flex-col gap-y-2 mt-5">
-                <div className="px-1 tracking-wider text-xl text-light/80 flex items-center gap-x-2">
-                    <LiaSlackHash className="rotate-30 text-primary-light" />
-                    Start building with Winterfell
-                </div>
-
-                <div className="w-full border border-neutral-800 rounded-[4px] overflow-hidden">
-                    <ClientExpandableSteps title="Create your account" steps={stepsAccount} />
-                    <ClientExpandableSteps
-                        title="Create your first contract"
-                        steps={stepsCreateContract}
-                    />
-                    <ClientExpandableSteps title="Work in the playground" steps={stepsPlayground} />
-                    <ClientExpandableSteps title="Using the Winter Shell" steps={stepsShell} />
-                    <ClientExpandableSteps title="Export to GitHub" steps={stepsGithubExport} />
+            <div id={GettingStartedSubContent.ROOT_WORKSPACE} className="w-full scroll-mt-8  ">
+                <ClientWorkspaceCard
+                    title="Root Workspace"
+                    redirectLink="winterfell.dev"
+                    description="Creating your first contract"
+                    imageUrl="/images/winterfell-dashboard.png"
+                />
+                <div className="w-full px-2 flex flex-col gap-y-2 mt-10">
+                    <div className="px-1 tracking-wider text-xl text-light/80 flex items-center gap-x-2">
+                        <LiaSlackHash className="rotate-30 text-primary-light" />
+                        Start building with Winterfell
+                    </div>
+                    <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
+                        <ClientExpandableSteps
+                            title="Create your account"
+                            steps={stepsCreateYourAccoutn}
+                        />
+                        <ClientExpandableSteps
+                            title="Build your first contract"
+                            steps={buildSteps}
+                        />
+                        <ClientExpandableSteps
+                            title="Work in the playground"
+                            steps={updateBuildSteps}
+                        />
+                    </div>
                 </div>
             </div>
 
-            <ClientWorkspaceCard
-                className="mt-20"
-                title="Playground Workspace"
-                redirectLink="winterfell.dev/playground/(some-uuid)"
-                description="Update your contract"
-                imageUrl="/Images/winterfell-playground.png"
-            />
-
-            <div className="w-full px-2 flex flex-col gap-y-2 mt-5">
-                <div className="px-1 tracking-wider text-xl text-light/80 flex items-center gap-x-2">
-                    <LiaSlackHash className="rotate-30 text-primary-light" />
-                    Explore Playground Workspace
-                </div>
-
-                <div className="w-full border border-neutral-800 rounded-[4px] overflow-hidden">
-                    <ClientExpandableSteps
-                        title="Playground Overview"
-                        steps={stepsPlaygroundOverview}
-                    />
-                    <ClientExpandableSteps
-                        title="Update Your Contract"
-                        steps={stepsUpdateContract}
-                    />
-                    <ClientExpandableSteps
-                        title="Tools: Shell & GitHub"
-                        steps={stepsPlaygroundTools}
-                    />
+            <div
+                id={GettingStartedSubContent.PLAYGROUND_WORKSPACE}
+                className="w-full scroll-mt-8 mt-10"
+            >
+                <ClientWorkspaceCard
+                    title="Playground Workspace"
+                    redirectLink="winterfell.dev/playground/(some-uuid)"
+                    description="Update your contract"
+                    imageUrl="/images/winterfell-playground.png"
+                />
+                <div className="w-full px-2 flex flex-col gap-y-2 mt-10">
+                    <div className="px-1 tracking-wider text-xl text-light/80 flex items-center gap-x-2">
+                        <LiaSlackHash className="rotate-30 text-primary-light" />
+                        Explore Playground Workspace
+                    </div>
+                    <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
+                        <ClientExpandableSteps
+                            title="Playground Overview"
+                            steps={stepsPlaygroundOverview}
+                        />
+                        <ClientExpandableSteps
+                            title="Update Your Contract"
+                            steps={stepsUpdateContract}
+                        />
+                        <ClientExpandableSteps title="Using the Winter Shell" steps={stepsShell} />
+                        <ClientExpandableSteps title="Export to GitHub" steps={stepsGithubExport} />
+                    </div>
                 </div>
             </div>
         </div>
