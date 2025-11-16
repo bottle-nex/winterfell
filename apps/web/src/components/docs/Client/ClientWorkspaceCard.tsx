@@ -26,7 +26,7 @@ export default function ClientWorkspaceCard({
                     'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.84) 50%, rgba(0,0,0,0) 100%)',
             }}
             className={cn(
-                'h-[60vh] w-full rounded-[14px] overflow-hidden p-3 min-h-[96%]',
+                'h-[60vh] w-full rounded-[8px] overflow-hidden p-3 min-h-[96%]',
                 'border border-neutral-800 bg-neutral-900 relative',
                 'shadow-2xl',
                 className,
@@ -35,7 +35,7 @@ export default function ClientWorkspaceCard({
             <div className="absolute top-0 left-2 h-px bg-linear-to-r from-transparent via-light/50 to-transparent w-full" />
             <div
                 className={cn(
-                    'h-full w-full rounded-lg border border-neutral-800 group-hover:border-neutral-700 overflow-hidden',
+                    'h-full w-full rounded-[6px] border border-neutral-800 group-hover:border-neutral-700 overflow-hidden',
                     'p-8 flex flex-col gap-y-10 relative items-center',
                     'bg-linear-to-br from-neutral-900 via-neutral-800/40 to-neutral-900',
                     'group tracking-wide',
