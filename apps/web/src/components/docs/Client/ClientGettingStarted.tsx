@@ -9,9 +9,9 @@ import {
     stepsShell,
     stepsUpdateContract,
     usePromptCopy,
-    stepsCreateYourAccoutn,
     stepsBuildYourFirstContract,
     stepsWorkInThePlayground,
+    stepsCreateYourAccount,
 } from './getting_started_steps';
 import DocsHeading from '../../ui/DocsHeading';
 import { GettingStartedSubContent } from '@/src/types/docs-types';
@@ -29,7 +29,7 @@ export default function ClientGettingStarted() {
             )}
         >
             <div className="flex justify-between items-end gap-y-1 px-1 w-full">
-               <DocsHeading firstText='Winterfell' secondText='Guide'/>
+                <DocsHeading firstText='Winterfell' secondText='Guide' />
             </div>
 
             <div id={GettingStartedSubContent.ROOT_WORKSPACE} className="w-full scroll-mt-8  ">
@@ -47,7 +47,7 @@ export default function ClientGettingStarted() {
                     <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
                         <ClientExpandableSteps
                             title="Create your account"
-                            steps={stepsCreateYourAccoutn}
+                            steps={stepsCreateYourAccount}
                         />
                         <ClientExpandableSteps
                             title="Build your first contract"

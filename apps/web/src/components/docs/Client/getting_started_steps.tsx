@@ -1,7 +1,7 @@
 import { IoCopy } from 'react-icons/io5';
 import { ArrowRight } from 'lucide-react';
 import { MdTerminal } from 'react-icons/md';
-import { FaGithub } from 'react-icons/fa';
+import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { HiPencil } from 'react-icons/hi2';
 import { ReactNode, Ref, useRef } from 'react';
 import ToolTipComponent from '../../ui/TooltipComponent';
@@ -13,26 +13,49 @@ export interface Step {
     description: string | ReactNode;
 }
 
-// root-workspace potins
-export const stepsCreateYourAccoutn: Step[] = [
+export const stepsCreateYourAccount: Step[] = [
     {
         number: 1,
         title: 'Open Winterfell',
         description: (
-            <>
-                Visit{' '}
-                <span className="text-primary-light cursor-pointer hover:text-primary transition-colors">
-                    winterfell.dev
-                </span>{' '}
-                to begin.
-            </>
+            <div className="flex flex-col gap-y-3">
+                <p className="text-light/70 text-sm">
+                    Navigate to Winterfell to get started
+                </p>
+                <a
+                    href="https://winterfell.dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-light hover:text-primary transition-colors font-semibold text-sm underline decoration-primary-light/30 hover:decoration-primary w-fit"
+                >
+                    winterfell.dev →
+                </a>
+            </div>
         ),
     },
     {
         number: 2,
-        title: 'Sign in / Sign up',
-        description:
-            'Use Google or GitHub to authenticate. If already logged in, this step is skipped.',
+        title: 'Sign In / Sign Up',
+        description: (
+            <div className="flex flex-col gap-y-3">
+                <p className="text-light/70 text-sm">
+                    Use Google or GitHub to authenticate. If already logged in, this step is skipped.
+                </p>
+                <div className="flex flex-col gap-y-2.5 w-full max-w-sm">
+                    <Button className="bg-white hover:bg-light/95 text-dark-base px-4 py-2.5 rounded-[4px] font-semibold text-sm flex items-center justify-center gap-x-2.5 w-full transition-all hover:-translate-y-0.5 border border-light/20 shadow-sm">
+                        <FaGoogle className="w-4 h-4" />
+                        <span>Continue with Google</span>
+                    </Button>
+                    <Button className="bg-[#24292e] hover:bg-[#1a1e22] text-white px-4 py-2.5 rounded-[4px] font-semibold text-sm flex items-center justify-center gap-x-2.5 w-full transition-all hover:-translate-y-0.5 shadow-sm">
+                        <FaGithub className="w-4 h-4" />
+                        <span>Continue with GitHub</span>
+                    </Button>
+                </div>
+                <p className="text-xs text-light/50">
+                    By signing in, you agree to our Terms of Service and Privacy Policy.
+                </p>
+            </div>
+        ),
     },
 ];
 
@@ -40,115 +63,115 @@ export const stepsBuildYourFirstContract = (
     promptRef: Ref<HTMLDivElement>,
     handleCopy: () => void,
 ) => [
-    {
-        number: 1,
-        title: 'Paste the starter prompt',
-        description: 'Copy the provided starter prompt and paste it inside the input box.',
-    },
-    {
-        number: 2,
-        title: 'Starter Prompt',
-        description: (
-            <>
-                <div ref={promptRef} className="flex items-center gap-x-2 group">
-                    Create a counter program
-                    <ToolTipComponent content="copy">
-                        <span
-                            className="opacity-0 group-hover:opacity-100 transition-opacity transform duration-200 cursor-pointer"
-                            onClick={handleCopy}
-                        >
-                            <IoCopy className="" />
-                        </span>
-                    </ToolTipComponent>
-                </div>
-            </>
-        ),
-    },
-    {
-        number: 3,
-        title: 'Submit the prompt',
-        description: (
-            <>
-                <div className="flex items-center gap-x-1.5">
-                    Submit the prompt by either pressing{' '}
-                    <Button variant="docs" size="mini">
-                        Enter
-                    </Button>{' '}
-                    or clicking on
-                    <Button variant="docs" size="mini">
-                        <ArrowRight className="size-3.5 inline-block text-light/80" />
-                    </Button>{' '}
-                    button
-                </div>
-            </>
-        ),
-    },
-    {
-        number: 4,
-        title: 'Access the playground',
-        description: 'You will be automatically redirected to the playground page.',
-    },
-    {
-        number: 5,
-        title: 'Generation in progress',
-        description: 'Wait a few minutes and Winterfell will start generating your contract files.',
-    },
-];
+        {
+            number: 1,
+            title: 'Paste the starter prompt',
+            description: 'Copy the provided starter prompt and paste it inside the input box.',
+        },
+        {
+            number: 2,
+            title: 'Starter Prompt',
+            description: (
+                <>
+                    <div ref={promptRef} className="flex items-center gap-x-2 group">
+                        Create a counter program
+                        <ToolTipComponent content="copy">
+                            <span
+                                className="opacity-0 group-hover:opacity-100 transition-opacity transform duration-200 cursor-pointer"
+                                onClick={handleCopy}
+                            >
+                                <IoCopy className="" />
+                            </span>
+                        </ToolTipComponent>
+                    </div>
+                </>
+            ),
+        },
+        {
+            number: 3,
+            title: 'Submit the prompt',
+            description: (
+                <>
+                    <div className="flex items-center gap-x-1.5">
+                        Submit the prompt by either pressing{' '}
+                        <Button variant="docs" size="mini">
+                            Enter
+                        </Button>{' '}
+                        or clicking on
+                        <Button variant="docs" size="mini">
+                            <ArrowRight className="size-3.5 inline-block text-light/80" />
+                        </Button>{' '}
+                        button
+                    </div>
+                </>
+            ),
+        },
+        {
+            number: 4,
+            title: 'Access the playground',
+            description: 'You will be automatically redirected to the playground page.',
+        },
+        {
+            number: 5,
+            title: 'Generation in progress',
+            description: 'Wait a few minutes and Winterfell will start generating your contract files.',
+        },
+    ];
 
 export const stepsWorkInThePlayground = (
     promptRef: Ref<HTMLDivElement>,
     handleCopy: () => void,
 ) => [
-    {
-        number: 1,
-        title: 'Watch contract generation',
-        description: 'Your contract files appear in real-time inside the playground.',
-    },
-    {
-        number: 2,
-        title: 'Update your contract',
-        description:
-            'Write an update prompt and paste it into the input box to refine your contract.',
-    },
-    {
-        number: 3,
-        title: 'Update Prompt',
-        description: (
-            <>
-                <div ref={promptRef} className="flex items-center gap-x-2 group">
-                    Update the counter program with more instructions and update the test files.
-                    <ToolTipComponent content="copy">
-                        <span
-                            className="opacity-0 group-hover:opacity-100 transition-opacity transform duration-200 cursor-pointer"
-                            onClick={handleCopy}
-                        >
-                            <IoCopy className="" />
-                        </span>
-                    </ToolTipComponent>
-                </div>
-            </>
-        ),
-    },
-    {
-        number: 4,
-        title: 'Submit your updates',
-        description: (
-            <>
-                <div className="flex items-center gap-x-1.5">
-                    Press{' '}
-                    <Button variant="docs" size="mini">
-                        Enter
-                    </Button>{' '}
-                    or click on{' '}
-                    <Button variant="docs" size="mini" className="px-1.5 h-6">
-                        <ArrowRight className="size-3.5 inline-block text-light/80" />
-                    </Button>{' '}
-                    button to submit changes.
-                </div>
-            </>
-        ),
-    },
-];
+        {
+            number: 1,
+            title: 'Watch contract generation',
+            description: 'Your contract files appear in real-time inside the playground.',
+        },
+        {
+            number: 2,
+            title: 'Update your contract',
+            description:
+                'Write an update prompt and paste it into the input box to refine your contract.',
+        },
+        {
+            number: 3,
+            title: 'Update Prompt',
+            description: (
+                <>
+                    <div ref={promptRef} className="flex items-center gap-x-2 group">
+                        Update the counter program with more instructions and update the test files.
+                        <ToolTipComponent content="copy">
+                            <span
+                                className="opacity-0 group-hover:opacity-100 transition-opacity transform duration-200 cursor-pointer"
+                                onClick={handleCopy}
+                            >
+                                <IoCopy className="" />
+                            </span>
+                        </ToolTipComponent>
+                    </div>
+                </>
+            ),
+        },
+        {
+            number: 4,
+            title: 'Submit your updates',
+            description: (
+                <>
+                    <div className="flex items-center gap-x-1.5">
+                        Press{' '}
+                        <Button variant="docs" size="mini">
+                            Enter
+                        </Button>{' '}
+                        or click on{' '}
+                        <Button variant="docs" size="mini" className="px-1.5 h-6">
+                            <ArrowRight className="size-3.5 inline-block text-light/80" />
+                        </Button>{' '}
+                        button to submit changes.
+                    </div>
+                </>
+            ),
+        },
+    ];
 
 // playgroun-workspace
 export const stepsShell: Step[] = [
