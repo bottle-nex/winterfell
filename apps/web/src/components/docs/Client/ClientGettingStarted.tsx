@@ -14,6 +14,7 @@ import {
     stepsUpdateContract,
 } from './getting_started_steps';
 import { doto } from '../../base/FeatureOne';
+import DocsHeading from '../../ui/DocsHeading';
 
 export default function ClientGettingStarted() {
     return (
@@ -23,9 +24,7 @@ export default function ClientGettingStarted() {
                 'text-left tracking-wide text-light/90 max-w-[80%] mx-auto',
             )}
         >
-            <div className="flex justify-between items-end gap-y-1 px-1 w-full">
-                <span className={cn("text-6xl", doto.className)}>Getting Started</span>
-            </div>
+            <DocsHeading firstText='Getting' secondText='Started' />
 
             <ClientWorkspaceCard
                 title="Root Workspace"
@@ -40,7 +39,7 @@ export default function ClientGettingStarted() {
                     Start building with Winterfell
                 </div>
 
-                <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
+                <div className="w-full border border-neutral-800 rounded-[4px] overflow-hidden">
                     <ClientExpandableSteps title="Create your account" steps={stepsAccount} />
                     <ClientExpandableSteps
                         title="Create your first contract"
@@ -66,7 +65,7 @@ export default function ClientGettingStarted() {
                     Explore Playground Workspace
                 </div>
 
-                <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
+                <div className="w-full border border-neutral-800 rounded-[4px] overflow-hidden">
                     <ClientExpandableSteps
                         title="Playground Overview"
                         steps={stepsPlaygroundOverview}

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/src/lib/utils';
 import { doto } from '../../base/FeatureOne';
+import DocsHeading from '../../ui/DocsHeading';
 
 const overviewPoints = [
     {
@@ -34,24 +35,7 @@ export default function ClientOverview() {
                 <div className="grid grid-cols-[60%_40%] w-full ">
                     <div className="">
                         <div className="text-6xl text-left flex flex-col items-start justify-center">
-                            <div className={cn('flex items-center gap-x-3', doto.className)}>
-                                <motion.div
-                                    initial={{ y: -40, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ duration: 0.6 }}
-                                    className="font-bold"
-                                >
-                                    Winterfell
-                                </motion.div>
-                                <motion.i
-                                    transition={{ duration: 0.6 }}
-                                    initial={{ x: 40, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    className="font-normal text-primary"
-                                >
-                                    Docs
-                                </motion.i>
-                            </div>
+                            <DocsHeading firstText='Winterfell' secondText='Docs' />
                         </div>
 
                         <div className="text-md text-light/70 tracking-wider max-w-[600px] mt-6">
