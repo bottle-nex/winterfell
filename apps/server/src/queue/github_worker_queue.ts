@@ -12,8 +12,6 @@ export class GithubWorkerQueue {
     constructor(queue_name: string) {
         this.queue = new Queue(queue_name, queue_config);
         this.worker = new Worker(queue_name, this.processJob.bind(this), queue_config);
-
-        console.log(`GitHub push queue initialized: ${queue_name}`);
     }
 
     private async processJob(job: Job<GithubPushJobData>) {
@@ -24,6 +22,7 @@ export class GithubWorkerQueue {
             await this.ensureRepository(octokit, owner, repo_name);
 
             const files = await get_s3_codebase(contract_id);
+
             if (!files || files.length === 0) {
                 throw new Error('No files found in codebase');
             }
@@ -55,10 +54,10 @@ export class GithubWorkerQueue {
                 console.log(`Creating repository ${repo_name} with initial commit...`);
 
                 await octokit.repos.createForAuthenticatedUser({
-                    name: repo_name,
+                    name: 'Winterfell - AI-Powered Anchor Contract Workspace',
                     private: false,
                     auto_init: true,
-                    description: `Deployed from Winterfell`,
+                    description: ``,
                 });
 
                 console.log(`Repository ${repo_name} created successfully`);
@@ -121,6 +120,14 @@ export class GithubWorkerQueue {
         console.log(`creating commit...`);
         const { data: commit } = await octokit.git.createCommit({
             owner,
+            author: {
+                name: 'Winterfell',
+                email: 'winterfell.dev.official@gmail.com',
+            },
+            committer: {
+                name: 'Winterfell',
+                email: 'winterfell.dev.official@gmail.com',
+            },
             repo: repo_name,
             message: `Deployed from winterfell \n\nUser: ${user_id}\nFiles: ${files.length}`,
             tree: tree.sha,

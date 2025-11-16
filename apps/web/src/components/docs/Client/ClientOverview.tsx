@@ -37,7 +37,7 @@ export default function ClientOverview() {
                 <div className="grid grid-cols-[60%_40%] w-full ">
                     <div className="">
                         <div className="text-6xl text-left flex flex-col items-start justify-center">
-                            <DocsHeading firstText='Winterfell' secondText='Docs' />
+                            <DocsHeading firstText="Winterfell" secondText="Docs" />
                         </div>
 
                         <div className="text-md text-light/70 tracking-wider max-w-[600px] mt-6">

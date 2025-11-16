@@ -10,8 +10,9 @@ const tabs = [
         icon: Box,
         content: {
             title: 'Winterfell Sandbox',
-            description: 'Our E2B-powered sandbox environment provides a secure, isolated space for building and testing Anchor smart contracts. No local setup required—just write, compile, and deploy directly from your browser.'
-        }
+            description:
+                'Our E2B-powered sandbox environment provides a secure, isolated space for building and testing Anchor smart contracts. No local setup required—just write, compile, and deploy directly from your browser.',
+        },
     },
     {
         id: 'features',
@@ -19,8 +20,9 @@ const tabs = [
         icon: Cpu,
         content: {
             title: 'Powered by E2B',
-            description: 'Leverage cloud-based execution with full Rust and Anchor framework support. Each session runs in a dedicated container with pre-configured dependencies, ensuring consistent builds and eliminating environment conflicts.'
-        }
+            description:
+                'Leverage cloud-based execution with full Rust and Anchor framework support. Each session runs in a dedicated container with pre-configured dependencies, ensuring consistent builds and eliminating environment conflicts.',
+        },
     },
     {
         id: 'security',
@@ -28,8 +30,9 @@ const tabs = [
         icon: Shield,
         content: {
             title: 'Enterprise-Grade Security',
-            description: 'Every sandbox instance is completely isolated with network restrictions and resource limits. Your code runs in a secure environment that prevents unauthorized access and ensures safe testing before mainnet deployment.'
-        }
+            description:
+                'Every sandbox instance is completely isolated with network restrictions and resource limits. Your code runs in a secure environment that prevents unauthorized access and ensures safe testing before mainnet deployment.',
+        },
     },
     {
         id: 'deploy',
@@ -37,15 +40,16 @@ const tabs = [
         icon: Rocket,
         content: {
             title: 'One-Click Deployment',
-            description: 'Seamlessly transition from development to deployment. Test on devnet, validate on testnet, and deploy to mainnet—all from the same interface. Winterfell handles the complexity so you can focus on building.'
-        }
-    }
+            description:
+                'Seamlessly transition from development to deployment. Test on devnet, validate on testnet, and deploy to mainnet—all from the same interface. Winterfell handles the complexity so you can focus on building.',
+        },
+    },
 ];
 
 export default function ClientDocsE2BDetails() {
     const [activeTab, setActiveTab] = useState('overview');
 
-    const currentTab = tabs.find(tab => tab.id === activeTab);
+    const currentTab = tabs.find((tab) => tab.id === activeTab);
 
     return (
         <div className="w-full mt-12">
@@ -58,10 +62,9 @@ export default function ClientDocsE2BDetails() {
                                 variant={'ghost'}
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex-1 px-6 py-4 flex items-center justify-center gap-2 transition-all duration-300 relative hover:bg-dark-base hover:text-light ${activeTab === tab.id
-                                    ? 'text-primary'
-                                    : 'text-light'
-                                    }`}
+                                className={`flex-1 px-6 py-4 flex items-center justify-center gap-2 transition-all duration-300 relative hover:bg-dark-base hover:text-light ${
+                                    activeTab === tab.id ? 'text-primary' : 'text-light'
+                                }`}
                             >
                                 <Icon className="w-4 h-4" />
                                 <span className="font-medium text-sm">{tab.label}</span>

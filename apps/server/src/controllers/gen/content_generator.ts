@@ -84,6 +84,13 @@ export default class ContentGenerator {
             const final_code = mergeWithLLMFiles(base_files, llmGeneratedFiles);
 
             await this.saveLLMResponseToDb(llmGeneratedFiles, contractId);
+            const existing = await prisma.contract.findUnique({
+                where: { id: contractId },
+            });
+            if (!existing) {
+                console.error('contract id not found');
+            }
+
             await prisma.contract.update({
                 where: {
                     id: contractId,

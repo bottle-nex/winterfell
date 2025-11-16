@@ -6,14 +6,16 @@ import Card from '../ui/Card';
 import LogoutModal from './LogoutModal';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { useHandleClickOutside } from '@/src/hooks/useHandleClickOutside';
+import { useRouter } from 'next/navigation';
 
 interface ProfileMenuProps {
     setOpenProfleMenu: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ProfileMenu({ setOpenProfleMenu }: ProfileMenuProps) {
-    const [openLogoutModal, setOpenLogoutModal] = useState(false);
+    const [openLogoutModal, setOpenLogoutModal] = useState<boolean>(false);
     const profileMenuRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
     function handleLogoutClick() {
         setOpenLogoutModal(true);
     }
@@ -26,7 +28,10 @@ export default function ProfileMenu({ setOpenProfleMenu }: ProfileMenuProps) {
         >
             <Card className="p-0 bg-transparent border-0 shadow-none font-semibold">
                 <div>
-                    <div className="px-4 py-[11px] text-xs text-light hover:bg-dark/30 dark:text-light-base border-b border-neutral-800 flex justify-between cursor-pointer tracking-wide">
+                    <div
+                        onClick={() => router.push('/docs')}
+                        className="px-4 py-[11px] text-xs text-light hover:bg-dark/30 dark:text-light-base border-b border-neutral-800 flex justify-between cursor-pointer tracking-wide"
+                    >
                         Docs
                         <SlDocs />
                     </div>
