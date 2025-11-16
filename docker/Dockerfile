@@ -1,49 +1,51 @@
 FROM ubuntu:24.04
 
-# Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Update and install necessary packages
 RUN apt-get update && apt-get install -y \
-    vim \
-    curl \
-    wget \
-    ca-certificates \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    libudev-dev \
-    git \
+    curl wget ca-certificates build-essential \
+    pkg-config libssl-dev libudev-dev git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Install everything and extract the actual paths in ONE layer
+RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash && \
+    # Source the configs to get the environment
+    . ~/.bashrc && \
+    . ~/.profile && \
+    # Verify everything works
+    echo "=== Verifying installations ===" && \
+    rustc --version && \
+    cargo --version && \
+    solana --version && \
+    anchor --version && \
+    node --version && \
+    yarn --version && \
+    echo "=== All tools verified ===" && \
+    # Extract the actual PATH that works
+    echo "Working PATH: $PATH"
 
-# Install Node.js 20.x LTS
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
+# Set the environment based on standard installation locations
+ENV PATH="/root/.avm/bin:/root/.cargo/bin:/root/.local/share/solana/install/active_release/bin:${PATH}"
 
-# Install Yarn
-RUN npm install -g yarn
+# Create an entrypoint that sources the environment
+RUN echo '#!/bin/bash' > /entrypoint.sh && \
+    echo '. ~/.bashrc 2>/dev/null || true' >> /entrypoint.sh && \
+    echo '. ~/.profile 2>/dev/null || true' >> /entrypoint.sh && \
+    echo 'exec "$@"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
 
-# Install Solana CLI only (skip Anchor for now)
-ENV SOLANA_INSTALL_INIT_SKIP_ANCHOR=true
-RUN curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+# Pre-cache dependencies (source environment first)
+RUN . ~/.bashrc && \
+    . ~/.profile && \
+    mkdir -p /tmp/dummy && \
+    cd /tmp/dummy && \
+    anchor init dummy --no-git && \
+    cd dummy && \
+    anchor build && \
+    rm -rf /tmp/dummy
 
-# Add Solana to PATH
-ENV PATH="/root/.local/share/solana/install/active_release/bin:${PATH}"
-
-# Install Anchor CLI using cargo (builds from source, avoids GLIBC issues)
-RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-RUN avm install latest && avm use latest
-
-# Add AVM to PATH
-ENV PATH="/root/.avm/bin:${PATH}"
-
-# Set working directory
+ENV CARGO_HOME=/root/.cargo
 WORKDIR /workspace
 
-# Default command
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
