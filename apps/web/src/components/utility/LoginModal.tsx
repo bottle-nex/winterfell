@@ -39,7 +39,7 @@ export default function LoginModal({ opensignInModal, setOpenSignInModal }: Logi
                                 className="w-full flex items-center justify-center gap-3 px-6 py-5 text-sm font-medium bg-[#0f0f0f] hover:bg-[#141414] border border-neutral-800 rounded-[8px] transition-all"
                             >
                                 <Image
-                                    src="/Images/google.png"
+                                    src="/images/google.png"
                                     height={20}
                                     width={20}
                                     alt="G"

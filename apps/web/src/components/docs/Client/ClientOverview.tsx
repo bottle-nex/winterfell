@@ -4,23 +4,25 @@ import Image from 'next/image';
 import SafariBrowser from '../../ui/SafariBrowser';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/src/lib/utils';
-import { doto } from '../../base/FeatureOne';
 import DocsHeading from '../../ui/DocsHeading';
+import { OverviewSubContent } from '@/src/types/docs-types';
 
 const overviewPoints = [
     {
+        id: OverviewSubContent.AI_CONTRACTS,
         title: 'AI Contracts',
         description: 'Generate and optimize Rust smart contracts instantly.',
         image: '/images/demo-1.jpg',
     },
     {
+        id: OverviewSubContent.SMART_EDITOR,
         title: 'Smart Editor',
         description: 'Edit, refactor, and visualize your Anchor programs easily.',
         image: '/images/demo-2.jpg',
     },
     {
-        title: 'One-Click Deployment',
+        id: OverviewSubContent.ONE_CLICK_DEPLOYMENT,
+        title: 'One Click Deployment',
         description: 'Deploy and interact with Solana contracts effortlessly.',
         image: '/images/demo-3.jpg',
     },
@@ -47,10 +49,10 @@ export default function ClientOverview() {
                     </div>
                     <div className="relative flex-1 w-full h-full">
                         <Image
-                            src="/Images/svgs/monkey.svg"
+                            src="/images/svgs/monkey.svg"
                             fill
                             unoptimized
-                            alt=""
+                            alt="overview-image"
                             className="rounded-2 object-cover invert scale-125 sepia-[0.3] hue-rotate-20 saturate-[10]"
                         />
                     </div>
@@ -72,12 +74,12 @@ export default function ClientOverview() {
                 <div className="w-full flex gap-x-5 mt-6">
                     {overviewPoints.map((overview, index) => (
                         <StartCards
+                            id={overview.id}
                             key={overview.title}
                             delay={index / 10}
                             heading={overview.title}
                             description={overview.description}
                             onMouseEnter={() => setActiveImage(overview.image)}
-                            onMouseLeave={() => setActiveImage('/images/demo-2.jpg')}
                         />
                     ))}
                 </div>
@@ -94,6 +96,7 @@ interface StartCardsProps {
     icon?: React.ReactElement;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
+    id?: string | undefined;
     delay: number;
 }
 
@@ -101,19 +104,21 @@ function StartCards({
     heading,
     description,
     icon,
+    id,
     delay = 0,
     onMouseEnter,
     onMouseLeave,
 }: StartCardsProps) {
     return (
-        <motion.div
+        <motion.section
+            id={id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.2, ease: 'easeOut' }}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             className="flex flex-col max-w-60 items-start gap-y-1 rounded-md border border-neutral-700 bg-dark 
-                 px-3 py-2 text-left text-light/80 select-none 
+                 px-3 py-2 text-left text-light/80 select-none scroll-mt-24
                  transition-transform duration-300 hover:scale-105 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.1)]"
         >
             <div className="flex items-center gap-x-1.5">
@@ -121,6 +126,6 @@ function StartCards({
                 <span className="font-semibold tracking-wide text-md">{heading}</span>
             </div>
             <p className="text-sm text-light/60 tracking-wide">{description}</p>
-        </motion.div>
+        </motion.section>
     );
 }

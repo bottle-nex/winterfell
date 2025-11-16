@@ -9,6 +9,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
+                docs: 'h-fit w-fit bg-dark px-1.5 text-light/80 border-b-2 border-r-2 border-neutral-700 rounded-xs text-[13px] tracking-wider font-semibold hover:-translate-y-[2px] transition-transform cursor-auto',
                 default: 'bg-primary text-primary-foreground hover:bg-primary/90',
                 destructive:
                     'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
@@ -20,6 +21,7 @@ const buttonVariants = cva(
             },
             size: {
                 default: 'h-9 px-4 py-2 has-[>svg]:px-3',
+                mini: 'h-6 rounded-xs px-2',
                 xs: 'h-7 rounded-[4px] px-2 py-2 gap-1',
                 sm: 'h-8 rounded-[4px] gap-1.5 px-3 has-[>svg]:px-2.5',
                 lg: 'h-10 rounded-[4px] px-6 has-[>svg]:px-4',
