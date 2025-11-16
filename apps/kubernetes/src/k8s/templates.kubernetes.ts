@@ -77,7 +77,7 @@ export default function podTemplate(configs: PodConfig) {
       containers: [
         {
           name: "anchor-executor",
-          image: "winterfellhubwinterfell-base:latest",
+          image: "winterfellhub:winterfell-base:latest",
           command: ["/bin/sh", "-c"],
           args: [
             `

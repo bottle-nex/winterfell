@@ -1,4 +1,4 @@
-import { CoreApi, CoreV1Api, KubeConfig } from "@kubernetes/client-node";
+import { CoreV1Api, KubeConfig } from "@kubernetes/client-node";
 
 export default class KubernetesClient {
   public core_api: CoreV1Api;

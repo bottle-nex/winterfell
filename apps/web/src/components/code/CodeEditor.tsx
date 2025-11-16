@@ -126,7 +126,7 @@ export default function CodeEditor(): JSX.Element {
                         onMount={handleEditorDidMount}
                         theme="clean-dark"
                         options={{
-                            readOnly: true,
+                            readOnly: false,
                         }}
                         value={currentCode}
                     />
