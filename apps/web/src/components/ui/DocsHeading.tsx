@@ -1,6 +1,6 @@
-import { cn } from "@/src/lib/utils";
-import { doto } from "../base/FeatureOne";
-import { motion } from 'framer-motion'
+import { cn } from '@/src/lib/utils';
+import { doto } from '../base/FeatureOne';
+import { motion } from 'framer-motion';
 
 interface DocsHeadingProps {
     firstText?: string;
@@ -16,7 +16,6 @@ export default function DocsHeading({ firstText, secondText }: DocsHeadingProps)
                 transition={{ duration: 0.6 }}
                 className="font-bold"
             >
-
                 {firstText}
             </motion.div>
             <motion.i
@@ -28,5 +27,5 @@ export default function DocsHeading({ firstText, secondText }: DocsHeadingProps)
                 {secondText}
             </motion.i>
         </div>
-    )
+    );
 }

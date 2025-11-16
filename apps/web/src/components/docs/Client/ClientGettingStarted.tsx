@@ -29,7 +29,7 @@ export default function ClientGettingStarted() {
             )}
         >
             <div className="flex justify-between items-end gap-y-1 px-1 w-full">
-                <DocsHeading firstText='Winterfell' secondText='Guide' />
+                <DocsHeading firstText="Winterfell" secondText="Guide" />
             </div>
 
             <div id={GettingStartedSubContent.ROOT_WORKSPACE} className="w-full scroll-mt-8  ">

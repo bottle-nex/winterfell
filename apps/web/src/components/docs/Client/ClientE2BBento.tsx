@@ -1,5 +1,12 @@
 import React from 'react';
-import { RiShieldFill, RiFlightLandFill, RiCodeSSlashFill, RiTerminalBoxFill, RiBox3Fill, RiRocketFill } from 'react-icons/ri';
+import {
+    RiShieldFill,
+    RiFlightLandFill,
+    RiCodeSSlashFill,
+    RiTerminalBoxFill,
+    RiBox3Fill,
+    RiRocketFill,
+} from 'react-icons/ri';
 import { IconType } from 'react-icons';
 
 interface Feature {
@@ -21,11 +28,12 @@ const features: Feature[] = [
     {
         id: 'secure',
         title: 'Isolated Execution',
-        description: 'Each workspace runs in its own container. Your contracts are compiled and tested in a secure environment with zero interference.',
+        description:
+            'Each workspace runs in its own container. Your contracts are compiled and tested in a secure environment with zero interference.',
         icon: RiShieldFill,
         accent: '#6c44fc',
         span: 'col-span-2 row-span-2',
-        delay: 0.1
+        delay: 0.1,
     },
     {
         id: 'instant',
@@ -34,25 +42,27 @@ const features: Feature[] = [
         icon: RiFlightLandFill,
         accent: '#9679ffea',
         span: 'col-span-2 row-span-1',
-        delay: 0.2
+        delay: 0.2,
     },
     {
         id: 'anchor',
         title: 'Native Anchor',
-        description: 'Full Anchor framework support out of the box. All dependencies, all tools, zero configuration.',
+        description:
+            'Full Anchor framework support out of the box. All dependencies, all tools, zero configuration.',
         icon: RiCodeSSlashFill,
         accent: '#1c1d20',
         span: 'col-span-2 row-span-1',
-        delay: 0.3
+        delay: 0.3,
     },
     {
         id: 'terminal',
         title: 'Built-in Terminal',
-        description: 'Run commands, check logs, debug—everything you need without leaving the browser.',
+        description:
+            'Run commands, check logs, debug—everything you need without leaving the browser.',
         icon: RiTerminalBoxFill,
         accent: '#6c44fc',
         span: 'col-span-1 row-span-1',
-        delay: 0.4
+        delay: 0.4,
     },
     {
         id: 'deps',
@@ -61,7 +71,7 @@ const features: Feature[] = [
         icon: RiBox3Fill,
         accent: '#9679ffea',
         span: 'col-span-1 row-span-1',
-        delay: 0.5
+        delay: 0.5,
     },
     {
         id: 'deploy',
@@ -70,8 +80,8 @@ const features: Feature[] = [
         icon: RiRocketFill,
         accent: '#6c44fc',
         span: 'col-span-2 row-span-1',
-        delay: 0.6
-    }
+        delay: 0.6,
+    },
 ];
 
 function BentoCard({ feature, index }: BentoCardProps) {
@@ -85,13 +95,13 @@ function BentoCard({ feature, index }: BentoCardProps) {
                 className="h-full rounded-[4px] p-6 transition-all duration-300 hover:scale-[1.02] cursor-pointer relative overflow-hidden"
                 style={{
                     backgroundColor: isDark ? feature.accent : '#fdf9f0',
-                    border: isDark ? 'none' : '1px solid rgba(108, 68, 252, 0.1)'
+                    border: isDark ? 'none' : '1px solid rgba(108, 68, 252, 0.1)',
                 }}
             >
                 <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{
-                        background: `radial-gradient(circle at top right, ${feature.accent}15, transparent 70%)`
+                        background: `radial-gradient(circle at top right, ${feature.accent}15, transparent 70%)`,
                     }}
                 />
 
@@ -99,13 +109,12 @@ function BentoCard({ feature, index }: BentoCardProps) {
                     <div
                         className="w-12 h-12 rounded-[4px] flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 shrink-0"
                         style={{
-                            backgroundColor: isDark ? 'rgba(150, 121, 255, 0.15)' : 'rgba(108, 68, 252, 0.08)'
+                            backgroundColor: isDark
+                                ? 'rgba(150, 121, 255, 0.15)'
+                                : 'rgba(108, 68, 252, 0.08)',
                         }}
                     >
-                        <Icon
-                            size={24}
-                            style={{ color: isDark ? '#9679ffea' : feature.accent }}
-                        />
+                        <Icon size={24} style={{ color: isDark ? '#9679ffea' : feature.accent }} />
                     </div>
 
                     <div className="flex-1 text-left">
@@ -119,7 +128,7 @@ function BentoCard({ feature, index }: BentoCardProps) {
                             className={`leading-relaxed ${isLarge ? 'text-[15px]' : 'text-[14px]'}`}
                             style={{
                                 color: isDark ? 'rgba(253, 249, 240, 0.75)' : '#141517',
-                                opacity: isDark ? 1 : 0.8
+                                opacity: isDark ? 1 : 0.8,
                             }}
                         >
                             {feature.description}
@@ -127,11 +136,14 @@ function BentoCard({ feature, index }: BentoCardProps) {
                     </div>
 
                     {isLarge && (
-                        <div className="mt-4 flex items-center gap-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                        <div
+                            className="mt-4 flex items-center gap-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity"
                             style={{ color: isDark ? '#9679ffea' : feature.accent }}
                         >
                             <span>Explore</span>
-                            <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            <span className="group-hover:translate-x-1 transition-transform">
+                                →
+                            </span>
                         </div>
                     )}
                 </div>
@@ -144,16 +156,10 @@ export default function ClientE2BBento() {
     return (
         <div className="w-full rounded-[4px]">
             <div className="mb-4 text-left bg-primary p-6 rounded-[4px]">
-                <h2
-                    className="text-5xl font-bold mb-4 tracking-tight"
-                >
-                    Winterfell Runtime
-                </h2>
-                <p
-                    className="text-lg max-w-2xl"
-                >
-                    A sandboxed development environment built for Anchor smart contracts.
-                    Write, compile, test, and deploy—all in one place.
+                <h2 className="text-5xl font-bold mb-4 tracking-tight">Winterfell Runtime</h2>
+                <p className="text-lg max-w-2xl">
+                    A sandboxed development environment built for Anchor smart contracts. Write,
+                    compile, test, and deploy—all in one place.
                 </p>
             </div>
 

@@ -36,7 +36,7 @@ export default function ClientDocsLeftSidebar({ switchPanel }: ClientDocsSidebar
 
     return (
         <div className="min-h-screen z-50 bg-dark border-l border-neutral-800 fixed top-0 left-0 w-[20vw] flex flex-col justify-between">
-            <div className='px-8 py-6'>
+            <div className="px-8 py-6">
                 <div className="relative">
                     <AppLogo />
                 </div>
@@ -77,7 +77,9 @@ export default function ClientDocsLeftSidebar({ switchPanel }: ClientDocsSidebar
                                             <Icon
                                                 className={cn(
                                                     'transition-colors duration-300',
-                                                    isActive ? 'text-primary-light' : 'text-white/50',
+                                                    isActive
+                                                        ? 'text-primary-light'
+                                                        : 'text-white/50',
                                                 )}
                                                 size={16}
                                             />
@@ -160,7 +162,6 @@ export default function ClientDocsLeftSidebar({ switchPanel }: ClientDocsSidebar
                     winterfell.dev
                 </div>
             </div>
-
         </div>
     );
 }
