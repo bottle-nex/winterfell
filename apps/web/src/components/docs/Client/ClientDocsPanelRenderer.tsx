@@ -4,6 +4,7 @@ import ClientOverview from './ClientOverview';
 import ClientE2B from './ClientE2B';
 import ClientDocsExporting from './ClientDocsExporting';
 import ClientDocsDeployments from './ClientDocsDeployments';
+import ClientDocsWinterShell from './ClientDocsWinterShell';
 
 interface ClientDocsPanelRendererProps {
     clientPanel: ClientDocsPanel;
@@ -18,6 +19,8 @@ export default function ClientDocsPanelRenderer({ clientPanel }: ClientDocsPanel
                 return <ClientGettingStarted />;
             case ClientDocsPanel.SANDBOX:
                 return <ClientE2B />;
+            case ClientDocsPanel.WINTER_SHELL:
+                return <ClientDocsWinterShell />;
             case ClientDocsPanel.EXPORTING:
                 return <ClientDocsExporting />;
             case ClientDocsPanel.DEPLOYMENT:

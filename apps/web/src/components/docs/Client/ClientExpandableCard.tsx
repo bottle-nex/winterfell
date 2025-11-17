@@ -8,7 +8,7 @@ export interface ExpandableStepsProps {
     steps: { number: number; title: string; description: string | React.ReactNode }[];
 }
 
-export default function ClientExpandableSteps({ title, steps }: ExpandableStepsProps) {
+export default function ClientExpandableSteps({ title, steps, id }: ExpandableStepsProps) {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     return (
@@ -28,7 +28,7 @@ export default function ClientExpandableSteps({ title, steps }: ExpandableStepsP
             </Button>
 
             {isExpanded && (
-                <div className="px-4 py-4">
+                <div id={id} className="px-4 py-4">
                     {steps.map((step, index) => (
                         <div
                             key={index}

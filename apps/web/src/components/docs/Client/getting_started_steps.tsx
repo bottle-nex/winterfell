@@ -226,7 +226,7 @@ export const stepsShell: Step[] = [
         description: (
             <div className="flex items-center gap-x-1.5">
                 <span className="font-semibold">winter build: </span> compiles and builds your
-                contrac
+                contract
             </div>
         ),
     },
@@ -276,7 +276,15 @@ export const stepsGithubExport: Step[] = [
     {
         number: 4,
         title: 'Export or download',
-        description: 'Press Enter to export to GitHub or download the ZIP file.',
+        description: (
+            <div className="flex items-center gap-x-1.5">
+                Press{' '}
+                <Button variant="docs" size="mini">
+                    Enter
+                </Button>{' '}
+                to export to GitHub or download the ZIP file.
+            </div>
+        ),
     },
 ];
 

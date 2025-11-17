@@ -5,7 +5,6 @@ import DocsHeading from '../../ui/DocsHeading';
 import Image from 'next/image';
 import ClientExpandableSteps from './ClientExpandableCard';
 import { exportingSteps } from './exporting_steps';
-import { cn } from '@/src/lib/utils';
 
 interface Feature {
     icon: JSX.Element;
