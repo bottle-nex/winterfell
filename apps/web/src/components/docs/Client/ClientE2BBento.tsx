@@ -84,7 +84,7 @@ const features: Feature[] = [
     },
 ];
 
-function BentoCard({ feature, index }: BentoCardProps) {
+function BentoCard({ feature }: BentoCardProps) {
     const Icon = feature.icon;
     const isLarge = feature.span.includes('row-span-2');
     const isDark = feature.accent === '#1c1d20';

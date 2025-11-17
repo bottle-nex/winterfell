@@ -1,5 +1,5 @@
+'use client';
 import ClientDocsE2BDetails from './ClientDocsE2BDetails';
-import ClientE2BBento from './ClientE2BBento';
 import DocsHeading from '../../ui/DocsHeading';
 import BentoGrid from './BentoGrid';
 export default function ClientE2B() {

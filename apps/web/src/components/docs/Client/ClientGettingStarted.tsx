@@ -32,7 +32,7 @@ export default function ClientGettingStarted() {
                 <DocsHeading firstText="Winterfell" secondText="Guide" />
             </div>
 
-            <div id={GettingStartedSubContent.ROOT_WORKSPACE} className="w-full scroll-mt-8  ">
+            <div className="w-full scroll-mt-8  ">
                 <ClientWorkspaceCard
                     title="Root Workspace"
                     redirectLink="winterfell.dev"
@@ -46,10 +46,12 @@ export default function ClientGettingStarted() {
                     </div>
                     <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
                         <ClientExpandableSteps
+                            id={GettingStartedSubContent.CREATE_ACCOUNT}
                             title="Create your account"
                             steps={stepsCreateYourAccount}
                         />
                         <ClientExpandableSteps
+                            id={GettingStartedSubContent.FIRST_PROMPT}
                             title="Build your first contract"
                             steps={buildSteps}
                         />
@@ -61,10 +63,7 @@ export default function ClientGettingStarted() {
                 </div>
             </div>
 
-            <div
-                id={GettingStartedSubContent.PLAYGROUND_WORKSPACE}
-                className="w-full scroll-mt-8 mt-10"
-            >
+            <div className="w-full scroll-mt-8 mt-10">
                 <ClientWorkspaceCard
                     title="Playground Workspace"
                     redirectLink="winterfell.dev/playground/(some-uuid)"
@@ -78,15 +77,25 @@ export default function ClientGettingStarted() {
                     </div>
                     <div className="w-full border border-neutral-800 rounded-lg overflow-hidden">
                         <ClientExpandableSteps
+                            id={GettingStartedSubContent.PLAYGROUND_OVERVIEW}
                             title="Playground Overview"
                             steps={stepsPlaygroundOverview}
                         />
                         <ClientExpandableSteps
+                            id={GettingStartedSubContent.UPDATE_CONTRACT}
                             title="Update Your Contract"
                             steps={stepsUpdateContract}
                         />
-                        <ClientExpandableSteps title="Using the Winter Shell" steps={stepsShell} />
-                        <ClientExpandableSteps title="Export to GitHub" steps={stepsGithubExport} />
+                        <ClientExpandableSteps
+                            id={GettingStartedSubContent.WINTER_SHELL}
+                            title="Using the Winter Shell"
+                            steps={stepsShell}
+                        />
+                        <ClientExpandableSteps
+                            id={GettingStartedSubContent.EXPORT_CONTRACT}
+                            title="Export to GitHub"
+                            steps={stepsGithubExport}
+                        />
                     </div>
                 </div>
             </div>

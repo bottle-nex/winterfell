@@ -1,5 +1,4 @@
 import { FaGithub } from 'react-icons/fa';
-import { Button } from '../../ui/button';
 import { Step } from './getting_started_steps';
 
 /**
