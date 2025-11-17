@@ -175,7 +175,7 @@ export default class StreamParser {
                     .trim()
                     .split('<')[0];
 
-                console.log('the context: ', chalk.red(content));
+                console.log('the context: ', chalk.red(content.trimEnd()));
 
                 llm_message = await prisma.message.create({
                     data: {

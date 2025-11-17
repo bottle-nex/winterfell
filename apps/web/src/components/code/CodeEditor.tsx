@@ -113,7 +113,7 @@ export default function CodeEditor(): JSX.Element {
         <div className="flex flex-col w-full h-full relative">
             <div className="flex flex-1 min-h-0">
                 {collapseFileTree && (
-                    <div className="w-[18rem] h-full flex-shrink-0">
+                    <div className="w-[18rem] h-full shrink-0">
                         <SidePanel />
                     </div>
                 )}
@@ -126,7 +126,8 @@ export default function CodeEditor(): JSX.Element {
                         onMount={handleEditorDidMount}
                         theme="clean-dark"
                         options={{
-                            readOnly: false,
+                            readOnly: true,
+                            readOnlyMessage: { value: 'This feature is available for Premium+ users only.',  }
                         }}
                         value={currentCode}
                     />

@@ -31,6 +31,11 @@ winter deploy --devnet      to deploy the contract on devnet
 winter deploy --mainnet     to deploy the contract on mainnet
 `;
 
+// instead of using winter deploy cmds like this use them like this
+// winter deploy --network devnet
+// winter deploy --network mainnet
+// winter deploy --network <custom-network>
+
 // const winterfellBuildResponse = ``;
 
 export enum COMMAND {

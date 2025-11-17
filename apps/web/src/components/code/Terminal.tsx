@@ -101,7 +101,8 @@ export default function Terminal() {
 
     const handleCurrentFileExtension = () => {
         if (!currentFile) return 'no selected file.';
-        const extension = currentFile.name.split('.')[1];
+        const currentFileNameArray = currentFile.name.split('.');
+        const extension = currentFileNameArray[currentFileNameArray.length - 1];
         switch (extension) {
             case 'rs':
                 return 'Rust';
@@ -112,6 +113,7 @@ export default function Terminal() {
             case 'toml':
                 return 'TOML';
             default:
+                if(extension.endsWith('ignore')) return 'ignore'
                 return 'File';
         }
     };
@@ -120,7 +122,7 @@ export default function Terminal() {
         <>
             {showTerminal && (
                 <div
-                    className="absolute bottom-6 left-0 right-0 bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 font-mono shadow-lg flex flex-col z-[999999]"
+                    className="absolute bottom-6 left-0 right-0 bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 font-mono shadow-lg flex flex-col z-999999"
                     style={{
                         height: `min(${height}px, calc(100% - 6rem))`,
                         maxHeight: 'calc(100% - 6rem)',
@@ -131,9 +133,9 @@ export default function Terminal() {
                             e.preventDefault();
                             startResize();
                         }}
-                        className="h-[2px] w-full cursor-ns-resize bg-neutral-800 hover:bg-blue-500/20 active:bg-blue-500/40 transition-colors flex-shrink-0"
+                        className="h-0.5 w-full cursor-ns-resize bg-neutral-800 hover:bg-blue-500/20 active:bg-blue-500/40 transition-colors shrink-0"
                     />
-                    <div className="text-light/50 py-1 px-4 flex justify-between items-center select-none bg-dark-base flex-shrink-0">
+                    <div className="text-light/50 py-1 px-4 flex justify-between items-center select-none bg-dark-base shrink-0">
                         <Button
                             disabled
                             className="tracking-[2px] p-0 text-[11px] h-fit w-fit bg-transparent font-sans text-light/90 rounded-none"
@@ -202,13 +204,13 @@ export default function Terminal() {
                             </div>
                         </div>
 
-                        <div className="w- border-l border-neutral-800 px-1 flex flex-col items-center py-2 overflow-y-auto flex-shrink-0">
+                        <div className="w- border-l border-neutral-800 px-1 flex flex-col items-center py-2 overflow-y-auto shrink-0">
                             {terminals.map((tab) => (
                                 <ToolTipComponent key={tab.id} content={tab.name}>
                                     <Button
                                         // variant='ghost'
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`h-fit !px-1.5 bg-transparent py-1 hover:bg-dark rounded-none cursor-pointer ${
+                                        className={`h-fit px-1.5! bg-transparent py-1 hover:bg-dark rounded-none cursor-pointer ${
                                             activeTab === tab.id ? 'bg-dark' : 'text-light/70'
                                         }`}
                                     >
@@ -222,7 +224,7 @@ export default function Terminal() {
             )}
             <div className="absolute bottom-0 left-0 right-0 h-6 flex justify-between items-center px-3 text-[11px] text-light/70 bg-dark-base border-t border-neutral-800 z-20">
                 <div
-                    className="flex items-center space-x-1.5 hover:bg-neutral-800/50 px-2 py-[2px] rounded-md cursor-pointer transition text-[11px]"
+                    className="flex items-center space-x-1.5 hover:bg-neutral-800/50 px-2 py-0.5 rounded-md cursor-pointer transition text-[11px]"
                     onClick={() => setShowTerminal((prev) => !prev)}
                 >
                     <span className="font-bold text-light/50 tracking-wider">Ctrl/Cmd + J</span>
@@ -236,7 +238,7 @@ export default function Terminal() {
                         Ln 128, Col 14
                     </div>
                     <div className="hover:text-light/80 cursor-pointer tracking-wider">
-                        {handleCurrentFileExtension()}
+                        {'{ } ' + handleCurrentFileExtension()}
                     </div>
                 </div>
             </div>
