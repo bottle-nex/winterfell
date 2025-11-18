@@ -1,6 +1,7 @@
 import path from 'path';
 import fs, { readFileSync } from 'fs';
 import { tool } from '@langchain/core/tools';
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { tool_schema } from '../schema/tool_schema';
 import chalk from 'chalk';
 import { RunnableLambda } from '@langchain/core/runnables';
@@ -8,56 +9,49 @@ import { RunnableLambda } from '@langchain/core/runnables';
 const RULES_DIR = path.resolve(process.cwd(), 'dist/rules');
 
 export default class Tool {
+
     /**
-     * for fetching rule files from tool calls
-     * @returns dynamic structured tool
+     * for fetching rule file from tool call
      */
-    public static get_rules() {
-        const get_tool = tool(
-            async ({ rule_name }: { rule_name: string }) => {
-                console.log(chalk.red('tool called for rule: '), rule_name);
+    public static get_rule = tool(
+        async ({ rule_name }: { rule_name: string }) => {
+            console.log(chalk.red('tool called for rule: '), rule_name);
 
-                const file_path = path.join(RULES_DIR, `${rule_name}.md`);
+            const file_path = path.join(RULES_DIR, `${rule_name}.md`);
 
-                console.log(chalk.yellow('requested rule name path: '), file_path);
+            console.log(chalk.yellow('requested rule name path: '), file_path);
 
-                if (!fs.existsSync(file_path)) throw new Error('rule file not found');
+            if (!fs.existsSync(file_path)) throw new Error('rule file not found');
 
-                return readFileSync(file_path, 'utf-8');
-            },
-            {
-                name: 'get_rule',
-                description: 'fetches a rule document by name',
-                schema: tool_schema,
-            },
-        );
-        return get_tool;
-    }
+            return readFileSync(file_path, 'utf-8');
+        },
+        {
+            name: 'get_rule',
+            description: 'fetches a rule document by name',
+            schema: tool_schema,
+        },
+    );
 
     /**
      * creates a runnable-lambda that executes tool-calling by using specific paths
-     * @returns tool-runner with ai-message and tool-results
      */
-    public static runner() {
-        const tool_runner = new RunnableLambda({
-            func: async (aiMessage: any) => {
-                const tool_calls = aiMessage.tool_calls ?? aiMessage.tool_call_chunks ?? [];
-                const tool = Tool.get_rules();
-                const results: Record<string, any>[] = [];
+    public static runner = new RunnableLambda({
+        func: async (aiMessage: any) => {
+            const tool_calls = aiMessage.tool_calls ?? aiMessage.tool_call_chunks ?? [];
+            const tool = Tool.get_rule;
+            const results: Record<string, any>[] = [];
 
-                for (const tc of tool_calls) {
-                    const args = typeof tc.args === 'string' ? JSON.parse(tc.args) : tc.args;
-                    const result = await tool.invoke({ rule_name: args.rule_name });
-                    results.push({ name: tc.name, args, result });
-                }
-                return {
-                    aiMessage,
-                    toolResults: results,
-                };
-            },
-        });
-        return tool_runner;
-    }
+            for (const tc of tool_calls) {
+                const args = typeof tc.args === 'string' ? JSON.parse(tc.args) : tc.args;
+                const result = await tool.invoke({ rule_name: args.rule_name });
+                results.push({ name: tc.name, args, result });
+            }
+            return {
+                aiMessage,
+                toolResults: results,
+            };
+        },
+    });
 
     /**
      * finds all the rules file and remover their extension and return the name
@@ -80,4 +74,6 @@ export default class Tool {
         console.log({ docs });
         return docs;
     }
+
+    public static node = new ToolNode([Tool.get_rule]);
 }
