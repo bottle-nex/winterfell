@@ -24,5 +24,9 @@ server.listen(env.SERVER_PORT, () => {
     console.warn('Server is running on port : ', env.SERVER_PORT);
 });
 
-const agent = new Agent();
-agent.final_call();
+const trial = () => {
+    const agent = new Agent();
+    agent.final_call();
+}
+
+setTimeout(trial, 1000);

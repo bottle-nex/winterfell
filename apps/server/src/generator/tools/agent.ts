@@ -8,6 +8,7 @@ import { AIMessage } from "@langchain/core/messages";
 export default class Agent {
 
     private llm;
+    private agent_builder;
 
     constructor() {
         this.llm = new ChatGoogleGenerativeAI({
@@ -15,8 +16,20 @@ export default class Agent {
             temperature: 0.2,
             streaming: true,
             apiKey: env.SERVER_GEMINI_API_KEY,
-        });
+        }).bindTools([Tool.get_rule]);
         // add the clause llm too
+
+        this.agent_builder = new StateGraph(MessagesAnnotation)
+        .addNode("llmCall", this.llm_call.bind(this))
+        .addNode("toolNode", Tool.node)
+        .addEdge("__start__", "llmCall")
+        .addConditionalEdges(
+            "llmCall",
+            this.should_continue.bind(this),
+            ["toolNode", "__end__"],
+        )
+        .addEdge("toolNode", "llmCall")
+        .compile();
     }
 
     public final_call() {
@@ -74,18 +87,6 @@ export default class Agent {
         if(last_message && this.has_tool_calls(last_message)) return "toolNode";
         return "__end__";
     }
-
-    public agent_builder = new StateGraph(MessagesAnnotation)
-        .addNode("llmCall", this.llm_call)
-        .addNode("toolNode", Tool.node)
-        .addEdge("__start__", "llmCall")
-        .addConditionalEdges(
-            "llmCall",
-            this.should_continue,
-            ["toolNode", "__end__"],
-        )
-        .addEdge("toolNode", "llmCall")
-        .compile();
 
     private coder_content = `
 You are a senior Anchor Solana smart contract developer.
