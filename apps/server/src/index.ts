@@ -4,6 +4,7 @@ import env from './configs/config.env';
 import cors from 'cors';
 import router from './routes';
 import init_services from './services/init';
+import Agent from './generator/tools/Agent';
 
 const app = express();
 const server = http.createServer(app);
@@ -23,17 +24,9 @@ server.listen(env.SERVER_PORT, () => {
     console.warn('Server is running on port : ', env.SERVER_PORT);
 });
 
-// console.log('----------------------IGNORE THIS FOR NOW----------------------');
+const trial = () => {
+    const agent = new Agent();
+    agent.final_call();
+}
 
-// const caller = async () => {
-//     const result = await contract_services.generate_contract(
-//         'build a todo contract with only add todo function.',
-//     );
-//     console.log('----------------------- the plan');
-//     console.log(result.plan);
-//     console.log('----------------------- the code');
-//     console.log(result.coder_output);
-//     console.log('----------------------IGNORE THIS FOR NOW----------------------');
-// };
-
-// setTimeout(caller, 1000);
+setTimeout(trial, 1000);
