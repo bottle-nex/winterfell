@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import DocsHeading from '../../ui/DocsHeading';
 import { OverviewSubContent } from '@/src/types/docs-types';
+import ClientE2BBento from './ClientE2BBento';
 
 const overviewPoints = [
     {
@@ -86,6 +87,7 @@ export default function ClientOverview() {
             </div>
 
             <SafariBrowser className="" url="winterfell.dev/client" imageSrc={activeImage!} />
+            <ClientE2BBento />
         </div>
     );
 }

@@ -27,11 +27,11 @@ export default function BentoGrid() {
                         </div>
                     </div>
                     <div className="h-full w-full absolute flex justify-center top-1/3 left-0 right-0 pointer-events-none">
-                        <Image
+                        {/* <Image
                             src={'/images/docs/team.svg'}
                             alt="k8s-img"
                             className="object-contain max-h-[150px] sm:max-h-[200px]"
-                        />
+                        /> */}
                     </div>
                     <div className="h-full flex items-end justify-center gap-x-2 mt-auto z-10">
                         <div className="flex items-center justify-between w-full">
