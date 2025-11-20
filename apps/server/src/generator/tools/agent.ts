@@ -30,13 +30,11 @@ export default class Agent {
     }
 
     public final_call() {
-        const messages = [
-            {
-                role: 'user',
-                content: 'create a todo contract',
-            },
-        ];
-
+        const messages = [{
+            role: 'user',
+            content: 'create a counter contract with only increment.',
+        }];
+        
         const final = async () => {
             console.log('here comes the ai call and response');
             const result = await this.agent_builder.invoke({ messages });
