@@ -16,7 +16,8 @@ const envSchema = z.object({
 function parseEnv() {
     try {
         return envSchema.parse(process.env);
-    } catch {
+    } catch (err) {
+        console.error('error in validating', err);
         process.exit(1);
     }
 }

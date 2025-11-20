@@ -1,11 +1,11 @@
-import { MessagesAnnotation, StateGraph } from "@langchain/langgraph";
-import Tool from "./tool";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import env from "../../configs/config.env";
-import { AIMessage } from "@langchain/core/messages";
+import { MessagesAnnotation, StateGraph } from '@langchain/langgraph';
+import Tool from './tool';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import env from '../../configs/config.env';
+import { AIMessage } from '@langchain/core/messages';
 
 const coder = new ChatGoogleGenerativeAI({
-    model: "gemini-2.5-flash",
+    model: 'gemini-2.5-flash',
     temperature: 0.2,
     apiKey: env.SERVER_GEMINI_API_KEY,
     streaming: true,
@@ -14,7 +14,7 @@ const coder = new ChatGoogleGenerativeAI({
 async function llm_call(state: typeof MessagesAnnotation.State) {
     const stream = await coder.stream([
         {
-            role: "system",
+            role: 'system',
             content: `
 You are a senior Anchor Solana smart contract developer.
 
@@ -38,13 +38,13 @@ Process:
 1. Think if rules are needed. If yes → call the tool.
 2. Wait for tool output.
 3. Continue generating the contract with correct rules.
-`
+`,
         },
 
         ...state.messages,
     ]);
 
-    let final_content = "";
+    let final_content = '';
     let tool_calls: string | any[] | undefined = [];
 
     for await (const chunk of stream) {
@@ -61,11 +61,11 @@ Process:
     const message = new AIMessage({
         content: final_content,
         tool_calls: tool_calls.length > 0 ? tool_calls : undefined,
-    })
+    });
 
     return {
-        messages: [message]
-    }
+        messages: [message],
+    };
 }
 
 function has_tool_calls(msg: any): msg is { tool_calls: any[] } {
@@ -75,29 +75,27 @@ function has_tool_calls(msg: any): msg is { tool_calls: any[] } {
 function shouldContinue(state: typeof MessagesAnnotation.State) {
     const lastMessage = state.messages.at(-1);
 
-    if (lastMessage && has_tool_calls(lastMessage)) return "toolNode";
-    return "__end__";
+    if (lastMessage && has_tool_calls(lastMessage)) return 'toolNode';
+    return '__end__';
 }
 
 const agentBuilder = new StateGraph(MessagesAnnotation)
-    .addNode("llmCall", llm_call)
-    .addNode("toolNode", Tool.node)
-    .addEdge("__start__", "llmCall")
-    .addConditionalEdges(
-        "llmCall",
-        shouldContinue,
-        ["toolNode", "__end__"],
-    )
-    .addEdge("toolNode", "llmCall")
+    .addNode('llmCall', llm_call)
+    .addNode('toolNode', Tool.node)
+    .addEdge('__start__', 'llmCall')
+    .addConditionalEdges('llmCall', shouldContinue, ['toolNode', '__end__'])
+    .addEdge('toolNode', 'llmCall')
     .compile();
 
-const messages = [{
-    role: 'user',
-    content: 'create a todo contract',
-}];
+const messages = [
+    {
+        role: 'user',
+        content: 'create a todo contract',
+    },
+];
 
 export const final = async () => {
     console.log('here comes the ai call and response.');
     const result = await agentBuilder.invoke({ messages });
     console.log(result);
-}
+};
