@@ -1,7 +1,7 @@
 import path from 'path';
 import fs, { readFileSync } from 'fs';
 import { tool } from '@langchain/core/tools';
-import { ToolNode } from "@langchain/langgraph/prebuilt";
+import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { tool_schema } from '../schema/tool_schema';
 import chalk from 'chalk';
 import { RunnableLambda } from '@langchain/core/runnables';
@@ -9,7 +9,6 @@ import { RunnableLambda } from '@langchain/core/runnables';
 const RULES_DIR = path.resolve(process.cwd(), 'dist/rules');
 
 export default class Tool {
-
     /**
      * for fetching rule file from tool call
      */
@@ -58,7 +57,7 @@ export default class Tool {
      * @returns {string[]} containing rules name inside rules folder
      */
     public static get_rules_name(): string[] {
-        let docs: string[] = [];
+        const docs: string[] = [];
 
         const rules_dir = fs.readdirSync(RULES_DIR);
 

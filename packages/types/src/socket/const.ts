@@ -5,6 +5,7 @@ export enum TerminalSocketData {
   lOGS = "lOGS",
   BUILD_ERROR = "ERROR",
   VALIDATION_ERROR = "VALIDATION_ERROR",
+  SERVER_MESSAGE = 'SERVER_MESSAGE'
 }
 
 export interface WSServerIncomingPayload<T> {
