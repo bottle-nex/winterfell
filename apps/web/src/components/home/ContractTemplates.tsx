@@ -40,8 +40,8 @@ export default function ContractTemplates() {
                                 </div>
                             </div>
                         </div>
-                        <div className="absolute flex items-center justify-center gap-x-1 px-2 py-1 bg-dark opacity-0 group-hover:opacity-100 rounded-[4px] bottom-12 right-3 translate-x-2 group-hover:translate-x-0">
-                            <span className="text-xs">start building </span>
+                        <div className="absolute flex items-center justify-center gap-x-1 px-5 py-1 bg-primary text-light font-bold opacity-0 group-hover:opacity-100 rounded-[2px] bottom-12 right-3 translate-x-2 group-hover:translate-x-0">
+                            <span className="text-sm">start building </span>
                             <FaChevronRight size={12} strokeWidth={0.2} />
                         </div>
                     </div>

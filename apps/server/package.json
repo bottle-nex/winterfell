@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx esbuild ./src/index.ts --bundle --platform=node --outdir=dist --format=cjs --loader:.ts=ts --sourcemap --minify --external:@prisma/client --external:express --external:jsonwebtoken --external:@aws-sdk/client-s3 --external:@aws-sdk/s3-request-presigner --external:ioredis --external:ws --external:@google/genai --external:@anthropic-ai/sdk --external:razorpay --external:uuid --external:winston --external:zod",
     "start": "node dist/index.js",
-    "dev": "yarn build && yarn start",
+    "dev:esbuild": "yarn build && yarn start",
+    "dev": "tsx --import ./src/opentelemtry/instrumentation.ts ./src/index.ts",
     "remove-logs": "npx ts-node src/scripts/remove-logs",
     "lint": "eslint './src/**/*.{ts,js}'",
     "format": "prettier --write './src/**/*.{ts,tsx,js,jsx,json,md}'"
@@ -26,6 +27,15 @@
     "@langchain/langgraph": "^1.0.2",
     "@langchain/textsplitters": "^1.0.0",
     "@octokit/rest": "^22.0.0",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.67.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.208.0",
+    "@opentelemetry/resources": "^2.2.0",
+    "@opentelemetry/sdk-metrics": "^2.2.0",
+    "@opentelemetry/sdk-node": "^0.208.0",
+    "@opentelemetry/sdk-trace-node": "^2.2.0",
+    "@opentelemetry/semantic-conventions": "^1.38.0",
+    "@prisma/instrumentation": "^7.0.0",
     "@repo/database": "*",
     "@repo/types": "*",
     "@solana/web3.js": "^1.98.4",
@@ -60,6 +70,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.6.0"
   }
 }
