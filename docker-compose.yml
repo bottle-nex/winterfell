@@ -12,18 +12,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  temp-postgres:
-    image: ankane/pgvector
-    container_name: winterfell-temp-pg
-    ports:
-      - 5436:5432
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: winterfell_db
-    volumes:
-      - temp_postgres_data:/var/lib/postgresql/data
-
   redis:
     image: redis:latest
     container_name: winterfell-redis

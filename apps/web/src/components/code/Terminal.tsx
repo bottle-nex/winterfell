@@ -125,7 +125,7 @@ export default function Terminal() {
         <>
             {showTerminal && (
                 <div
-                    className="absolute bottom-6 left-0 right-0 bg-dark-base border-t border-neutral-800 text-[11px] text-neutral-200 font-mono shadow-lg flex flex-col z-999999"
+                    className="absolute bottom-6 left-0 right-0 bg-dark-base border-t border-neutral-800 text-neutral-200 font-mono shadow-lg flex flex-col z-999999 text-[12px] tracking-wider"
                     style={{
                         height: `min(${height}px, calc(100% - 6rem))`,
                         maxHeight: 'calc(100% - 6rem)',
@@ -237,20 +237,25 @@ export default function Terminal() {
                 </div>
                 <div className="flex items-center space-x-4 text-light/60">
 
-                    <div className="flex items-center gap-2">
-                        <span className="relative flex h-3 w-3 items-center justify-center">
-                            {isConnected && (
-                                <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-50" />
-                            )}
-                            <span className={cn(
-                                "relative inline-flex rounded-full h-1.5 w-1.5",
-                                isConnected
-                                    ? "bg-green-500 shadow-md shadow-green-500/60"
-                                    : "bg-red-500 shadow-md shadow-red-500/60"
-                            )} />
-                        </span>
-                        <span>{isConnected ? "winter shell is connected" : "winter shell disconnected"}</span>
-                    </div>
+                    <ToolTipComponent side='top' content={isConnected
+                        ? "winter shell is plugged in and cozy."
+                        : "winter shell drifted into a snowstorm… finding the signal again."
+                    }>
+                        <div className="flex items-center gap-2 cursor-default">
+                            <span className="relative flex h-3 w-3 items-center justify-center">
+                                {isConnected && (
+                                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-50" />
+                                )}
+                                <span className={cn(
+                                    "relative inline-flex rounded-full h-1.5 w-1.5",
+                                    isConnected
+                                        ? "bg-green-500 shadow-md shadow-green-500/60"
+                                        : "bg-red-500 shadow-md shadow-red-500/60"
+                                )} />
+                            </span>
+                            <span className='font-semibold test-[13px] tracking-wide'>{isConnected ? "winter shell is connected" : "winter shell disconnected"}</span>
+                        </div>
+                    </ToolTipComponent>
 
                     <div className="hover:text-light/80 cursor-pointer tracking-wider">
                         Ln 128, Col 14

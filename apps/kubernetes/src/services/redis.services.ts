@@ -1,11 +1,12 @@
 import Redis from 'ioredis';
+import { env } from '../configs/configs.env';
 
 export class RedisLockService {
     private redis: Redis;
     private ttlSeconds: number = 1000;
 
-    constructor(redis: Redis) {
-        this.redis = redis;
+    constructor() {
+        this.redis = new Redis(env.KUBERNETES_REDIS_URL);
     }
 
     /**

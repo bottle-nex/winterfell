@@ -24,6 +24,7 @@ export default class SocketToOrchestratorQueue {
                 priority: 2,
                 jobId: `anchor-command-${payload.contractId}-${this.create_job_id()}`,
             });
+            console.log('added to the queue');
             return job.id;
         } catch (err) {
             console.error('failed to run anchor build command', err);

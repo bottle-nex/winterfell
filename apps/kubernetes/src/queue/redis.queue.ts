@@ -2,37 +2,39 @@ import { BuildJobPayload, COMMAND } from "@repo/types";
 import { Job, Worker } from "bullmq";
 import { kubernetes_services } from "..";
 import { PodServices } from "../services/pod.services";
+import IORedis from "ioredis";
+import { env } from "../configs/configs.env";
 
 export default class RedisQueue {
   private queue: Worker;
 
   constructor(queue_name: string) {
-    this.queue = new Worker(queue_name, this.process_job);
+
+    this.queue = new Worker(queue_name, this.process_job.bind(this), {
+      connection: {
+        url: env.KUBERNETES_REDIS_URL
+      },
+    }
+    );
   }
 
   private async process_job(job: Job) {
     const command = job.name as COMMAND;
     const payload = job.data as BuildJobPayload;
-
     console.log(`Processing job ${job.id}: ${command}`);
 
     try {
       switch (command) {
         case COMMAND.WINTERFELL_BUILD:
           return await this.handleBuild(payload);
-
         case COMMAND.WINTERFELL_TEST:
           return await this.handleTest(payload);
-
         case COMMAND.WINTERFELL_DEPLOY_DEVNET:
           return await this.handleDeployDevnet(payload);
-
         case COMMAND.WINTERFELL_DEPLOY_MAINNET:
           return await this.handleDeployMainnet(payload);
-
         case COMMAND.WINTERFELL_VERIFY:
           return await this.handleVerify(payload);
-
         default:
           throw new Error(`Unknown command: ${command}`);
       }
@@ -43,9 +45,9 @@ export default class RedisQueue {
   }
 
   private async handleBuild(payload: BuildJobPayload) {
-    
+    console.log("run build command");
     try {
-      const { userId, contractId, contractName, jobId, command }   = payload;
+      const { userId, contractId, contractName, jobId, command } = payload;
 
       // const pod_status = await kubernetes_services.kubernetes_manager.get_pod_status(userId, contractId);
       const pod_exists = await kubernetes_services.redis_lock_service.is_locked(userId, contractId);
@@ -58,11 +60,11 @@ export default class RedisQueue {
       const codebase = await PodServices.get_codebase(contractId);
 
       await kubernetes_services.kubernetes_manager.create_pod(jobId, userId, contractId, command, codebase);
-      
+
 
 
     } catch (error) {
-      
+
     }
 
     return { success: true, message: "Build completed" };

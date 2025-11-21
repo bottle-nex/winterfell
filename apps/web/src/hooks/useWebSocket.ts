@@ -50,11 +50,15 @@ export const useWebSocket = () => {
         socket.current.subscribe_to_handlers('TERMINAL_STREAM', handler);
     }
 
+    // todo: @rishi this should also get the contract name
     function sendSocketMessage(command: COMMAND, message: COMMAND_WRITER) {
         if (!socket.current) return;
-        const data: ParsedOutgoingMessage = {
+        const data: ParsedOutgoingMessage<{ message: string, contractName: string }> = {
             type: command,
-            payload: "executing " + message,
+            payload: {
+                contractName: '',
+                message: "executing " + message
+            },
         };
         socket.current.send_message(data);
     }
