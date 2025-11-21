@@ -1,13 +1,12 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  extensions = [pgvector(map:"vector")]
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
 }
 
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/client"
+  provider        = "prisma-client-js"
+  output          = "../generated/client"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -60,13 +59,13 @@ model Contract {
 }
 
 model ContractEMbedding {
-  id          String @id @default(uuid())
+  id          String                       @id @default(uuid())
   contractId  String
   fileName    String
   filePath    String
   fileContent String
   chunkIndex  Int
-  embedding Unsupported("vector(1536)")?
+  embedding   Unsupported("vector(1536)")?
 }
 
 model BuildJob {

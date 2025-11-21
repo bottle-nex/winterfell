@@ -5,9 +5,9 @@ export interface ParsedIncomingMessage {
     type: 'TERMINAL_STREAM';
     payload: string;
 }
-export interface ParsedOutgoingMessage {
+export interface ParsedOutgoingMessage<T> {
     type: COMMAND;
-    payload: string;
+    payload: T;
 }
 export default class WebSocketClient {
     private ws!: WebSocket;
@@ -99,7 +99,7 @@ export default class WebSocketClient {
         }
     }
 
-    public send_message(message: ParsedOutgoingMessage) {
+    public send_message<T>(message: ParsedOutgoingMessage<T>) {
         if (this.is_connected && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(message));
         }

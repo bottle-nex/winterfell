@@ -9,8 +9,8 @@ export let socket_orchestrator_queue: SocketToOrchestratorQueue;
 export default function init_services() {
     try {
         redis_pubsub = new RedisPubSub();
-        wsserver = new WebSocketServer(redis_pubsub);
         socket_orchestrator_queue = new SocketToOrchestratorQueue('socket-to-orchestrator');
+        wsserver = new WebSocketServer(redis_pubsub);
     } catch (error) {
         console.error('Error initializing services:', error);
         throw error;

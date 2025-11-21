@@ -1,5 +1,5 @@
 import { Redis } from 'ioredis';
-import { wsserver } from './init_services';
+import { wsserver } from './services.init';
 import { ParsedMessage } from '../ws/socket.server';
 import { env } from '../configs/config.env';
 

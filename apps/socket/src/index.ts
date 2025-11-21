@@ -1,3 +1,3 @@
-import init_services from './services/init_services';
+import init_services from './services/services.init';
 
 init_services();

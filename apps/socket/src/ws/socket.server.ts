@@ -8,9 +8,9 @@ import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
 import { AuthUser } from '../types/auth_user';
 
-export interface ParsedMessage {
+export interface ParsedMessage<T> {
     type: COMMAND;
-    payload: string;
+    payload: T;
 }
 
 export default class WebSocketServer {
@@ -28,9 +28,7 @@ export default class WebSocketServer {
     private initialize_connection() {
         if (!this.wss) return;
         this.wss.on('connection', (ws: CustomWebSocket, req_url: IncomingMessage) => {
-            console.log('socket connected');
             const { authorised, decoded, contractId } = this.authorize_user(ws, req_url);
-            console.log('is authorised is : ', contractId);
             if (!authorised || !contractId || !decoded) {
                 ws.close();
                 return;
@@ -38,8 +36,8 @@ export default class WebSocketServer {
             this.add_listeners(ws);
             this.send_confirmation_connection(ws);
             this.connection_mapping.set(contractId, ws);
-            // const topic = `${decoded?.id}_${contractId}`;
-            // this.redis.subscribe(topic);
+            const topic = `${decoded?.id}_${contractId}`;
+            this.redis.subscribe(topic);
         });
     }
 
@@ -61,7 +59,7 @@ export default class WebSocketServer {
         });
     }
 
-    private async handle_incoming_message(ws: CustomWebSocket, message: ParsedMessage) {
+    private async handle_incoming_message<T>(ws: CustomWebSocket, message: ParsedMessage<T>) {
         console.log('message is : ', message);
         switch (message.type as COMMAND) {
             case COMMAND.WINTERFELL_BUILD: {
