@@ -16,14 +16,14 @@ export default function HomeNavbar() {
                 <LiaServicestack size={28} className="text-primary" />
                 WINTERFELL
             </div>
-            <div className='flex items-center justify-center gap-x-6 text-sm'>
-                <div className='font-semibold cursor-pointer flex items-center justify-center gap-x-2 hover:text-primary text-light/70 transition-transform hover:-translate-y-0.5'>
-                    <IoIosCreate
-                        className="hover:bg-neutral-700/70 hidden md:block rounded-sm p-[4px] h-7 w-7 select-none cursor-pointer"
-                    />
-                    <span className=''>Playgroud</span>
+            <div className="flex items-center justify-center gap-x-6 text-sm">
+                <div className="font-semibold cursor-pointer flex items-center justify-center gap-x-2 hover:text-primary text-light/70 transition-transform hover:-translate-y-0.5">
+                    <IoIosCreate className="hover:bg-neutral-700/70 hidden md:block rounded-sm p-[4px] h-7 w-7 select-none cursor-pointer" />
+                    <span className="">Playgroud</span>
                 </div>
-                <div className='font-semibold cursor-pointer transition-transform hover:-translate-y-0.5 hover:text-primary text-light/70'>Docs</div>
+                <div className="font-semibold cursor-pointer transition-transform hover:-translate-y-0.5 hover:text-primary text-light/70">
+                    Docs
+                </div>
                 <div className="">
                     {session?.user?.image && (
                         <Image

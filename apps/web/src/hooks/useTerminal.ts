@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import executeCommandServer from '@/src/lib/server/execute-command-server';
-import { COMMAND, CommandResponse } from '../lib/terminal_commands';
+import { COMMAND_WRITER, CommandResponse } from '../lib/terminal_commands';
 import { Line, TerminalTab } from '../types/terminal_types';
+import { useWebSocket } from './useWebSocket';
+import { COMMAND } from '@repo/types';
 
 interface UseTerminalLogicProps {
     contractId: string;
@@ -9,12 +10,13 @@ interface UseTerminalLogicProps {
     addCommand: (command: string) => void;
 }
 
-export function useTerminalLogic({ contractId, token, addCommand }: UseTerminalLogicProps) {
+export function useTerminalLogic({ token, addCommand }: UseTerminalLogicProps) {
     const [terminals, setTerminals] = useState<TerminalTab[]>([
         { id: '1', name: 'shell 1', logs: [], input: '' },
     ]);
 
     const [activeTab, setActiveTab] = useState<string>('1');
+    const { sendSocketMessage } = useWebSocket();
 
     const appendLog = useCallback((tabId: string, line: Line) => {
         setTerminals((prev) =>
@@ -33,30 +35,45 @@ export function useTerminalLogic({ contractId, token, addCommand }: UseTerminalL
     const handleCommand = useCallback(
         (command: string) => {
             if (!token) return;
-            const trimmed = command.trim() as COMMAND;
+            const trimmed = command.trim() as COMMAND_WRITER;
             if (!trimmed) return;
 
             addCommand(trimmed);
             let output = '';
 
             switch (trimmed) {
-                case COMMAND.CLEAR:
+                case COMMAND_WRITER.CLEAR:
                     updateLogs(activeTab, []);
                     return;
 
-                case COMMAND.HELP:
-                case COMMAND.HOT_KEYS:
-                case COMMAND.PLATFORM:
-                case COMMAND.COMMANDS:
+                case COMMAND_WRITER.HELP:
+                case COMMAND_WRITER.HOT_KEYS:
+                case COMMAND_WRITER.PLATFORM:
+                case COMMAND_WRITER.COMMANDS:
                     output = CommandResponse[trimmed];
                     break;
 
-                case COMMAND.WINTERFELL_BUILD:
-                case COMMAND.WINTERFELL_TEST:
-                case COMMAND.WINTERFELL_DEPLOY_DEVNET:
+                case COMMAND_WRITER.WINTERFELL_BUILD:
+                case COMMAND_WRITER.WINTERFELL_TEST:
+                    case COMMAND_WRITER.WINTERFELL_DEPLOY_MAINNET:
+                case COMMAND_WRITER.WINTERFELL_DEPLOY_DEVNET: {
                     output = CommandResponse[trimmed];
-                    executeCommandServer(trimmed, contractId, token);
+                    switch (trimmed) {
+                        case COMMAND_WRITER.WINTERFELL_BUILD:
+                            sendSocketMessage(COMMAND.WINTERFELL_BUILD, COMMAND_WRITER.WINTERFELL_BUILD);
+                            break;
+                        case COMMAND_WRITER.WINTERFELL_TEST:
+                            sendSocketMessage(COMMAND.WINTERFELL_TEST, COMMAND_WRITER.WINTERFELL_TEST);
+                            break;
+                        case COMMAND_WRITER.WINTERFELL_DEPLOY_DEVNET:
+                            sendSocketMessage(COMMAND.WINTERFELL_DEPLOY_DEVNET, COMMAND_WRITER.WINTERFELL_DEPLOY_DEVNET);
+                            break;
+                        case COMMAND_WRITER.WINTERFELL_DEPLOY_MAINNET:
+                            sendSocketMessage(COMMAND.WINTERFELL_DEPLOY_MAINNET, COMMAND_WRITER.WINTERFELL_DEPLOY_MAINNET);
+                            break;
+                    }
                     break;
+                }
 
                 default:
                     output = `winterfell: command not found: ${trimmed}. Try --help`;
@@ -66,7 +83,7 @@ export function useTerminalLogic({ contractId, token, addCommand }: UseTerminalL
             appendLog(activeTab, { type: 'command', text: trimmed });
             appendLog(activeTab, { type: 'output', text: output });
         },
-        [token, activeTab, addCommand, appendLog, updateLogs, contractId],
+        [token, activeTab, addCommand, appendLog, updateLogs, sendSocketMessage],
     );
 
     const addNewTerminal = useCallback(() => {

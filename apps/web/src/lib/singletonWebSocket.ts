@@ -6,11 +6,11 @@ export function getWebSocketClient(token: string, contractId: string) {
         return null;
     }
 
-    const base = `ws://localhost:8085`;
+    const base = `ws://localhost:8282`;
     const url = `${base}?contractId=${encodeURIComponent(contractId)}&token=${encodeURIComponent(token)}`;
 
     if (client) {
-        client.close();
+        return client;
     }
 
     client = new WebSocketClient(url, token);

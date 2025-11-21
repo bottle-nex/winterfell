@@ -38,7 +38,7 @@ winter deploy --mainnet     to deploy the contract on mainnet
 
 // const winterfellBuildResponse = ``;
 
-export enum COMMAND {
+export enum COMMAND_WRITER {
     CLEAR = 'clear',
     HELP = '--help',
     HOT_KEYS = '--hotkeys',
@@ -50,14 +50,14 @@ export enum COMMAND {
     WINTERFELL_DEPLOY_MAINNET = 'winter deploy --mainnet',
 }
 
-export const CommandResponse: Record<COMMAND, string> = {
-    [COMMAND.CLEAR]: 'no clear action',
-    [COMMAND.HELP]: helpResponse,
-    [COMMAND.HOT_KEYS]: hotKeysResponse,
-    [COMMAND.PLATFORM]: platformResponse,
-    [COMMAND.COMMANDS]: commandsResponse,
-    [COMMAND.WINTERFELL_BUILD]: `sure I'll start building your contract`,
-    [COMMAND.WINTERFELL_TEST]: `sure I'll start testing you contract`,
-    [COMMAND.WINTERFELL_DEPLOY_DEVNET]: `sure I'll start deploying your contract to devnet`,
-    [COMMAND.WINTERFELL_DEPLOY_MAINNET]: `sure I'll start deploying you contract to mainnet`,
+export const CommandResponse: Record<COMMAND_WRITER, string> = {
+    [COMMAND_WRITER.CLEAR]: 'no clear action',
+    [COMMAND_WRITER.HELP]: helpResponse,
+    [COMMAND_WRITER.HOT_KEYS]: hotKeysResponse,
+    [COMMAND_WRITER.PLATFORM]: platformResponse,
+    [COMMAND_WRITER.COMMANDS]: commandsResponse,
+    [COMMAND_WRITER.WINTERFELL_BUILD]: `sure I'll start building your contract`,
+    [COMMAND_WRITER.WINTERFELL_TEST]: `sure I'll start testing you contract`,
+    [COMMAND_WRITER.WINTERFELL_DEPLOY_DEVNET]: `sure I'll start deploying your contract to devnet`,
+    [COMMAND_WRITER.WINTERFELL_DEPLOY_MAINNET]: `sure I'll start deploying you contract to mainnet`,
 };

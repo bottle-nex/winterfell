@@ -1,14 +1,14 @@
-export interface MessagePayload {
-    type: 'TERMINAL_STREAM';
-    payload: unknown;
-}
+import { COMMAND } from '@repo/types';
 
 export type MessageHandler = (payload: string) => void;
-export type ParsedMessage = {
+export interface ParsedIncomingMessage {
     type: 'TERMINAL_STREAM';
     payload: string;
-};
-
+}
+export interface ParsedOutgoingMessage {
+    type: COMMAND;
+    payload: string;
+}
 export default class WebSocketClient {
     private ws!: WebSocket;
     public is_connected: boolean = false;
@@ -45,7 +45,7 @@ export default class WebSocketClient {
 
         this.ws.onmessage = (event: MessageEvent<string>) => {
             try {
-                const parsed_data: ParsedMessage = JSON.parse(event.data);
+                const parsed_data: ParsedIncomingMessage = JSON.parse(event.data);
                 this.handle_incoming_message(parsed_data);
             } catch (error) {
                 console.error('Failed to parse incoming WebSocket message:', event.data, error);
@@ -70,7 +70,7 @@ export default class WebSocketClient {
         };
     }
 
-    private handle_incoming_message(parsed_data: ParsedMessage) {
+    private handle_incoming_message(parsed_data: ParsedIncomingMessage) {
         const { type, payload } = parsed_data;
         const handlers = this.handlers.get(type);
         if (handlers) {
@@ -99,7 +99,7 @@ export default class WebSocketClient {
         }
     }
 
-    public send_message(message: MessagePayload) {
+    public send_message(message: ParsedOutgoingMessage) {
         if (this.is_connected && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(message));
         }
