@@ -51,7 +51,8 @@
         "tailwind-merge": "^3.3.1",
         "three": "^0.181.1",
         "uuid": "^13.0.0",
-        "zustand": "^5.0.8"
+        "zustand": "^5.0.8",
+        "@repo/types": "*"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",

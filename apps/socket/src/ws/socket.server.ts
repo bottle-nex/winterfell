@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer as WSServer } from 'ws';
 import { CustomWebSocket } from '../types/socket_types';
-import { COMMAND, WSServerIncomingPayload } from '@repo/types';
+import { COMMAND, TerminalSocketData, WSServerIncomingPayload } from '@repo/types';
 import RedisPubSub from '../queue/redis.pubsub';
 import { env } from '../configs/config.env';
 import CommandService from '../services/services.command';
@@ -29,37 +29,40 @@ export default class WebSocketServer {
         if (!this.wss) return;
         this.wss.on('connection', (ws: CustomWebSocket, req_url: IncomingMessage) => {
             console.log('socket connected');
-            const is_authorized = this.authorize_user(ws, req_url);
-            console.log('is authorised is : ', is_authorized);
-            if (!is_authorized) {
+            const { authorised, decoded, contractId } = this.authorize_user(ws, req_url);
+            console.log('is authorised is : ', contractId);
+            if (!authorised || !contractId || !decoded) {
                 ws.close();
                 return;
             }
-
             this.add_listeners(ws);
-
-            // const topic = '';
+            this.send_confirmation_connection(ws);
+            this.connection_mapping.set(contractId, ws);
+            // const topic = `${decoded?.id}_${contractId}`;
             // this.redis.subscribe(topic);
         });
     }
 
     private add_listeners(ws: CustomWebSocket) {
         ws.on('message', (message) => {
-            const parsed = JSON.parse(JSON.stringify(message));
+            const parsed = JSON.parse(message.toString());
             this.handle_incoming_message(ws, parsed);
         });
 
-        // ws.on('close', () => {
-        //     this.connection_mapping.delete(ws.user.id);
-        // });
+        ws.on('close', (code, reason) => {
+            console.log('Socket closing - Code:', code, 'Reason:', reason.toString());
+            this.connection_mapping.delete(ws.contractId);
+        });
 
-        // ws.on('error', () => {
-        //     this.connection_mapping.delete(ws.user.id);
-        //     ws.close();
-        // });
+        ws.on('error', (err) => {
+            console.log('error is socket : ', err);
+            this.connection_mapping.delete(ws.contractId); // Changed from ws.user.id
+            ws.close();
+        });
     }
 
     private async handle_incoming_message(ws: CustomWebSocket, message: ParsedMessage) {
+        console.log('message is : ', message);
         switch (message.type as COMMAND) {
             case COMMAND.WINTERFELL_BUILD: {
                 const data = await CommandService.handle_incoming_build(ws, message);
@@ -78,19 +81,38 @@ export default class WebSocketServer {
         }
     }
 
-    private authorize_user(ws: CustomWebSocket, req: IncomingMessage) {
-        const url = new URL(req.url || `http://${req.headers.host}`);
+    private authorize_user(
+        ws: CustomWebSocket,
+        req: IncomingMessage,
+    ): {
+        authorised: boolean;
+        decoded: AuthUser | null;
+        contractId: string | null;
+    } {
+        const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
         const token = url.searchParams.get('token');
+        const contract_id = url.searchParams.get('contractId');
 
-        if (!token) {
+        if (!token || !contract_id) {
             console.error('No token provided');
-            return false;
+            return { authorised: false, decoded: null, contractId: null };
         }
 
         const decoded = jwt.verify(token, env.SOCKET_JWT_SECRET);
-        console.log('decoded is : ', decoded);
-        if (!decoded) return false;
+        if (!decoded) {
+            return { authorised: false, decoded: null, contractId: null };
+        }
 
         ws.user = decoded as AuthUser;
+        ws.contractId = contract_id;
+        return { authorised: true, decoded: ws.user, contractId: contract_id };
+    }
+
+    private send_confirmation_connection(ws: CustomWebSocket) {
+        const data: WSServerIncomingPayload<string> = {
+            type: TerminalSocketData.CONNECTED,
+            payload: 'you are connected to winter shell',
+        };
+        this.send_message(ws, data);
     }
 }

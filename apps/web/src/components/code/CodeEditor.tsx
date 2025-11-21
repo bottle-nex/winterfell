@@ -127,7 +127,9 @@ export default function CodeEditor(): JSX.Element {
                         theme="clean-dark"
                         options={{
                             readOnly: true,
-                            readOnlyMessage: { value: 'This feature is available for Premium+ users only.',  }
+                            readOnlyMessage: {
+                                value: 'This feature is available for Premium+ users only.',
+                            },
                         }}
                         value={currentCode}
                     />

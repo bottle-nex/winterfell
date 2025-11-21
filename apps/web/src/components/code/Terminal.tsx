@@ -14,6 +14,8 @@ import ToolTipComponent from '../ui/TooltipComponent';
 import { useTerminalResize } from '@/src/hooks/useTerminalResize';
 import { useTerminalLogic } from '@/src/hooks/useTerminal';
 import { Line } from '@/src/types/terminal_types';
+import { cn } from '@/src/lib/utils';
+import { useWebSocket } from '@/src/hooks/useWebSocket';
 
 export default function Terminal() {
     const [showTerminal, setShowTerminal] = useState<boolean>(false);
@@ -24,6 +26,7 @@ export default function Terminal() {
     const contractId = params.contractId as string;
     const { session } = useUserSessionStore();
     const { addCommand, moveUp, moveDown, resetIndex } = useCommandHistoryStore();
+    const { isConnected } = useWebSocket();
     const { height, startResize } = useTerminalResize({
         onClose: () => setShowTerminal(false),
     });
@@ -113,7 +116,7 @@ export default function Terminal() {
             case 'toml':
                 return 'TOML';
             default:
-                if(extension.endsWith('ignore')) return 'ignore'
+                if (extension.endsWith('ignore')) return 'ignore';
                 return 'File';
         }
     };
@@ -210,9 +213,8 @@ export default function Terminal() {
                                     <Button
                                         // variant='ghost'
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`h-fit px-1.5! bg-transparent py-1 hover:bg-dark rounded-none cursor-pointer ${
-                                            activeTab === tab.id ? 'bg-dark' : 'text-light/70'
-                                        }`}
+                                        className={`h-fit px-1.5! bg-transparent py-1 hover:bg-dark rounded-none cursor-pointer ${activeTab === tab.id ? 'bg-dark' : 'text-light/70'
+                                            }`}
                                     >
                                         <PiTerminalWindow className="size-4" />
                                     </Button>
@@ -234,6 +236,22 @@ export default function Terminal() {
                     </span>
                 </div>
                 <div className="flex items-center space-x-4 text-light/60">
+
+                    <div className="flex items-center gap-2">
+                        <span className="relative flex h-3 w-3 items-center justify-center">
+                            {isConnected && (
+                                <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-50" />
+                            )}
+                            <span className={cn(
+                                "relative inline-flex rounded-full h-1.5 w-1.5",
+                                isConnected
+                                    ? "bg-green-500 shadow-md shadow-green-500/60"
+                                    : "bg-red-500 shadow-md shadow-red-500/60"
+                            )} />
+                        </span>
+                        <span>{isConnected ? "winter shell is connected" : "winter shell disconnected"}</span>
+                    </div>
+
                     <div className="hover:text-light/80 cursor-pointer tracking-wider">
                         Ln 128, Col 14
                     </div>
