@@ -1,5 +1,7 @@
 import { BuildJobPayload, COMMAND } from "@repo/types";
 import { Job, Worker } from "bullmq";
+import { kubernetes_services } from "..";
+import { PodServices } from "../services/pod.services";
 
 export default class RedisQueue {
   private queue: Worker;
@@ -41,7 +43,28 @@ export default class RedisQueue {
   }
 
   private async handleBuild(payload: BuildJobPayload) {
-    console.log("Building contract:", payload.contractId);
+    
+    try {
+      const { userId, contractId, contractName, jobId, command }   = payload;
+
+      // const pod_status = await kubernetes_services.kubernetes_manager.get_pod_status(userId, contractId);
+      const pod_exists = await kubernetes_services.redis_lock_service.is_locked(userId, contractId);
+      if (pod_exists) {
+        console.error('Pod already exists');
+        return;
+      }
+
+      await kubernetes_services.redis_lock_service.create_lock(userId, contractId);
+      const codebase = await PodServices.get_codebase(contractId);
+
+      await kubernetes_services.kubernetes_manager.create_pod(jobId, userId, contractId, command, codebase);
+      
+
+
+    } catch (error) {
+      
+    }
+
     return { success: true, message: "Build completed" };
   }
 
