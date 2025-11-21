@@ -9,8 +9,10 @@ interface CodeEditorState {
     fileTree: FileNode[];
     editedFiles: Record<string, FileNode>;
     collapseFileTree: boolean;
+    collapseChat: boolean
 
     setCollapseFileTree: (collapse: boolean) => void;
+    setCollapsechat: (collapse: boolean) => void;
     setCurrentCode: (code: string) => void;
     updateFileContent: (fileId: string, content: string) => void;
     deleteFile: (path: string) => void;
@@ -27,8 +29,10 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
         fileTree: [],
         editedFiles: {},
         collapseFileTree: false,
+        collapseChat: false,
 
         setCollapseFileTree: (collapse: boolean) => set({ collapseFileTree: collapse }),
+        setCollapsechat: (value: boolean) => set({ collapseChat: value }),
         setCurrentCode: (code: string) => {
             set({ currentCode: code });
         },
@@ -41,8 +45,8 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
                     n.id === fileId
                         ? { ...n, content }
                         : n.children
-                          ? { ...n, children: updateNode(n.children) }
-                          : n,
+                            ? { ...n, children: updateNode(n.children) }
+                            : n,
                 );
 
             const newTree = updateNode(state.fileTree);
@@ -99,11 +103,11 @@ export const useCodeEditor = create<CodeEditorState>((set, get) => {
             const existingTree = state.fileTree.length
                 ? state.fileTree[0]
                 : {
-                      id: 'root',
-                      name: 'root',
-                      type: NODE.FOLDER,
-                      children: [],
-                  };
+                    id: 'root',
+                    name: 'root',
+                    type: NODE.FOLDER,
+                    children: [],
+                };
 
             // Helper: recursively find folder by path
             function findOrCreateFolder(root: FileNode, parts: string[]): FileNode {

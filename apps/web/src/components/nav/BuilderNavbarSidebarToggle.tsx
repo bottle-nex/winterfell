@@ -2,18 +2,30 @@
 import {
     TbLayoutSidebarLeftCollapseFilled,
     TbLayoutSidebarRightCollapseFilled,
+    TbMessageFilled,
 } from 'react-icons/tb';
 import ToolTipComponent from '../ui/TooltipComponent';
 import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
 export default function BuilderNavbarSidebarToggle() {
-    const { collapseFileTree, setCollapseFileTree } = useCodeEditor();
+    const { collapseFileTree, setCollapseFileTree, setCollapsechat, collapseChat } = useCodeEditor();
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
 
     return (
         <div className="flex items-center justify-center gap-x-1.5">
+            <ToolTipComponent duration={300} content={`collapse | ${shortcutKey} + E`}>
+                <TbMessageFilled
+                    size={22}
+                    onClick={() => setCollapsechat(!collapseChat)}
+                    className={cn(
+                        'text-primary cursor-pointer hover:-translate-y-[0.5px] transition-transform',
+                        collapseChat && 'text-light/70',
+                    )}
+                />
+            </ToolTipComponent>
+
             <ToolTipComponent duration={300} content={`collapse | ${shortcutKey} + E`}>
                 <TbLayoutSidebarLeftCollapseFilled
                     size={22}
