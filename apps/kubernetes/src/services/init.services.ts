@@ -1,7 +1,7 @@
 import redis_config from "../configs/config.redis";
 import KubernetesClient from "../k8s/client.kubernetes";
 import KubernetesManager from "../k8s/manager.kubernetes";
-import RedisQueue from "../queue/queue.redis";
+import RedisQueue from "../queue/redis.queue";
 import { RedisLockService } from "./redis.services";
 
 export default class Services {

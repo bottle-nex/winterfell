@@ -7,7 +7,7 @@ export default class RedisQueue {
   private queue: Worker;
 
   constructor(queue_name: string) {
-    this.queue = new Worker(queue_name, this.process_job);
+    this.queue = new Worker(queue_name, this.process_job.bind);
   }
 
   private async process_job(job: Job) {
