@@ -67,4 +67,4 @@
 - only use phases in Generating Code stage
 - strictly follow all the stages, no change in order too
 - only use file tag while in generating or deleting phase
-- at the end
+- at the end show a single open <END> tag.
