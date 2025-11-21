@@ -3,9 +3,14 @@ import podTemplate from "./template.kubernetes";
 import { kubernetes_services } from "..";
 import { env } from "../configs/configs.env";
 import { PodServices } from "../services/pod.services";
+import KubernetesClient from "./client.kubernetes";
 
 export default class KubernetesManager {
-  private core_api: CoreV1Api = kubernetes_services.kubernetes_client.core_api;
+  private core_api: CoreV1Api;
+
+  constructor(kubernetes_client: KubernetesClient) {
+    this.core_api = kubernetes_client.core_api;
+  }
 
   public async create_pod(
     job_id: string,

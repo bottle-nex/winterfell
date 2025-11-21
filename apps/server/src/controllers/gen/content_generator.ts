@@ -109,8 +109,8 @@ export default class ContentGenerator {
             } else {
                 throw new Error('No files were generated');
             }
-        } catch (error) {
-            logger.error('Error in generateInitialResponse:', error);
+        } catch {
+            logger.error('Error in generateInitialResponse:');
             parser.reset();
             this.deleteParser(contractId);
             res.end();

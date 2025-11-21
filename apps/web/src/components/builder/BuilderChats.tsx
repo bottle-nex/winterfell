@@ -20,6 +20,7 @@ import { useChatStore } from '@/src/store/user/useChatStore';
 import { Message } from '@/src/types/prisma-types';
 import { LayoutGrid } from '../ui/animated/layout-grid-icon';
 import { TextShimmer } from '../ui/shimmer-text';
+import { formatChatTime } from '@/src/lib/format_chat_time';
 
 export default function BuilderChats() {
     const { session } = useUserSessionStore();
@@ -195,8 +196,11 @@ export default function BuilderChats() {
                         {message.role === 'USER' && (
                             <div className="flex justify-end items-start w-full">
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
-                                    <div className="px-4 py-2 rounded-[4px] text-sm font-semibold bg-dark text-light text-right">
-                                        {message.content}
+                                    <div>
+                                        <span className='text-right flex justify-end text-xs font-semibold mb-1 mr-1'>{formatChatTime(message.createdAt)}</span>
+                                        <div className="px-4 py-2 rounded-b-[8px] rounded-tl-[8px] text-sm font-semibold bg-primary text-light text-right">
+                                            {message.content}
+                                        </div>
                                     </div>
                                     {session?.user.image && (
                                         <Image

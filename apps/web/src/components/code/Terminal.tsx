@@ -238,8 +238,8 @@ export default function Terminal() {
                 <div className="flex items-center space-x-4 text-light/60">
 
                     <ToolTipComponent side='top' content={isConnected
-                        ? "winter Terminal is plugged in and cozy."
-                        : "winter Terminal drifted into a snowstorm… finding the signal again."
+                        ? "winter shell is plugged in and cozy."
+                        : "winter shell drifted into a snowstorm… finding the signal again."
                     }>
                         <div className="flex items-center gap-2 cursor-default">
                             <span className="relative flex h-3 w-3 items-center justify-center">

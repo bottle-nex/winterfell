@@ -1,13 +1,11 @@
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [pgvector(map: "vector")]
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../generated/client"
-  previewFeatures = ["postgresqlExtensions"]
+  provider = "prisma-client-js"
+  output   = "../generated/client"
 }
 
 model User {
@@ -36,6 +34,7 @@ model Contract {
   contractType ContractType
   code         String?
   codeHash     String?
+  s3_url       String?
 
   lastBuildStatus BuildStatus @default(NEVER_BUILT)
   lastBuildId     String?
@@ -56,16 +55,6 @@ model Contract {
   deployments Deployment[]
   buildJob    BuildJob[]
   messages    Message[]
-}
-
-model ContractEMbedding {
-  id          String                       @id @default(uuid())
-  contractId  String
-  fileName    String
-  filePath    String
-  fileContent String
-  chunkIndex  Int
-  embedding   Unsupported("vector(1536)")?
 }
 
 model BuildJob {

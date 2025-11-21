@@ -11,7 +11,7 @@ export default class CommandService {
         message: ParsedMessage<T>,
     ): Promise<WSServerIncomingPayload<string>> {
         try {
-            const contractId = message.payload;
+            const contractId = ws.contractId;
             if (!contractId || typeof contractId !== 'string') {
                 return {
                     type: TerminalSocketData.VALIDATION_ERROR,

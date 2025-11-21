@@ -18,6 +18,7 @@ function parseEnv() {
   try {
     return envSchema.parse(process.env);
   } catch (error) {
+    console.error("error while parsing envs at kubernetes : ", error);
     process.exit(1);
   }
 }

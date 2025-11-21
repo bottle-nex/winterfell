@@ -2,37 +2,44 @@ import { BuildJobPayload, COMMAND } from "@repo/types";
 import { Job, Worker } from "bullmq";
 import { kubernetes_services } from "..";
 import { PodServices } from "../services/pod.services";
+import IORedis from "ioredis";
 
 export default class RedisQueue {
   private queue: Worker;
+  private connection: IORedis;
 
   constructor(queue_name: string) {
     this.queue = new Worker(queue_name, this.process_job.bind);
+
+    this.connection = new IORedis({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379'),
+      maxRetriesPerRequest: null,
+    });
+
+    this.queue = new Worker(queue_name, this.process_job.bind(this), {
+      connection: this.connection,
+    }
+    );
   }
 
   private async process_job(job: Job) {
     const command = job.name as COMMAND;
     const payload = job.data as BuildJobPayload;
-
     console.log(`Processing job ${job.id}: ${command}`);
 
     try {
       switch (command) {
         case COMMAND.WINTERFELL_BUILD:
           return await this.handleBuild(payload);
-
         case COMMAND.WINTERFELL_TEST:
           return await this.handleTest(payload);
-
         case COMMAND.WINTERFELL_DEPLOY_DEVNET:
           return await this.handleDeployDevnet(payload);
-
         case COMMAND.WINTERFELL_DEPLOY_MAINNET:
           return await this.handleDeployMainnet(payload);
-
         case COMMAND.WINTERFELL_VERIFY:
           return await this.handleVerify(payload);
-
         default:
           throw new Error(`Unknown command: ${command}`);
       }
@@ -90,5 +97,6 @@ export default class RedisQueue {
 
   public async close() {
     await this.queue.close();
+    await this.connection.quit(); // ✅ Also close Redis connection
   }
 }

@@ -12,7 +12,7 @@ export default class Services {
 
   constructor() {
     this.kubernetes_client = new KubernetesClient();
-    this.kubernetes_manager = new KubernetesManager();
+    this.kubernetes_manager = new KubernetesManager(this.kubernetes_client);
     this.redis_queue = new RedisQueue("socket-to-orchestrator");
     this.redis_lock_service = new RedisLockService(redis_config);
   }

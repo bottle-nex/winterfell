@@ -37,6 +37,7 @@ export default async function startChatController(req: Request, res: Response) {
                     title: 'contractor',
                     contractType: 'CUSTOM',
                     userId: userId,
+                    
                 },
                 include: {
                     messages: {
