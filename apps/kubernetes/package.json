@@ -13,9 +13,10 @@
   },
   "dependencies": {
     "@kubernetes/client-node": "^1.4.0",
+    "@repo/types": "*",
+    "axios": "^1.13.2",
     "bullmq": "^5.63.0",
     "dotenv": "^17.2.3",
-    "zod": "^4.1.12",
-    "@repo/types": "*"
+    "zod": "^4.1.12"
   }
 }
