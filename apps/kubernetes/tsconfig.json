@@ -1,13 +1,17 @@
 {
   "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
   "include": [
     "src"
   ],
   "exclude": [
-    "dist",
-    "node_modules"
-  ],
-  "compilerOptions": {
-    "outDir": "./dist"
-  }
+    "node_modules",
+    "dist"
+  ]
 }

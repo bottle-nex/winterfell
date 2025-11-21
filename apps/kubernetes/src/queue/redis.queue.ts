@@ -3,22 +3,17 @@ import { Job, Worker } from "bullmq";
 import { kubernetes_services } from "..";
 import { PodServices } from "../services/pod.services";
 import IORedis from "ioredis";
+import { env } from "../configs/configs.env";
 
 export default class RedisQueue {
   private queue: Worker;
-  private connection: IORedis;
 
   constructor(queue_name: string) {
-    this.queue = new Worker(queue_name, this.process_job.bind);
-
-    this.connection = new IORedis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      maxRetriesPerRequest: null,
-    });
 
     this.queue = new Worker(queue_name, this.process_job.bind(this), {
-      connection: this.connection,
+      connection: {
+        url: env.KUBERNETES_REDIS_URL
+      },
     }
     );
   }
@@ -50,9 +45,9 @@ export default class RedisQueue {
   }
 
   private async handleBuild(payload: BuildJobPayload) {
-    
+    console.log("run build command");
     try {
-      const { userId, contractId, contractName, jobId, command }   = payload;
+      const { userId, contractId, contractName, jobId, command } = payload;
 
       // const pod_status = await kubernetes_services.kubernetes_manager.get_pod_status(userId, contractId);
       const pod_exists = await kubernetes_services.redis_lock_service.is_locked(userId, contractId);
@@ -65,11 +60,11 @@ export default class RedisQueue {
       const codebase = await PodServices.get_codebase(contractId);
 
       await kubernetes_services.kubernetes_manager.create_pod(jobId, userId, contractId, command, codebase);
-      
+
 
 
     } catch (error) {
-      
+
     }
 
     return { success: true, message: "Build completed" };
@@ -97,6 +92,5 @@ export default class RedisQueue {
 
   public async close() {
     await this.queue.close();
-    await this.connection.quit(); // ✅ Also close Redis connection
   }
 }

@@ -6,12 +6,13 @@ import { WSServerIncomingPayload, TerminalSocketData, BuildJobPayload } from '@r
 import { socket_orchestrator_queue } from './services.init';
 
 export default class CommandService {
-    static async handle_incoming_build<T>(
+    static async handle_incoming_command<T>(
         ws: CustomWebSocket,
         message: ParsedMessage<T>,
     ): Promise<WSServerIncomingPayload<string>> {
         try {
             const contractId = ws.contractId;
+            console.log('contract id is : ', contractId);
             if (!contractId || typeof contractId !== 'string') {
                 return {
                     type: TerminalSocketData.VALIDATION_ERROR,

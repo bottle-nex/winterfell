@@ -63,7 +63,7 @@ export default class WebSocketServer {
         console.log('message is : ', message);
         switch (message.type as COMMAND) {
             case COMMAND.WINTERFELL_BUILD: {
-                const data = await CommandService.handle_incoming_build(ws, message);
+                const data = await CommandService.handle_incoming_command(ws, message);
                 this.send_message(ws, data);
                 return;
             }
