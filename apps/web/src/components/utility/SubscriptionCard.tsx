@@ -181,7 +181,7 @@ export default function SubscriptionPlans() {
     return (
         <section
             id="pricing"
-            className="w-full min-h-screen bg-dark-base text-center text-white relative flex flex-col items-center justify-center z-20 px-4"
+            className="w-full min-h-screen bg-linear-to-b from-[#0a0b0d] via-[#0a0b0d] to-dark-base text-center text-white relative flex flex-col items-center justify-center z-20 px-4"
         >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent" />
 

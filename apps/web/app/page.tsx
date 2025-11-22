@@ -8,6 +8,7 @@ import LenisProvider from '@/src/providers/LenisProvider';
 import Navbar from '@/src/components/nav/Navbar';
 import SubscriptionPlans from '@/src/components/utility/SubscriptionCard';
 import Faq from '@/src/components/base/Faq';
+import ReviewsSection from '@/src/components/utility/ReviewsSection';
 
 export default function Page() {
     const parallaxContainerRef = useRef<HTMLDivElement>(null);
@@ -20,12 +21,9 @@ export default function Page() {
                 <Features />
                 <WhoWeAre />
                 <SubscriptionPlans />
+                <ReviewsSection />
                 <Faq />
-                <div ref={parallaxContainerRef} className="relative h-[200vh]">
-                    <div className="sticky top-0 h-screen overflow-hidden">
-                        <Footer />
-                    </div>
-                </div>
+                <Footer />
             </div>
         </LenisProvider>
     );
