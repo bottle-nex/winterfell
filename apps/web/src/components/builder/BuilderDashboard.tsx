@@ -6,6 +6,9 @@ import { useBuilderChatStore } from '@/src/store/code/useBuilderChatStore';
 import BuilderLoader from './BuilderLoader';
 import { JSX } from 'react';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import SidePanel from '../code/SidePanel';
+import EditorSidePanel from '../code/EditorSidePanel';
+import Terminal from '../code/Terminal';
 
 export default function BuilderDashboard(): JSX.Element {
     const { loading } = useBuilderChatStore();
@@ -40,9 +43,20 @@ export default function BuilderDashboard(): JSX.Element {
                 className="pb-4 px-4 h-full flex-1 min-w-0"
             >
                 <div className="w-full h-full z-10 border-neutral-800 border rounded-[4px] relative overflow-hidden">
-                    {loading ? <BuilderLoader /> : <CodeEditor />}
+                    {loading ? <BuilderLoader /> : <Editing />}
                 </div>
             </motion.div>
+        </div>
+    );
+}
+
+function Editing() {
+    return (
+        <div className='flex h-full'>
+            <EditorSidePanel />
+            <SidePanel />
+            <CodeEditor />
+            <Terminal />
         </div>
     );
 }

@@ -64,7 +64,7 @@ export default class Agent {
 
         const systemMessage = await prisma.message.create({
             data: {
-                contractId: 'contract-id',
+                contractId: '66e3dab4-cc7f-49de-9b64-c5b0c007ad58',
                 role: ChatRole.SYSTEM,
                 content: 'starting to generate in a few seconds',
             },

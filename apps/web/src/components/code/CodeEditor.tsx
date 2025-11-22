@@ -3,11 +3,9 @@ import { JSX, useCallback } from 'react';
 import { Editor, Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
-import Terminal from './Terminal';
-import SidePanel from './SidePanel';
 
 export default function CodeEditor(): JSX.Element {
-    const { collapseFileTree, currentCode } = useCodeEditor();
+    const { collapseFileTree, currentCode, currentFile } = useCodeEditor();
 
     const handleEditorWillMount = useCallback((monaco: Monaco) => {
         monaco.editor.defineTheme('clean-dark', {
@@ -109,35 +107,31 @@ export default function CodeEditor(): JSX.Element {
         [],
     );
 
+    function filePathModifier(filePath: string | undefined) {
+        return filePath ? filePath.replaceAll('/', ' / ') : '';
+    }
+
     return (
-        <div className="flex flex-col w-full h-full relative">
-            <div className="flex flex-1 min-h-0">
-                {collapseFileTree && (
-                    <div className="w-[18rem] h-full shrink-0">
-                        <SidePanel />
-                    </div>
-                )}
-
-                <div className="flex-1 min-w-0 h-full w-full">
-                    <Editor
-                        height="100%"
-                        language="rust"
-                        width={"100%"}
-                        beforeMount={handleEditorWillMount}
-                        onMount={handleEditorDidMount}
-                        theme="clean-dark"
-                        options={{
-                            readOnly: true,
-                            readOnlyMessage: {
-                                value: 'This feature is available for Premium+ users only.',
-                            },
-                        }}
-                        value={currentCode}
-                    />
-                </div>
+        <div className="flex flex-col w-full h-full grow-0 relative">
+            <div className="w-full flex px-4 py-1 bg-[#1d1e21] text-gray-300 text-sm ">
+                {filePathModifier(currentFile?.id)}
             </div>
-
-            <Terminal />
+            <div className="flex-1 min-w-0 h-full">
+                <Editor
+                    height="100%"
+                    language="rust"
+                    beforeMount={handleEditorWillMount}
+                    onMount={handleEditorDidMount}
+                    theme="clean-dark"
+                    options={{
+                        readOnly: true,
+                        readOnlyMessage: {
+                            value: 'This feature is available for Premium+ users only.',
+                        },
+                    }}
+                    value={currentCode}
+                />
+            </div>
         </div>
     );
 }
