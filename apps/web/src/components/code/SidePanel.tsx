@@ -24,7 +24,7 @@ export default function SidePanel() {
     }
 
     return (
-        <div className="flex max-h-full bg-[#16171a] text-neutral-200 border-r border-neutral-800 min-w-56 w-56 max-w-[18rem]">
+        <div className="flex max-h-full bg-[#16171a] text-neutral-200 border-r border-neutral-800 min-w-[15rem] max-w-[18rem] ">
             <div className="flex-1 flex-col h-full select-none ">
                 <div className="w-full h-full ">
                     {renderSidePanels()}

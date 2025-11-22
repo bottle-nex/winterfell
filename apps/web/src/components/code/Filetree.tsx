@@ -50,13 +50,13 @@ export default function FileTree() {
     }));
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col w-full">
             <div className="p-3 border-b border-neutral-800 shrink-0">
                 <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                     Project Files
                 </h2>
             </div>
-            <div className="flex-1 ">
+            <div className="flex-1 h-full overflow-y-auto custom-scrollbar">
                 <UncontrolledTreeEnvironment
                     dataProvider={dataProvider}
                     getItemTitle={(item) => item.data}
@@ -100,7 +100,9 @@ export default function FileTree() {
                         </div>
                     )}
                 >
-                    <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
+                    <div className='h-full'>
+                        <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
+                    </div>
                 </UncontrolledTreeEnvironment>
             </div>
         </div>
