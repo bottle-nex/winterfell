@@ -118,10 +118,11 @@ export default function CodeEditor(): JSX.Element {
                     </div>
                 )}
 
-                <div className="flex-1 min-w-0 h-full">
+                <div className="flex-1 min-w-0 h-full w-full">
                     <Editor
                         height="100%"
                         language="rust"
+                        width={"100%"}
                         beforeMount={handleEditorWillMount}
                         onMount={handleEditorDidMount}
                         theme="clean-dark"

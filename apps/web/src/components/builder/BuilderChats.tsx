@@ -189,10 +189,10 @@ export default function BuilderChats() {
     }
 
     return (
-        <div className="w-full flex flex-col pt-4" style={{ height: 'calc(100vh - 3.5rem)' }}>
-            <div className="flex-1 flex flex-col gap-y-3 text-light text-sm px-6 overflow-y-auto min-h-0 custom-scrollbar">
+        <div className="w-full max-w-md min-w-md flex flex-col pt-4" style={{ height: 'calc(100vh - 3.5rem)' }}>
+            <div className="flex-1 flex flex-col gap-y-3 text-light text-sm pl-4 overflow-y-auto min-h-0 custom-scrollbar">
                 {messages.map((message) => (
-                    <div key={message.id} className="w-full flex flex-shrink-0">
+                    <div key={message.id} className="w-full flex shrink-0">
                         {message.role === 'USER' && (
                             <div className="flex justify-end items-start w-full">
                                 <div className="flex items-start gap-x-2 max-w-[70%]">
@@ -204,7 +204,7 @@ export default function BuilderChats() {
                                     </div>
                                     {session?.user.image && (
                                         <Image
-                                            className="rounded-full flex-shrink-0"
+                                            className="rounded-full shrink-0"
                                             src={session.user.image}
                                             alt="user"
                                             width={32}
