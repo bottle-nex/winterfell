@@ -1,8 +1,9 @@
 'use client';
-import { JSX, useCallback } from 'react';
+import { JSX, useCallback, useEffect } from 'react';
 import { Editor, Monaco } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
+import { LiaServicestack } from 'react-icons/lia';
 
 export default function CodeEditor(): JSX.Element {
     const { collapseFileTree, currentCode, currentFile } = useCodeEditor();
@@ -107,30 +108,42 @@ export default function CodeEditor(): JSX.Element {
         [],
     );
 
+    // useEffect(() => {
+    //     setTimeout(() => )
+    // }, [collapseFileTree]);
+
     function filePathModifier(filePath: string | undefined) {
         return filePath ? filePath.replaceAll('/', ' / ') : '';
     }
 
     return (
         <div className="flex flex-col w-full h-full grow-0 relative">
-            <div className="w-full flex px-4 py-1 bg-[#1d1e21] text-gray-300 text-sm ">
-                {filePathModifier(currentFile?.id)}
-            </div>
             <div className="flex-1 min-w-0 h-full">
-                <Editor
-                    height="100%"
-                    language="rust"
-                    beforeMount={handleEditorWillMount}
-                    onMount={handleEditorDidMount}
-                    theme="clean-dark"
-                    options={{
-                        readOnly: true,
-                        readOnlyMessage: {
-                            value: 'This feature is available for Premium+ users only.',
-                        },
-                    }}
-                    value={currentCode}
-                />
+                {currentFile ? (
+                    <>
+                        <div className="w-full flex px-4 py-1 bg-[#1d1e21] text-gray-300 text-sm ">
+                            {filePathModifier(currentFile?.id)}
+                        </div>
+                        <Editor
+                            height="100%"
+                            language="rust"
+                            beforeMount={handleEditorWillMount}
+                            onMount={handleEditorDidMount}
+                            theme="clean-dark"
+                            options={{
+                                readOnly: true,
+                                readOnlyMessage: {
+                                    value: 'This feature is available for Premium+ users only.',
+                                },
+                            }}
+                            value={currentCode}
+                        />
+                    </>
+                ) : (
+                <div className='w-full h-full flex justify-center items-center'>
+                    <LiaServicestack size={200} className="text-neutral-800" />
+                </div>
+            )}
             </div>
         </div>
     );
