@@ -9,13 +9,11 @@ import { cn } from '@/src/lib/utils';
 import { useCodeEditor } from '@/src/store/code/useCodeEditor';
 
 export default function BuilderNavbarSidebarToggle() {
-    const { collapseFileTree, setCollapseFileTree, setCollapsechat, collapseChat } = useCodeEditor();
+    const { setCollapsechat, collapseChat } = useCodeEditor();
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const shortcutKey = isMac ? 'Cmd' : 'Ctrl';
 
     const iconBaseStyles = "cursor-pointer transition-transform hover:-translate-y-[0.5px]";
-    const iconInactiveStyles = "text-light/70";
-    const iconActiveStyles = "text-primary";
 
     const chatButtonBaseStyles = "flex items-center justify-center gap-x-1 rounded-[4px] border px-3 py-0.5 text-xs cursor-pointer";
     const chatButtonActiveStyles = "border-light/70 text-light/70";
@@ -40,28 +38,6 @@ export default function BuilderNavbarSidebarToggle() {
                         )}
                     />
                 </div>
-            </ToolTipComponent>
-
-            <ToolTipComponent duration={300} content={`collapse | ${shortcutKey} + E`}>
-                <TbLayoutSidebarLeftCollapseFilled
-                    size={22}
-                    onClick={() => setCollapseFileTree(false)}
-                    className={cn(
-                        iconBaseStyles,
-                        !collapseFileTree ? iconActiveStyles : iconInactiveStyles
-                    )}
-                />
-            </ToolTipComponent>
-
-            <ToolTipComponent duration={300} content={`expand | ${shortcutKey} + E`}>
-                <TbLayoutSidebarRightCollapseFilled
-                    size={22}
-                    onClick={() => setCollapseFileTree(true)}
-                    className={cn(
-                        iconBaseStyles,
-                        collapseFileTree ? iconActiveStyles : iconInactiveStyles
-                    )}
-                />
             </ToolTipComponent>
         </div>
     );

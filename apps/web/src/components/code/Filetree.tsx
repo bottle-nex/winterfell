@@ -50,50 +50,62 @@ export default function FileTree() {
     }));
 
     return (
-        <UncontrolledTreeEnvironment
-            dataProvider={dataProvider}
-            getItemTitle={(item) => item.data}
-            viewState={{}}
-            canDragAndDrop={false}
-            canDropOnFolder={false}
-            canReorderItems={false}
-            onSelectItems={(items) => {
-                const itemId = items[0];
+        <div className="h-full flex flex-col w-full">
+            <div className="p-3 border-b border-neutral-800 shrink-0">
+                <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                    Project Files
+                </h2>
+            </div>
+            <div className="flex-1 h-full overflow-y-auto custom-scrollbar">
+                <UncontrolledTreeEnvironment
+                    dataProvider={dataProvider}
+                    getItemTitle={(item) => item.data}
+                    viewState={{}}
+                    canDragAndDrop={false}
+                    canDropOnFolder={false}
+                    canReorderItems={false}
+                    onSelectItems={(items) => {
+                        const itemId = items[0];
 
-                if (itemId && itemId !== 'root') {
-                    const findNode = (nodes: FileNode[], id: string): FileNode | null => {
-                        for (const node of nodes) {
-                            if (node.id === id) return node;
-                            if (node.children) {
-                                const found = findNode(node.children, id);
-                                if (found) return found;
+                        if (itemId && itemId !== 'root') {
+                            const findNode = (nodes: FileNode[], id: string): FileNode | null => {
+                                for (const node of nodes) {
+                                    if (node.id === id) return node;
+                                    if (node.children) {
+                                        const found = findNode(node.children, id);
+                                        if (found) return found;
+                                    }
+                                }
+                                return null;
+                            };
+                            const node = findNode(fileTree, itemId as string);
+
+                            if (node && node.type === NODE.FILE) {
+                                selectFile(node);
                             }
                         }
-                        return null;
-                    };
-                    const node = findNode(fileTree, itemId as string);
-
-                    if (node && node.type === NODE.FILE) {
-                        selectFile(node);
-                    }
-                }
-            }}
-            renderItemTitle={({ item, context }) => (
-                <div className="flex items-center gap-2">
-                    {item.isFolder ? (
-                        context.isExpanded ? (
-                            <AiFillFolderOpen size={16} className="text-[#317FFF]" />
-                        ) : (
-                            <AiFillFolder size={16} className="text-[#317FFF]" />
-                        )
-                    ) : (
-                        <FileIcon filename={item.data} size={14} className="text-neutral-400" />
+                    }}
+                    renderItemTitle={({ item, context }) => (
+                        <div className="flex items-center gap-2">
+                            {item.isFolder ? (
+                                context.isExpanded ? (
+                                    <AiFillFolderOpen size={16} className="text-[#317FFF]" />
+                                ) : (
+                                    <AiFillFolder size={16} className="text-[#317FFF]" />
+                                )
+                            ) : (
+                                <FileIcon filename={item.data} size={14} className="text-neutral-400" />
+                            )}
+                            <span className="w-full text-sm truncate">{item.data}</span>
+                        </div>
                     )}
-                    <span className="text-sm">{item.data}</span>
-                </div>
-            )}
-        >
-            <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
-        </UncontrolledTreeEnvironment>
+                >
+                    <div className='h-full'>
+                        <Tree treeId="file-tree" rootItem="root" treeLabel="Project Files" />
+                    </div>
+                </UncontrolledTreeEnvironment>
+            </div>
+        </div>
     );
+
 }

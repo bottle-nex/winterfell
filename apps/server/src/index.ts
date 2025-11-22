@@ -8,6 +8,7 @@ import router from './routes';
 import init_services from './services/init';
 import { loggingMiddleware } from './middlewares/middleware.logger';
 import { logger } from './utils/logger';
+import Agent from './generator/tools/agent';
 // import Agent from './generator/tools/agent';
 
 const app = express();
@@ -37,9 +38,9 @@ process.on('SIGINT', () => {
     });
 });
 
-// const trial = () => {
-//     const agent = new Agent();
-//     agent.final_call();
-// };
+const trial = () => {
+    const agent = new Agent();
+    agent.final_call();
+}
 
 // setTimeout(trial, 1000);
